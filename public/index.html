@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>MOYOFY · Rafa's Bar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #ff004c;
+      --primary-dark: #cc003d;
+      --dark: #1a1a2e;
+      --darker: #12121f;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --success: #00ffaa;
+      --warning: #ffcc00;
+      --danger: #ff6b6b;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: var(--darker);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--darker) 0%, #2d2d4f 100%);
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      animation: fadeInDown 0.5s ease;
+    }
+    
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff004c, #ff7300);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(255, 0, 76, 0.3);
+      position: relative;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    h2 {
+      font-size: 1.2rem;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+    
+    .user-panel {
+      background: rgba(30, 30, 50, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 0, 76, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    
+    .points-display {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--success);
+      margin: 10px 0;
+      text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+      background: linear-gradient(45deg, var(--success), #00cc88);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .level-badge {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+    
+    .search-box {
+      background: rgba(25, 25, 40, 0.9);
+      border: 2px solid var(--primary);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .search-label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      color: var(--light);
+      font-weight: 500;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(40, 40, 60, 0.8);
+      color: white;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 0, 76, 0.3);
+    }
+    
+    .search-input::placeholder {
+      color: #888;
+    }
+    
+    .search-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .search-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 0, 76, 0.4);
+    }
+    
+    .song-item {
+      background: rgba(35, 35, 55, 0.8);
+      border-left: 4px solid var(--primary);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .song-item:hover {
+      background: rgba(45, 45, 65, 0.9);
+      transform: translateX(5px);
+      border-left: 4px solid var(--success);
+    }
+    
+    .song-info {
+      flex: 1;
+    }
+    
+    .song-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 3px;
+      color: var(--light);
+    }
+    
+    .song-artist {
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    
+    .add-btn {
+      background: var(--success);
+      color: black;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 100px;
+    }
+    
+    .add-btn:hover {
+      background: #00cc88;
+      transform: scale(1.05);
+    }
+    
+    .message {
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      text-align: center;
+      font-weight: bold;
+      animation: pulse 0.5s ease;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    
+    .message.success {
+      background: rgba(0, 255, 170, 0.15);
+      border: 1px solid rgba(0, 255, 170, 0.3);
+      color: var(--success);
+    }
+    
+    .message.error {
+      background: rgba(255, 107, 107, 0.15);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: var(--danger);
+    }
+    
+    .message.warning {
+      background: rgba(255, 204, 0, 0.15);
+      border: 1px solid rgba(255, 204, 0, 0.3);
+      color: var(--warning);
+    }
+    
+    .auth-required {
+      background: rgba(255, 69, 58, 0.15);
+      border: 1px solid rgba(255, 69, 58, 0.3);
+      color: var(--danger);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+    
+    .auth-required:hover {
+      background: rgba(255, 69, 58, 0.25);
+      transform: scale(1.02);
+    }
+    
+    .auth-required i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .ranking-panel {
+      background: rgba(30, 30, 50, 0.8);
+      border: 1px solid rgba(0, 255, 170, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .ranking-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .rank-item:first-child {
+      color: gold;
+      font-weight: bold;
+    }
+    
+    .rank-item:nth-child(2) {
+      color: silver;
+    }
+    
+    .rank-item:nth-child(3) {
+      color: #cd7f32;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: var(--gray);
+    }
+    
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #888;
+      font-size: 0.9rem;
+      padding: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .container {
+        padding: 10px;
+      }
+      
+      .search-box {
+        padding: 15px;
+      }
+      
+      .user-panel {
+        padding: 15px;
+      }
+    }
+    
+    /* Efectos de sonido y animaciones */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .bounce {
+      animation: bounce 0.5s;
+    }
+    
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎸 MOYOFY PREMIUM</h1>
+      <h2>Tu vibra tiene valor · Rafa's Bar</h2>
+    </header>
+    
+    <div class="user-panel">
+      <div id="nickname-section" style="display: none;">
+        <h3>👤 ¿Cómo te llamas?</h3>
+        <input type="text" id="nickname" placeholder="Ej: RockMaster69" class="search-input">
+        <button onclick="setNickname()" class="search-btn">
+          <i class="fas fa-sign-in-alt"></i> ENTRAR AL BAR
+        </button>
+        <p style="color: #888; margin-top: 10px; font-size: 0.9rem;">
+          * Usa un apodo único para que aparezcas en el ranking
+        </p>
+      </div>
+      
+      <div id="user-profile" style="display: none;">
+        <h3 id="welcome-text">¡Bienvenido, <span id="user-nickname">usuario</span>!</h3>
+        <div class="points-display">
+          <i class="fas fa-coins"></i> <span id="user-points">100</span>
+        </div>
+        <div class="level-badge">
+          <i class="fas fa-level-up-alt"></i> Nivel <span id="user-level">1</span>
+        </div>
+        <div style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">
+          Canciones agregadas: <span id="songs-added">0</span>
+        </div>
+        <button onclick="changeUsername()" class="change-username-btn">
+          <i class="fas fa-user-edit"></i> Cambiar apodo
+        </button>
+      </div>
+    </div>
+    
+    <div class="search-box">
+      <h3>🎵 Buscar canción</h3>
+      <p style="color: #aaa; margin-bottom: 15px; font-size: 0.95rem;">
+        Solo se permiten géneros afines al rock (clásico, alternativo, metal, punk, indie, industrial, etc.).
+        <br>
+        <span style="color: var(--success); display: inline-block; margin-top: 5px;">
+          <i class="fas fa-check-circle"></i> ¡Gana MOYOS por cada canción que agregues!
+        </span>
+      </p>
+      
+      <input type="text" id="song-search" placeholder="Busca tu canción favorita..." class="search-input">
+      <button onclick="searchSongs()" class="search-btn">
+        <i class="fas fa-search"></i> BUSCAR CANCIONES
+      </button>
+      
+      <div id="auth-required-message" style="display: none;" class="auth-required" onclick="redirectToAuth()">
+        <i class="fas fa-lock"></i> <strong>🔐 ¡NECESITAS AUTENTICARTE CON YOUTUBE!</strong><br>
+        Para agregar canciones a la playlist, debes autorizar MOYOFY con tu cuenta de Google.<br>
+        <small>(Solo una vez por sesión)</small>
+      </div>
+      
+      <div id="message-container"></div>
+      
+      <div class="results-container" id="results-container">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>¿Qué canción quieres agregar hoy?</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="ranking-panel">
+      <div class="ranking-title">
+        <i class="fas fa-trophy"></i> 🏆 RANKING DEL BAR
+      </div>
+      <div id="ranking-list">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Cargando ranking...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>MOYOFY PREMIUM v2 · Sistema de entretenimiento social para bares</p>
+    <p>Música impulsada por YouTube · © 2025 Abundia.io</p>
+  </footer>
+  
+  <div class="confetti" id="confetti-container"></div>
+
+  <script>
+    // Variables globales
+    let currentUser = null;
+    let API_BASE = window.location.origin;
+    let requiresAuth = false;
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 MOYOFY PREMIUM v2 cargado');
+      
+      // Cargar perfil de usuario si existe en localStorage
+      const savedUser = localStorage.getItem('moyofy_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showUserProfile();
+        loadUserRanking();
+      } else {
+        showNicknameSection();
+      }
+    });
+    
+    function showNicknameSection() {
+      document.getElementById('nickname-section').style.display = 'block';
+      document.getElementById('user-profile').style.display = 'none';
+    }
+    
+    function showUserProfile() {
+      if (!currentUser) return;
+      
+      document.getElementById('nickname-section').style.display = 'none';
+      document.getElementById('user-profile').style.display = 'block';
+      
+      document.getElementById('user-nickname').textContent = currentUser.nickname;
+      document.getElementById('user-points').textContent = currentUser.points || 100;
+      document.getElementById('user-level').textContent = currentUser.level || 1;
+      document.getElementById('songs-added').textContent = currentUser.songsAdded || 0;
+    }
+    
+    function setNickname() {
+      const nickname = document.getElementById('nickname').value.trim();
+      if (!nickname || nickname.length < 3) {
+        showMessage('⚠️ Ingresa un apodo válido (mínimo 3 caracteres)', 'warning');
+        return;
+      }
+      
+      const userId = `user_${nickname.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`;
+      
+      currentUser = {
+        id: userId,
+        nickname: nickname,
+        points: 100,
+        level: 1,
+        songsAdded: 0
+      };
+      
+      localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
+      showUserProfile();
+      loadUserRanking();
+      showMessage(`🎉 ¡Bienvenido ${nickname} al Rafa's Bar!`, 'success');
+    }
+    
+    async function searchSongs() {
+      const query = document.getElementById('song-search').value.trim();
+      if (!query) {
+        showMessage('❌ Ingresa el nombre de una canción o artista', 'error');
+        return;
+      }
+      
+      if (!currentUser) {
+        showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
+        showNicknameSection();
+        return;
+      }
+      
+      document.getElementById('results-container').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Buscando canciones... <strong>${query}</strong></p>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (!data.ok) {
+          throw new Error(data.error || 'Error al buscar canciones');
+        }
+        
+        displaySearchResults(data.items, data.filterStats);
+        
+        if (data.items.length > 0) {
+          showMessage(`✅ ¡Encontramos ${data.items.length} canciones para ti!`, 'success');
+        } else {
+          showMessage('🔍 No encontramos canciones que cumplan con los criterios del bar', 'warning');
+        }
+        
+      } catch (error) {
+        console.error('Error en búsqueda:', error);
+        document.getElementById('results-container').innerHTML = `
+          <div class="message error">
+            <i class="fas fa-exclamation-circle"></i> ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    function displaySearchResults(items, stats) {
+      const container = document.getElementById('results-container');
+      
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="message warning">
+            <i class="fas fa-music"></i> No se encontraron canciones que cumplan con los criterios de Rafa's Bar.
+            <p style="margin-top: 10px; font-size: 0.9rem; color: #ddd;">
+              ⚠️ Recuerda: Solo se permiten géneros rock y sus variantes (incluyendo industrial, alternativo, etc.).
+              <br>Prueba con términos como "<strong>Queen</strong>", "<strong>Rush</strong>", "<strong>Metallica</strong>", "<strong>Pantera</strong>", etc.
+            </p>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '';
+      
+      if (stats) {
+        html += `
+          <div class="message info" style="background: rgba(108, 117, 125, 0.15); border: 1px solid rgba(108, 117, 125, 0.3);">
+            <i class="fas fa-filter"></i> Resultados filtrados: ${stats.approved}/${stats.totalResults} 
+            (${stats.approvalRate}%) aprobados para Rafa's Bar
+          </div>
+        `;
+      }
+      
+      items.forEach((item, index) => {
+        html += `
+          <div class="song-item" onclick="addSong('${item.videoId}', '${item.title.replace(/'/g, "\\'")}', this)">
+            <div class="song-info">
+              <div class="song-title">${item.title}</div>
+              <div class="song-artist">${item.artist || 'Artista desconocido'}</div>
+            </div>
+            <button class="add-btn">
+              <i class="fas fa-plus"></i> AGREGAR
+            </button>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+    
+    async function addSong(videoId, title, element) {
+      if (!currentUser) {
+        showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
+        showNicknameSection();
+        return;
+      }
+      
+      if (requiresAuth) {
+        showMessage('🔐 Necesitas autenticarte con YouTube para agregar canciones', 'error');
+        showAuthRequiredMessage();
+        return;
+      }
+      
+      try {
+        const button = element.querySelector('.add-btn');
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AGREGANDO...';
+        
+        const response = await fetch(`${API_BASE}/add-song`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            playlistId: 'PLo_v1BZSJlIvJnX7ISeilNokZp58D1nCe', // Reemplaza con tu playlist ID real
+            videoId: videoId,
+            userId: currentUser.id
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.ok) {
+          element.classList.add('bounce');
+          element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';
+          
+          currentUser.points = (currentUser.points || 100) + 10;
+          currentUser.level = Math.floor(currentUser.points / 100) + 1;
+          currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;
+          
+          document.getElementById('user-points').textContent = currentUser.points;
+          document.getElementById('user-level').textContent = currentUser.level;
+          document.getElementById('songs-added').textContent = currentUser.songsAdded;
+          
+          localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
+          
+          showMessage(`✅ ¡${title} agregada a la playlist! +10 MOYOS`, 'success');
+          
+          document.getElementById('song-search').value = '';
+          document.getElementById('results-container').innerHTML = `
+            <div class="message success">
+              <i class="fas fa-check-circle"></i> ¡Canción agregada exitosamente!
+            </div>
+          `;
+          
+        } else {
+          if (data.requiresAuth) {
+            requiresAuth = true;
+            showAuthRequiredMessage();
+            throw new Error('🔐 Necesitas autenticarte con YouTube para agregar canciones');
+          }
+          throw new Error(data.error || 'Error al agregar canción');
+        }
+        
+      } catch (error) {
+        console.error('Error al agregar canción:', error);
+        showMessage(`❌ Error: ${error.message}`, 'error');
+      } finally {
+        const button = element.querySelector('.add-btn');
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = '<i class="fas fa-plus"></i> AGREGAR';
+          element.classList.remove('bounce');
+        }
+      }
+    }
+    
+    async function loadUserRanking() {
+      try {
+        const response = await fetch(`${API_BASE}/user/profile?userId=${currentUser?.id || 'anonymous'}`);
+        const data = await response.json();
+        
+        if (data.ok) {
+          displayRanking(data.topUsers);
+        }
+      } catch (error) {
+        console.error('Error al cargar ranking:', error);
+      }
+    }
+    
+    function displayRanking(users) {
+      const container = document.getElementById('ranking-list');
+      
+      if (!users || users.length === 0) {
+        container.innerHTML = `
+          <div class="message info" style="background: rgba(108, 117, 125, 0.15); border: 1px solid rgba(108, 117, 125, 0.3);">
+            <i class="fas fa-users"></i> Aún no hay usuarios en el ranking
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '';
+      
+      users.forEach((user, index) => {
+        const isCurrentUser = currentUser && currentUser.nickname === user.nickname;
+        const highlight = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary);"' : '';
+        
+        html += `
+          <div class="rank-item" ${highlight}>
+            <span>
+              <strong>${user.rank}.</strong> ${user.nickname}
+              ${isCurrentUser ? '<span style="color: var(--primary); margin-left: 5px;">(TÚ)</span>' : ''}
+            </span>
+            <span>
+              <i class="fas fa-coins" style="color: var(--success); margin-right: 5px;"></i>
+              ${user.points} MOYOS • Nivel ${user.level}
+            </span>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+    
+    function showMessage(text, type = 'info') {
+      const container = document.getElementById('message-container');
+      container.innerHTML = `
+        <div class="message ${type} bounce">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+          ${text}
+        </div>
+      `;
+      
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 5000);
+    }
+    
+    function showAuthRequiredMessage() {
+      const container = document.getElementById('auth-required-message');
+      container.style.display = 'block';
+    }
+    
+    function redirectToAuth() {
+      window.location.href = `${API_BASE}/auth`;
+    }
+    
+    function changeUsername() {
+      localStorage.removeItem('moyofy_user');
+      currentUser = null;
+      showNicknameSection();
+      showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');
+    }
+  </script>
+</body>
+</html>

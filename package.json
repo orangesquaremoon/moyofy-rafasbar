@@ -1,0 +1,22 @@
+{
+  "name": "moyofy-premium",
+  "version": "2.0.0",
+  "description": "MOYOFY PREMIUM v2 - Sistema de entretenimiento social para bares",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "keywords": ["music", "social", "gamification", "bar", "rock"],
+  "author": "Abundia.io",
+  "license": "MIT",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "googleapis": "^131.0.0"
+  }
+}
