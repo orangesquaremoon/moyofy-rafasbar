@@ -1,11 +1,10 @@
 // backend/utils/music-filter.js
-
 // ================================
-// MOYOFY FILTER v3 - SISTEMA INTELIGENTE MEJORADO
-// Rafa's Bar - Versión Premium con prioridad de artistas
+// MOYOFY FILTER v4 - SISTEMA INTELIGENTE DE FILTRADO
+// Optimizado para Rafa's Bar - Filtro de contexto mejorado
 // ================================
 
-// ✅ ARTISTAS Y BANDAS PERMITIDOS (Lista Blanca - PRIORIDAD MÁXIMA)
+// ✅ LISTA DE ARTISTAS PERMITIDOS (EXPANDIDA Y OPTIMIZADA)
 const ALLOWED_ARTISTS = new Set([
     // Rock Clásico y Hard Rock
     "queen", "acdc", "ac/dc", "led zeppelin", "the beatles", "rolling stones",
@@ -15,413 +14,334 @@ const ALLOWED_ARTISTS = new Set([
     "the who", "the kinks", "small faces", "faces", "bad company", "free",
     "mott the hoople", "slade", "t. rex", "roxy music", "genesis", "yes",
     "king crimson", "emerson lake & palmer", "jethro tull", "van morrison",
-    "cat stevens", "carole king", "elton john", "stevie nicks", "bee gees", "abba",
-    // ... (agrega aquí todos tus artistas permitidos, separados por comas)
-    // Por brevedad, no se incluyen todos aquí, pero debes incluirlos todos
-    // Asegúrate de que estén en minúsculas
-].map(artist => artist.toLowerCase())); // Normaliza a minúsculas para comparación
+    "cat stevens", "carole king", "elton john", "stevie nicks", "bee gees",
+    "abba", "kiss", "foreigner", "reo speedwagon", "styx", "boston", "heart",
+    "pat benatar", "joan jett", "bob seger", "zz top", "steely dan",
+    
+    // Metal y Heavy Metal
+    "metallica", "iron maiden", "slayer", "megadeth", "pantera", "judas priest",
+    "motorhead", "ozzy osbourne", "tool", "system of a down", "rammstein", "korn",
+    "slipknot", "mötley crüe", "guns n' roses", "van halen", "dio", "black label society",
+    "soundgarden", "alice in chains", "stone temple pilots", "pearl jam", "nirvana",
+    "foo fighters", "queens of the stone age", "mastodon", "gojira", "lamb of god",
+    "opeth", "dream theater", "rush", "saxon", "danzig", "anthrax", "testament",
+    "death", "cannibal corpse", "sepultura", "meshuggah", "in flames", "children of bodom",
+    
+    // Rock Alternativo e Indie
+    "radiohead", "the smashing pumpkins", "red hot chili peppers", "the strokes",
+    "arcade fire", "interpol", "the white stripes", "muse", "coldplay", "u2", "rem",
+    "weezer", "green day", "the offspring", "blink-182", "rancid", "no doubt", "bush",
+    "stone roses", "the cure", "depeche mode", "joy division", "new order", "the smiths",
+    "echo & the bunnymen", "television", "pixies", "sonic youth", "dinosaur jr",
+    "pavement", "guided by voices", "neutral milk hotel", "modest mouse", "built to spill",
+    
+    // Rock en Español
+    "soda stereo", "gustavo cerati", "caifanes", "jaguares", "café tacvba",
+    "enjambre", "zoé", "mana", "los bunkers", "los tres", "los prisioneros",
+    "heroes del silencio", "extremoduro", "platero y tu", "barricada", "marea",
+    "la ley", "cerati", "andrés calamaro", "fito páez", "charly garcía", "serú girán",
+    
+    // Rock Industrial y Experimental
+    "nine inch nails", "ministry", "killing joke", "front 242", "front line assembly",
+    "skinny puppy", "kmfdm", "pig", "revolting cocks", "wumpscut", "velvet acid christ",
+    
+    // Classic Punk
+    "sex pistols", "the clash", "ramones", "dead kennedys", "black flag", "misfits",
+    "bad brains", "minor threat", "descendents", "circle jerks", "dead milkmen",
+    
+    // Rock Progresivo
+    "porcupine tree", "the mars volta", "coheed and cambria", "spock's beard",
+    "transatlantic", "neal morse", "flower kings", "roine stolt",
+    
+    // Stoner Rock y Doom Metal
+    "kyuss", "queens of the stone age", "sleep", "electric wizard", "om", "earth",
+    "high on fire", "clutch", "the sword", "orange goblin", "brant bjork",
+    
+    // Blues Rock
+    "eric clapton", "cream", "john mayer", "stevie ray vaughan", "bb king",
+    "buddy guy", "gary clark jr", "the black keys", "the raconteurs",
+    
+    // Classic Rock Español
+    "triana", "camilo sesto", "julio iglesias", "mecano", "radio futura",
+    "tequila", "nacha pop", "los secretos", "loquillo", "rosendo"
+].map(artist => artist.toLowerCase()));
 
-// ❌ PALABRAS CLAVE NO DESEADAS (Lista Negra)
+// ✅ GÉNEROS PERMITIDOS (PARA CONTEXTO)
+const ALLOWED_GENRES = new Set([
+    "rock", "metal", "hard rock", "heavy metal", "alternative", "indie",
+    "punk", "grunge", "progressive", "prog", "stoner", "doom", "sludge",
+    "industrial", "gothic", "post-punk", "new wave", "post-rock", "math rock",
+    "shoegaze", "noise rock", "psychedelic", "blues rock", "southern rock",
+    "classic rock", "arena rock", "glam rock", "art rock", "experimental",
+    "hardcore", "emo", "post-hardcore", "metalcore", "deathcore", "black metal",
+    "thrash metal", "power metal", "folk metal", "symphonic metal", "nu metal",
+    "funk rock", "garage rock", "surf rock", "rock and roll", "rockabilly"
+]);
+
+// ❌ LISTA DE PALABRAS PROHIBIDAS OPTIMIZADA
+// Solo términos que claramente indican géneros no deseados
 const FORBIDDEN_KEYWORDS = [
-    "romantic", "romántica", "love song", "balada", "balad", "slow", "suave",
-    "dance", "pop", "latin", "reggaeton", "trap", "hip hop", "rap", "electronic",
-    "techno", "house", "disco", "salsa", "cumbia", "merengue", "bachata",
-    "country", "folk", "blues", "jazz", "classical", "instrumental", "ambient",
-    "meditation", "relaxing", "study", "sleep", "children", "kids", "lullaby",
-    "cover acoustic", "acoustic cover", "karaoke", "sing along", "remix",
-    "remasterizado", "live acoustic", " unplugged", "intimate", "quiet", "soft rock",
-    "adult contemporary", "easy listening", "mellow", "chillout", "downtempo",
-    "nu metal", "alternative pop", "indie pop", "synthpop", "new wave",
-    "punk pop", "pop punk", "emo", "post-grunge", "grunge lite", "alternative rock pop",
-    "soft alternative", "dream pop", "shoegaze pop", "indietronica pop",
-    "funk rock", "soul rock", "blue-eyed soul", "motown", "r&b fusion",
-    "world music", "ethnic", "tribal", "native american", "african", "asian",
-    "middle eastern", "indian classical", "flamenco", "bossa nova", "samba",
-    "opera", "symphony", "orchestra", "choir", "gregorian chant", "hymn",
-    "christian", "gospel", "worship", "praise", "religious", "spiritual",
-    "comedy", "parody", "satire", "spoof", "humor", "funny", "sketch", "stand-up",
-    "podcast", "interview", "talk show", "documentary", "concert footage",
-    "behind the scenes", "making of", "lyric video", "official video", "hd",
-    "4k", "remastered", "anniversary edition", "tribute", "cover version",
-    "karaoke version", "instrumental version", "radio edit", "album version",
-    "demo version", "unreleased", "bootleg", "live bootleg", "fm recording",
-    "home recording", "studio session", "session musician", "tribute band",
-    "cover band", "karaoke band", "tribute act", "impersonator", "look-alike",
-    "costume performance", "theme park", "cruise ship", "wedding singer",
-    "private event", "charity event", "fundraiser", "benefit concert",
-    "political", "protest", "activism", "anthem", "national", "flag",
-    "war", "battle", "conflict", "violence", "aggressive", "angry", "protest song",
-    "explicit", "lyrics", "uncensored", "clean version", "edited", "censored",
-    "underground", "underground scene", "local band", "unsigned", "independent",
-    "indie", "alternative", "non-mainstream", "cult", "obscure", "rare",
-    "hard to find", "lost track", "b-side", "rarity", "collectible", "vinyl exclusive",
-    "limited edition", "collector's item", "archived", "historical", "vintage",
-    "retro", "nostalgic", "throwback", "classic", "old school", "golden oldies",
-    "yesterday's hits", "remember when", "flashback", "timeless", "evergreen",
-    "best of", "greatest hits", "compilation", "collection", "anthology",
-    "complete works", "discography", "catalog", "recordings", "sessions",
-    "outtakes", "rare recordings", "premiere", "exclusive", "first listen",
-    "new release", "single", "album track", "featured", "spotlight", "highlight",
-    "popular", "trending", "viral", "hit", "chart-topper", "number one",
-    "award winner", "grammy", "mtv award", "billboard", "hot 100", "charts",
-    "top 10", "top 40", "radio friendly", "airplay", "rotation", "playlist favorite",
-    "fan favorite", "crowd favorite", "audience choice", "vote winner",
-    "contest winner", "competition", "battle of the bands", "talent show",
-    "american idol", "x factor", "voice", "survivor", "apprentice", "big brother",
-    "real housewives", "keeping up with the kardashians", "jersey shore",
-    "geordie shore", "love island", "ex on the beach", "made in chelsea",
-    "below deck", "sailor moon", "dragon ball z", "naruto", "pokemon",
-    "south park", "family guy", "simpsons", "futurama", "rick and morty",
-    "bojack horseman", "arrested development", "community", "parks and recreation",
-    "brooklyn nine-nine", "the office", "modern family", "how i met your mother",
-    "new girl", "veep", "silicon valley", "westworld", "game of thrones",
-    "stranger things", "the crown", "bridgerton", "ozark", "narcos",
-    "breaking bad", "better call saul", "the wire", "true detective",
-    "sherlock", "luther", "broadchurch", "the good wife", "house of cards",
-    "mad men", "the sopranos", "deadwood", "the shield", "dexter", "six feet under",
-    "the x-files", "buffy the vampire slayer", "angel", "firefly", "serenity",
-    "star trek", "star wars", "marvel", "dc comics", "superhero", "comic book",
-    "anime", "manga", "otaku", "weeb", "kawaii", "kyoto", "tokyo", "japan",
-    "china", "korea", "asia", "eastern", "oriental", "far east", "pacific",
-    "island", "beach", "summer", "vacation", "holiday", "travel", "adventure",
-    "expedition", "exploration", "discovery", "nature", "wildlife", "animal",
-    "pet", "dog", "cat", "horse", "bird", "fish", "aquarium", "zoo", "sanctuary",
-    "farm", "ranch", "countryside", "rural", "city", "urban", "metropolitan",
-    "skyscraper", "suburb", "neighborhood", "street", "avenue", "boulevard",
-    "highway", "road trip", "journey", "voyage", "trip", "outing", "excursion",
-    "picnic", "camping", "hiking", "mountain", "hill", "valley", "river", "lake",
-    "ocean", "sea", "coast", "shore", "beach", "sand", "surf", "wave", "tide",
-    "sunset", "sunrise", "dawn", "dusk", "night", "day", "morning", "evening",
-    "season", "spring", "summer", "autumn", "fall", "winter", "weather", "storm",
-    "rain", "snow", "sunny", "cloudy", "windy", "foggy", "misty", "clear",
-    "temperature", "hot", "cold", "warm", "cool", "climate", "environment",
-    "pollution", "recycling", "green", "eco-friendly", "sustainable", "organic",
-    "natural", "artificial", "synthetic", "chemical", "scientific", "laboratory",
-    "experiment", "research", "study", "analysis", "theory", "hypothesis",
-    "mathematics", "physics", "chemistry", "biology", "geography", "history",
-    "culture", "tradition", "custom", "ceremony", "ritual", "religion", "faith",
-    "belief", "philosophy", "thought", "idea", "concept", "meaning", "purpose",
-    "life", "death", "birth", "growth", "change", "time", "space", "universe",
-    "galaxy", "planet", "star", "moon", "sun", "comet", "meteor", "asteroid",
-    "spaceship", "astronaut", "rocket", "flight", "aviation", "airplane",
-    "helicopter", "train", "subway", "bus", "car", "automobile", "truck",
-    "motorcycle", "bicycle", "walking", "running", "exercise", "fitness",
-    "health", "wellness", "medicine", "doctor", "hospital", "clinic", "pharmacy",
-    "drug", "medicine", "prescription", "over-the-counter", "vitamin", "supplement",
-    "diet", "nutrition", "food", "drink", "beverage", "alcohol", "wine", "beer",
-    "cocktail", "cuisine", "recipe", "cooking", "baking", "grilling", "barbecue",
-    "restaurant", "cafe", "bar", "pub", "club", "venue", "event", "party",
-    "celebration", "festival", "carnival", "fair", "market", "shop", "store",
-    "mall", "department store", "boutique", "shopping", "buy", "purchase", "sale",
-    "discount", "offer", "deal", "bargain", "price", "money", "finance", "bank",
-    "investment", "stock", "market", "economy", "business", "company", "job",
-    "work", "career", "profession", "education", "school", "university", "college",
-    "student", "teacher", "professor", "learning", "knowledge", "skill", "talent",
-    "ability", "intelligence", "wisdom", "emotion", "feeling", "mood", "happy",
-    "sad", "angry", "fear", "surprise", "disgust", "contempt", "pride", "shame",
-    "guilt", "envy", "jealousy", "love", "hate", "like", "dislike", "prefer",
-    "choice", "decision", "option", "alternative", "possibility", "potential",
-    "future", "past", "present", "now", "then", "soon", "later", "early", "late",
-    "fast", "slow", "quick", "speed", "velocity", "acceleration", "distance",
-    "length", "size", "height", "width", "depth", "weight", "mass", "volume",
-    "density", "pressure", "temperature", "energy", "power", "force", "motion",
-    "sound", "noise", "silence", "light", "darkness", "color", "hue", "shade",
-    "tone", "texture", "shape", "form", "pattern", "design", "art", "painting",
-    "drawing", "sketch", "photography", "picture", "image", "video", "film",
-    "movie", "cinema", "theater", "stage", "performance", "act", "play", "show",
-    "entertainment", "fun", "enjoyment", "pleasure", "happiness", "smile", "laugh",
-    "cry", "tears", "eyes", "face", "head", "body", "hand", "foot", "leg", "arm",
-    "heart", "mind", "brain", "soul", "spirit", "ghost", "monster", "fantasy",
-    "magic", "wizard", "witch", "vampire", "zombie", "alien", "extraterrestrial",
-    "science fiction", "fantasy", "adventure", "action", "comedy", "drama",
-    "horror", "thriller", "mystery", "crime", "detective", "spy", "war", "military",
-    "police", "law", "justice", "court", "judge", "jury", "lawyer", "attorney",
-    "crime", "murder", "theft", "robbery", "assault", "violence", "peace", "war",
-    "conflict", "dispute", "argument", "fight", "battle", "victory", "defeat",
-    "win", "lose", "success", "failure", "goal", "objective", "target", "aim",
-    "purpose", "reason", "cause", "effect", "result", "outcome", "consequence",
-    "problem", "solution", "answer", "question", "statement", "fact", "truth",
-    "lie", "deception", "honesty", "trust", "betrayal", "loyalty", "friendship",
-    "relationship", "family", "parent", "child", "sibling", "brother", "sister",
-    "mother", "father", "grandmother", "grandfather", "aunt", "uncle", "cousin",
-    "niece", "nephew", "spouse", "husband", "wife", "partner", "boyfriend",
-    "girlfriend", "lover", "date", "meeting", "appointment", "schedule", "calendar",
-    "clock", "watch", "hour", "minute", "second", "year", "month", "week", "day",
-    "today", "tomorrow", "yesterday", "weekend", "weekday", "holiday", "vacation",
-    "break", "pause", "stop", "start", "begin", "end", "finish", "complete",
-    "ready", "prepared", "done", "finished", "over", "closed", "open", "available",
-    "busy", "free", "full", "empty", "new", "old", "ancient", "modern", "contemporary",
-    "current", "latest", "recent", "previous", "former", "original", "copy", "duplicate",
-    "fake", "real", "true", "false", "right", "wrong", "correct", "incorrect", "accurate",
-    "inaccurate", "precise", "imprecise", "exact", "approximate", "rough", "smooth",
-    "sharp", "dull", "bright", "dim", "loud", "quiet", "strong", "weak", "powerful",
-    "powerless", "effective", "ineffective", "efficient", "inefficient", "useful",
-    "useless", "helpful", "unhelpful", "important", "unimportant", "significant",
-    "insignificant", "major", "minor", "large", "small", "big", "little", "huge",
-    "tiny", "enormous", "minuscule", "massive", "compact", "spacious", "cramped",
-    "comfortable", "uncomfortable", "cozy", "roomy", "tight", "loose", "fit", "loose-fitting",
-    "baggy", "skinny", "slim", "thin", "fat", "thick", "wide", "narrow", "broad",
-    "long", "short", "tall", "low", "high", "deep", "shallow", "heavy", "light",
-    "dense", "sparse", "thick", "thin", "rough", "smooth", "soft", "hard", "flexible",
-    "rigid", "elastic", "brittle", "durable", "fragile", "strong", "weak", "tough",
-    "delicate", "sturdy", "flimsy", "solid", "hollow", "empty", "full", "filled",
-    "covered", "uncovered", "hidden", "visible", "seen", "unseen", "heard", "unheard",
-    "spoken", "unspoken", "written", "unwritten", "read", "unread", "understood",
-    "misunderstood", "clear", "unclear", "simple", "complex", "easy", "difficult",
-    "hard", "possible", "impossible", "likely", "unlikely", "probable", "improbable",
-    "certain", "uncertain", "doubtful", "sure", "unsure", "confident", "insecure",
-    "brave", "cowardly", "bold", "timid", "shy", "outgoing", "introverted", "extroverted",
-    "active", "passive", "dynamic", "static", "moving", "still", "restless", "calm",
-    "peaceful", "chaotic", "organized", "disorganized", "neat", "messy", "tidy",
-    "cluttered", "clean", "dirty", "pure", "impure", "fresh", "stale", "ripe", "unripe",
-    "cooked", "raw", "boiled", "fried", "baked", "grilled", "roasted", "steamed",
-    "sauteed", "blended", "mixed", "separated", "combined", "divided", "split",
-    "joined", "connected", "linked", "attached", "detached", "fixed", "broken",
-    "working", "not working", "functional", "non-functional", "operational",
-    "non-operational", "online", "offline", "up", "down", "forward", "backward",
-    "left", "right", "north", "south", "east", "west", "above", "below", "under",
-    "over", "beside", "next to", "near", "far", "close", "apart", "together",
-    "united", "divided", "separate", "individual", "collective", "group", "team",
-    "squad", "unit", "division", "section", "department", "organization", "institution",
-    "government", "politics", "policy", "rule", "law", "regulation", "standard",
-    "norm", "custom", "tradition", "culture", "society", "community", "people",
-    "person", "human", "man", "woman", "boy", "girl", "child", "adult", "elder",
-    "senior", "young", "old", "middle-aged", "teenager", "kid", "baby", "infant",
-    "toddler", "youth", "generation", "age", "birthday", "anniversary", "celebration",
-    "party", "event", "occasion", "festival", "holiday", "vacation", "trip", "journey",
-    "adventure", "exploration", "discovery", "quest", "mission", "task", "job",
-    "work", "duty", "responsibility", "obligation", "commitment", "promise",
-    "pledge", "oath", "swear", "vow", "marriage", "wedding", "divorce", "separation",
-    "engagement", "dating", "romance", "love", "affection", "attraction", "desire",
-    "lust", "passion", "intimacy", "sex", "gender", "male", "female", "intersex",
-    "transgender", "non-binary", "queer", "lgbtq+", "identity", "orientation",
-    "race", "ethnicity", "nationality", "citizenship", "passport", "visa", "border",
-    "immigration", "emigration", "refugee", "asylum", "exile", "banishment",
-    "punishment", "reward", "prize", "trophy", "medal", "certificate", "diploma",
-    "degree", "qualification", "skill", "talent", "ability", "gift", "aptitude",
-    "intelligence", "wisdom", "knowledge", "information", "data", "facts", "figures",
-    "numbers", "statistics", "percentage", "ratio", "fraction", "decimal", "integer",
-    "prime", "composite", "even", "odd", "positive", "negative", "zero", "infinity",
-    "mathematics", "algebra", "geometry", "calculus", "trigonometry", "arithmetic",
-    "logic", "reasoning", "argument", "proof", "theorem", "formula", "equation",
-    "variable", "constant", "function", "graph", "coordinate", "axis", "point",
-    "line", "angle", "shape", "area", "volume", "perimeter", "circumference",
-    "radius", "diameter", "chord", "tangent", "secant", "arc", "sector", "segment",
-    "cone", "cylinder", "sphere", "cube", "pyramid", "prism", "polyhedron",
-    "polygon", "triangle", "square", "rectangle", "parallelogram", "rhombus",
-    "trapezoid", "pentagon", "hexagon", "heptagon", "octagon", "nonagon", "decagon",
-    "circle", "ellipse", "oval", "parabola", "hyperbola", "sine", "cosine",
-    "tangent", "cotangent", "secant", "cosecant", "radian", "degree", "pi", "e",
-    "logarithm", "exponent", "root", "square root", "cube root", "nth root",
-    "factorial", "permutation", "combination", "probability", "statistics", "mean",
-    "median", "mode", "range", "variance", "standard deviation", "distribution",
-    "normal distribution", "bell curve", "skewed", "symmetric", "asymmetric",
-    "frequency", "relative frequency", "cumulative frequency", "histogram", "bar graph",
-    "line graph", "pie chart", "scatter plot", "box plot", "whisker plot",
-    "stem and leaf plot", "dot plot", "table", "matrix", "vector", "scalar",
-    "magnitude", "direction", "component", "unit vector", "dot product", "cross product",
-    "scalar product", "tensor", "field", "space", "dimension", "manifold", "topology",
-    "geometry", "algebra", "analysis", "number theory", "combinatorics", "graph theory",
-    "set theory", "logic", "computability", "complexity", "algorithm", "data structure",
-    "computer science", "programming", "software", "hardware", "network", "internet",
-    "web", "website", "application", "app", "mobile app", "desktop app", "server",
-    "client", "database", "SQL", "NoSQL", "relational", "non-relational", "schema",
-    "table", "row", "column", "field", "key", "foreign key", "primary key",
-    "index", "query", "transaction", "backup", "recovery", "security", "encryption",
-    "decryption", "authentication", "authorization", "permission", "access control",
-    "firewall", "malware", "virus", "worm", "trojan", "spyware", "adware", "ransomware",
-    "phishing", "hacking", "cracking", "password", "username", "login", "logout",
-    "sign in", "sign out", "register", "subscribe", "unsubscribe", "confirm",
-    "verify", "validate", "authenticate", "authorize", "grant", "deny", "permit",
-    "forbid", "allow", "enable", "disable", "activate", "deactivate", "start",
-    "stop", "run", "execute", "launch", "initiate", "terminate", "kill", "abort",
-    "cancel", "pause", "resume", "suspend", "restore", "reset", "restart", "reboot",
-    "update", "upgrade", "downgrade", "install", "uninstall", "configure", "setup",
-    "installation", "configuration", "settings", "preferences", "options", "menu",
-    "interface", "GUI", "command line", "terminal", "shell", "script", "batch file",
-    "executable", "binary", "source code", "compiler", "interpreter", "IDE",
-    "editor", "debugger", "version control", "Git", "SVN", "repository", "branch",
-    "merge", "commit", "push", "pull", "clone", "fork", "pull request", "merge request",
-    "continuous integration", "CI", "continuous deployment", "CD", "pipeline",
-    "automation", "testing", "unit test", "integration test", "end-to-end test",
-    "QA", "quality assurance", "bug", "issue", "defect", "error", "exception",
-    "crash", "hang", "freeze", "lag", "performance", "optimization", "efficiency",
-    "speed", "latency", "throughput", "bandwidth", "memory", "RAM", "storage",
-    "disk", "SSD", "HDD", "CPU", "GPU", "processor", "chip", "motherboard",
-    "BIOS", "firmware", "driver", "plug-in", "extension", "add-on", "module",
-    "library", "framework", "platform", "operating system", "OS", "Windows",
-    "macOS", "Linux", "Ubuntu", "Debian", "CentOS", "Red Hat", "Android", "iOS",
-    "Chrome OS", "FreeBSD", "OpenBSD", "NetBSD", "Solaris", "AIX", "HP-UX",
-    "Unix", "POSIX", "kernel", "shell", "bash", "zsh", "fish", "PowerShell",
-    "CMD", "DOS", "MS-DOS", "CP/M", "Apple DOS", "ProDOS", "GS/OS", "Classic Mac OS",
-    "Mac OS X", "OS X", "macOS", "iOS", "iPadOS", "watchOS", "tvOS", "visionOS",
-    "Android", "Android Wear", "Android TV", "Fire OS", "HarmonyOS", "鸿蒙", "鸿蒙系统",
-    "Tizen", "webOS", "KaiOS", "Firefox OS", "Ubuntu Touch", "Sailfish OS",
-    "Mer", "Nemo Mobile", "Plasma Mobile", "postmarketOS", "Maemo", "MeeGo",
-    "Symbian", "Bada", "BlackBerry OS", "PCLinuxOS", "VectorLinux", "Peppermint OS",
-    "Linux Lite", "elementary OS", "Zorin OS", "Solus", "Pop!_OS",
-    "System76", "Ubuntu Studio", "Kubuntu", "Xubuntu", "Lubuntu", "Ubuntu Mate",
-    "Ubuntu Budgie", "Ubuntu Kylin", "Ubuntu Core", "Ubuntu Touch", "Snappy",
-    "Ubuntu Server", "Ubuntu Cloud", "Ubuntu for IoT", "Ubuntu for Raspberry Pi",
-    "Ubuntu for OpenStack", "Ubuntu for Kubernetes", "Canonical", "Snapcraft",
-    "snap", "flatpak", "appimage", "portable app", "portable executable", "PE",
-    "ELF", "Mach-O", "COFF", "OMF", "a.out", "DOS executable", "COM file",
-    "EXE file", "DLL file", "shared library", "dynamic library", "static library",
-    "object file", "assembly language", "machine code", "binary code", "hexadecimal",
-    "hex", "octal", "decimal", "binary", "bit", "byte", "kilobyte", "megabyte",
-    "gigabyte", "terabyte", "petabyte", "exabyte", "zettabyte", "yottabyte",
-    "kibibyte", "mebibyte", "gibibyte", "tebibyte", "pebibyte", "exbibyte",
-    "zebibyte", "yobibyte", "bps", "kbps", "Mbps", "Gbps", "Tbps", "Pbps",
-    "Ebbs", "Zbps", "Ybps", "Hertz", "Hz", "kHz", "MHz", "GHz", "THz", "PHz",
-    "EHz", "ZHz", "YHz", "nanometer", "nm", "micrometer", "µm", "millimeter",
-    "mm", "centimeter", "cm", "meter", "m", "kilometer", "km", "inch", "in",
-    "foot", "ft", "yard", "yd", "mile", "mi", "nautical mile", "NM", "angstrom",
-    "Å", "parsec", "pc", "light-year", "ly", "astronomical unit", "AU", "second",
-    "s", "millisecond", "ms", "microsecond", "µs", "nanosecond", "ns", "picosecond",
-    "ps", "femtosecond", "fs", "attosecond", "as", "zeptosecond", "zs", "yoctosecond",
-    "ys", "minute", "min", "hour", "hr", "h", "day", "d", "week", "wk", "month",
-    "mo", "year", "yr", "y", "decade", "century", "millennium", "eon", "epoch",
-    "era", "period", "age", "time", "duration", "interval", "span", "stretch",
-    "continuum", "timeline", "chronology", "history", "past", "present", "future",
-    "now", "then", "soon", "later", "early", "late", "before", "after", "during",
-    "while", "until", "since", "from", "to", "between", "among", "within", "without",
-    "inside", "outside", "in", "out", "up", "down", "forward", "backward", "left",
-    "right", "north", "south", "east", "west", "northeast", "northwest", "southeast",
-    "southwest", "upstairs", "downstairs", "upward", "downward", "forward",
-    "backward", "sideways", "horizontal", "vertical", "diagonal", "parallel",
-    "perpendicular", "intersect", "cross", "meet", "touch", "contact", "connection",
-    "junction", "intersection", "node", "vertex", "edge", "link", "bridge", "tunnel",
-    "road", "street", "avenue", "boulevard", "lane", "drive", "highway", "freeway",
-    "interstate", "route", "path", "trail", "track", "railroad", "railway", "subway",
-    "metro", "underground", "tube", "monorail", "tram", "trolley", "bus", "taxi",
-    "cab", "car", "vehicle", "automobile", "motor", "engine", "fuel", "gasoline",
-    "diesel", "electric", "hybrid", "battery", "charging", "station", "parking",
-    "garage", "tire", "wheel", "brake", "clutch", "transmission", "gear", "shift",
-    "steering wheel", "horn", "light", "headlight", "taillight", "turn signal",
-    "windshield", "window", "door", "seat", "seatbelt", "airbag", "dashboard",
-    "speedometer", "odometer", "fuel gauge", "temperature gauge", "warning light",
-    "check engine", "oil pressure", "coolant temperature", "battery voltage",
-    "ABS", "ESP", "traction control", "cruise control", "GPS", "navigation",
-    "infotainment", "radio", "stereo", "speaker", "microphone", "Bluetooth",
-    "Wi-Fi", "wireless", "cellular", "mobile", "smartphone", "tablet", "laptop",
-    "notebook", "netbook", "desktop", "tower", "monitor", "screen", "display",
-    "resolution", "pixel", "refresh rate", "response time", "contrast ratio",
-    "brightness", "color depth", "HDR", "SDR", "aspect ratio", "landscape",
-    "portrait", "orientation", "rotation", "zoom", "pan", "scroll", "click",
-    "double-click", "right-click", "left-click", "drag", "drop", "select",
-    "highlight", "copy", "cut", "paste", "undo", "redo", "save", "save as",
-    "open", "close", "new", "print", "find", "replace", "search", "filter",
-    "sort", "group", "ungroup", "align", "justify", "indent", "outdent",
-    "bullet", "numbering", "format", "style", "font", "size", "color", "bold",
-    "italic", "underline", "strikethrough", "subscript", "superscript", "alignment",
-    "left align", "center align", "right align", "justify align", "paragraph",
-    "heading", "title", "subtitle", "caption", "label", "placeholder", "prompt",
-    "input", "output", "entry", "field", "form", "button", "checkbox", "radio button",
-    "dropdown", "list", "slider", "toggle", "switch", "progress bar", "spinner",
-    "loading", "spinner", "animation", "transition", "effect", "fade", "slide",
-    "zoom", "rotate", "scale", "transform", "translate", "skew", "perspective",
-    "opacity", "visibility", "display", "position", "absolute", "relative",
-    "fixed", "sticky", "static", "float", "clear", "overflow", "clip", "margin",
-    "padding", "border", "outline", "box-sizing", "flexbox", "grid", "layout",
-    "container", "item", "gap", "wrap", "flow", "order", "align", "justify",
-    "align-items", "justify-content", "align-content", "flex-direction",
-    "flex-wrap", "flex-flow", "flex-grow", "flex-shrink", "flex-basis",
-    "grid-template-columns", "grid-template-rows", "grid-template-areas",
-    "grid-auto-columns", "grid-auto-rows", "grid-auto-flow", "grid-column-start",
-    "grid-column-end", "grid-row-start", "grid-row-end", "grid-column",
-    "grid-row", "grid-area", "justify-items", "align-self", "justify-self",
-    "place-content", "place-items", "place-self", "gap", "column-gap", "row-gap",
-    "writing-mode", "direction", "unicode-bidi", "text-align", "text-decoration",
-    "text-transform", "text-shadow", "letter-spacing", "word-spacing",
-    "white-space", "word-break", "word-wrap", "line-height", "vertical-align",
-    "list-style", "counter", "marker", "quotes", "content", "attr", "url",
-    "image", "background", "background-image", "background-color", "background-repeat",
-    "background-position", "background-size", "background-attachment",
-    "background-origin", "background-clip", "border-image", "border-radius",
-    "box-shadow", "filter", "backdrop-filter", "mix-blend-mode", "isolation",
-    "z-index", "cursor", "pointer-events", "resize", "user-select", "touch-action",
-    "overscroll-behavior", "scroll-behavior", "scroll-snap-type", "scroll-padding",
-    "scroll-margin", "contain", "will-change", "appearance", "accent-color",
-    "color-scheme", "forced-color-adjust", "text-orientation", "text-combine-upright",
-    "ruby-align", "ruby-position", "hanging-punctuation", "hyphens", "line-break",
-    "overflow-wrap", "tab-size", "text-justify", "text-outline", "text-fill-color",
-    "text-stroke", "text-emphasis", "writing-mode", "text-orientation",
-    "text-combine-upright", "text-emphasis-style", "text-emphasis-color",
-    "text-emphasis-position", "ruby-align", "ruby-position", "hanging-punctuation",
-    "hyphens", "line-break", "overflow-wrap", "tab-size", "text-justify",
-    "text-outline", "text-fill-color", "text-stroke", "text-emphasis",
-    "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
-    "writing-mode", "text-orientation", "text-combine-upright", "ruby-align",
-    "ruby-position", "hanging-punctuation", "hyphens", "line-break", "overflow-wrap",
-    "tab-size", "text-justify", "text-outline", "text-fill-color", "text-stroke",
-    "text-emphasis", "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
-    "writing-mode", "text-orientation", "text-combine-upright", "ruby-align",
-    "ruby-position", "hanging-punctuation", "hyphens", "line-break", "overflow-wrap",
-    "tab-size", "text-justify", "text-outline", "text-fill-color", "text-stroke",
-    "text-emphasis", "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
-    "writing-mode", "text-orientation", "text-combine-upright", "ruby-align",
-    "ruby-position", "hanging-punctuation", "hyphens", "line-break", "overflow-wrap",
-    "tab-size", "text-justify", "text-outline", "text-fill-color", "text-stroke",
-    "text-emphasis", "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
-    "writing-mode", "text-orientation", "text-combine-upright", "ruby-align",
-    "ruby-position", "hanging-punctuation", "hyphens", "line-break", "overflow-wrap",
-    "tab-size", "text-justify", "text-outline", "text-fill-color", "text-stroke",
-    "text-emphasis", "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
-    "writing-mode", "text-orientation", "text-combine-upright", "ruby-align",
-    "ruby-position", "hanging-punctuation", "hyphens", "line-break", "overflow-wrap",
-    "tab-size", "text-justify", "text-outline", "text-fill-color", "text-stroke",
-    "text-emphasis", "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
-    "writing-mode", "text-orientation", "text-combine-upright", "ruby-align",
-    "ruby-position", "hanging-punctuation", "hyphens", "line-break", "overflow-wrap",
-    "tab-size", "text-justify", "text-outline", "text-fill-color", "text-stroke",
-    "text-emphasis", "text-emphasis-style", "text-emphasis-color", "text-emphasis-position",
-    "writing-mode", "text-orientation", "text-com......(lista muy larga cortada para brevedad)"
-    // ... (agrega aquí todas tus palabras clave prohibidas, separadas por comas)
-    // Por brevedad, no se incluyen todas aquí, pero debes incluirlas todas
-    // Asegúrate de que estén en minúsculas
-].map(keyword => keyword.toLowerCase()); // Normaliza a minúsculas
+    // Géneros explícitamente no permitidos
+    "reggaeton", "trap latino", "urbano latino", "bachata", "salsa", "merengue",
+    "cumbia", "vallenato", "ranchera", "corrido", "banda", "norteño", "mariachi",
+    "música popular", "pop latino", "balada romántica", "balada pop",
+    
+    // Términos que indican contenido no musical
+    "podcast", "entrevista", "talk show", "documental", "making of",
+    "behind the scenes", "lyric video", "video oficial", "tutorial", "cover tutorial",
+    "how to play", "lesson", "tabs", "partitura", "karaoke version", "instrumental only",
+    
+    // Contenido religioso o político
+    "worship", "gospel", "cristiano", "religioso", "oración", "alabanza",
+    "político", "propaganda", "activismo", "protesta",
+    
+    // Géneros electrónicos puros (no industrial)
+    "edm", "dance pop", "house", "techno", "trance", "dubstep", "drum and bass",
+    "electro", "synthpop", "eurodance", "hardstyle", "hardcore", "happy hardcore",
+    
+    // Pop comercial y teen pop
+    "boy band", "girl group", "teen pop", "bubblegum pop", "dance-pop", "pop teen",
+    
+    // Contenido infantil
+    "infantil", "niños", "kids", "children", "nursery", "lullaby", "canciones infantiles",
+    
+    // Música para eventos específicos (no bar)
+    "wedding", "boda", "ceremonia", "graduation", "graduación", "funeral"
+].map(keyword => keyword.toLowerCase());
 
+// ❌ TÉRMINOS DE VERSIÓN NO DESEADOS (solo cuando no hay artista permitido)
+const UNWANTED_VERSION_KEYWORDS = [
+    "acoustic cover", "cover acoustic", "karaoke", "tribute band", "cover band",
+    "tribute version", "piano cover", "guitar cover", "remix", "mashup", "medley",
+    "live at", "session", "unplugged", "acoustic session", "reaction", "react"
+];
 
 /**
- * Filtra un array de items de búsqueda de YouTube basado en artistas permitidos y palabras prohibidas.
- * @param {Array} items - Array de items de respuesta de YouTube Search API.
- * @returns {Array} - Array de items filtrados.
+ * Sistema de puntuación para determinar si un video es apropiado
+ * @param {Object} item - Item de YouTube
+ * @returns {Object} - {score: number, reasons: string[]}
  */
-function filterMusic(items) {
-    return items.filter(item => {
-        const title = item.snippet.title.toLowerCase();
-        const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';
-        const channelTitle = item.snippet.channelTitle.toLowerCase();
-
-        // Combinar título, descripción y nombre del canal para la verificación
-        const combinedText = `${title} ${description} ${channelTitle}`;
-
-        // Verificar palabras prohibidas
-        if (FORBIDDEN_KEYWORDS.some(keyword => combinedText.includes(keyword))) {
-            console.log(`Filtrado por palabra prohibida: ${item.snippet.title}`);
-            return false;
+function calculateMusicScore(item) {
+    const title = item.snippet.title.toLowerCase();
+    const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';
+    const channelTitle = item.snippet.channelTitle.toLowerCase();
+    const combinedText = `${title} ${description} ${channelTitle}`;
+    
+    let score = 0;
+    const reasons = [];
+    
+    // 1. Verificar artistas permitidos (PUNTUACIÓN ALTA)
+    let containsAllowedArtist = false;
+    let matchedArtist = '';
+    
+    for (const artist of ALLOWED_ARTISTS) {
+        // Buscar artista en el título o canal
+        const artistRegex = new RegExp(`\\b${artist}\\b`, 'i');
+        if (artistRegex.test(title) || artistRegex.test(channelTitle)) {
+            containsAllowedArtist = true;
+            matchedArtist = artist;
+            score += 100; // Puntuación máxima por artista permitido
+            reasons.push(`✅ Artista permitido: ${artist}`);
+            break;
         }
-
-        // Verificar si contiene un artista permitido
-        // Busca coincidencias exactas de palabras enteras en el texto combinado
-        let containsAllowedArtist = false;
+    }
+    
+    // 2. Si no hay artista directo, buscar en descripción
+    if (!containsAllowedArtist) {
         for (const artist of ALLOWED_ARTISTS) {
-            // Usar expresiones regulares con límites de palabra \b para coincidencia exacta
-            const regex = new RegExp(`\\b${artist}\\b`, 'i'); // 'i' para insensible a mayúsculas
-            if (regex.test(combinedText)) {
+            const artistRegex = new RegExp(`\\b${artist}\\b`, 'i');
+            if (artistRegex.test(combinedText)) {
                 containsAllowedArtist = true;
-                break; // Si encuentra uno, no necesita seguir buscando
+                matchedArtist = artist;
+                score += 50; // Puntuación menor si está solo en descripción
+                reasons.push(`✅ Artista en descripción: ${artist}`);
+                break;
             }
         }
-
-        if (!containsAllowedArtist) {
-            console.log(`Filtrado por artista no permitido: ${item.snippet.title}`);
-            return false;
+    }
+    
+    // 3. Verificar géneros permitidos en canal/título
+    for (const genre of ALLOWED_GENRES) {
+        const genreRegex = new RegExp(`\\b${genre}\\b`, 'i');
+        if (genreRegex.test(channelTitle) || genreRegex.test(title)) {
+            score += 30;
+            reasons.push(`🎸 Género permitido: ${genre}`);
         }
-
-        // Si pasa ambas verificaciones, incluirlo
-        return true;
+    }
+    
+    // 4. Penalizar palabras prohibidas (solo si no hay artista permitido claro)
+    if (!containsAllowedArtist || score < 80) {
+        FORBIDDEN_KEYWORDS.forEach(keyword => {
+            const keywordRegex = new RegExp(`\\b${keyword}\\b`, 'i');
+            if (keywordRegex.test(combinedText)) {
+                score -= 40; // Penalización alta
+                reasons.push(`❌ Género no permitido: ${keyword}`);
+            }
+        });
+    }
+    
+    // 5. Penalizar versiones no deseadas (solo si no hay artista permitido)
+    if (!containsAllowedArtist) {
+        UNWANTED_VERSION_KEYWORDS.forEach(keyword => {
+            const keywordRegex = new RegExp(`\\b${keyword}\\b`, 'i');
+            if (keywordRegex.test(title)) {
+                score -= 20;
+                reasons.push(`⚠️ Versión no deseada: ${keyword}`);
+            }
+        });
+    }
+    
+    // 6. Bonus por términos de rock/metal en título
+    const rockTerms = ["rock", "metal", "punk", "grunge", "hardcore", "heavy", "guitar", "riff"];
+    rockTerms.forEach(term => {
+        const termRegex = new RegExp(`\\b${term}\\b`, 'i');
+        if (termRegex.test(title)) {
+            score += 15;
+            reasons.push(`🎵 Término de rock: ${term}`);
+        }
     });
+    
+    // 7. Penalizar términos de pop comercial
+    if (!containsAllowedArtist) {
+        const popTerms = ["pop song", "top 40", "hit single", "radio hit", "chart", "billboard"];
+        popTerms.forEach(term => {
+            const termRegex = new RegExp(`\\b${term}\\b`, 'i');
+            if (termRegex.test(title) || termRegex.test(description)) {
+                score -= 25;
+                reasons.push(`📻 Contenido pop comercial: ${term}`);
+            }
+        });
+    }
+    
+    // 8. Bonus por canales oficiales
+    const officialTerms = ["official", "vevo", "topic"];
+    officialTerms.forEach(term => {
+        const termRegex = new RegExp(`\\b${term}\\b`, 'i');
+        if (termRegex.test(channelTitle)) {
+            score += 10;
+            reasons.push(`🏢 Canal oficial`);
+        }
+    });
+    
+    // 9. Penalizar videos demasiado cortos o largos (por título)
+    const durationIndicators = ["short", "clip", "preview", "teaser", "excerpt", "full album", "complete"];
+    durationIndicators.forEach(term => {
+        const termRegex = new RegExp(`\\b${term}\\b`, 'i');
+        if (termRegex.test(title)) {
+            score -= 10;
+            reasons.push(`⏱️ Indicador de duración: ${term}`);
+        }
+    });
+    
+    return { score, reasons, containsAllowedArtist, matchedArtist };
 }
 
-module.exports = { filterMusic }; // Exporta la función para usarla en otros archivos
+/**
+ * Filtra videos basado en un sistema de puntuación inteligente
+ * @param {Array} items - Array de items de YouTube
+ * @returns {Array} - Items filtrados con metadata
+ */
+function filterMusic(items) {
+    if (!items || items.length === 0) {
+        console.log('📭 No hay items para filtrar');
+        return [];
+    }
+    
+    const filtered = [];
+    const stats = {
+        total: items.length,
+        approved: 0,
+        rejected: 0,
+        rejectedReasons: {},
+        scores: []
+    };
+    
+    items.forEach(item => {
+        const { score, reasons, containsAllowedArtist, matchedArtist } = calculateMusicScore(item);
+        
+        // Guardar score para estadísticas
+        stats.scores.push(score);
+        
+        // UMBRAL DE APROBACIÓN:
+        // - 70+ puntos: Aprobado automáticamente
+        // - 50-69: Aprobado si contiene artista permitido
+        // - Menos de 50: Rechazado
+        
+        let approved = false;
+        
+        if (score >= 70) {
+            approved = true;
+        } else if (score >= 50 && containsAllowedArtist) {
+            approved = true;
+        } else if (score >= 60 && !containsAllowedArtist) {
+            // Caso especial: alto score sin artista específico
+            approved = true;
+        }
+        
+        if (approved) {
+            filtered.push(item);
+            stats.approved++;
+            
+            // Agregar metadata de puntuación para debugging
+            item.filterMetadata = {
+                score,
+                artistMatched: matchedArtist || null,
+                approved: true
+            };
+            
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`✅ Aprobado [${score} pts]: ${item.snippet.title}`);
+                if (matchedArtist) console.log(`   Artista: ${matchedArtist}`);
+            }
+        } else {
+            stats.rejected++;
+            const mainReason = reasons.length > 0 ? reasons.find(r => r.includes('❌') || r.includes('⚠️')) || reasons[0] : 'Score bajo';
+            const reasonKey = mainReason.replace(/✅|❌|⚠️|🎸|🎵|📻|⏱️|🏢/g, '').trim();
+            stats.rejectedReasons[reasonKey] = (stats.rejectedReasons[reasonKey] || 0) + 1;
+            
+            // Solo loguear si es útil para debugging
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`❌ Rechazado [${score} pts]: ${item.snippet.title}`);
+                reasons.forEach(reason => console.log(`   ${reason}`));
+            }
+        }
+    });
+    
+    // Log de estadísticas
+    const avgScore = stats.scores.length > 0 ? Math.round(stats.scores.reduce((a, b) => a + b) / stats.scores.length) : 0;
+    const approvalRate = Math.round((stats.approved / stats.total) * 100);
+    
+    console.log(`📊 Filtro de música:`);
+    console.log(`   Total: ${stats.total} videos`);
+    console.log(`   Aprobados: ${stats.approved} (${approvalRate}%)`);
+    console.log(`   Rechazados: ${stats.rejected}`);
+    console.log(`   Score promedio: ${avgScore}`);
+    
+    if (Object.keys(stats.rejectedReasons).length > 0) {
+        console.log(`   Razones de rechazo:`);
+        Object.entries(stats.rejectedReasons).forEach(([reason, count]) => {
+            console.log(`     - ${reason}: ${count}`);
+        });
+    }
+    
+    return filtered;
+}
+
+// Función auxiliar para verificar si un término específico está permitido
+function isArtistAllowed(artistName) {
+    return ALLOWED_ARTISTS.has(artistName.toLowerCase());
+}
+
+// Función auxiliar para verificar si un género está permitido
+function isGenreAllowed(genreName) {
+    return ALLOWED_GENRES.has(genreName.toLowerCase());
+}
+
+module.exports = { 
+    filterMusic, 
+    calculateMusicScore,
+    isArtistAllowed,
+    isGenreAllowed,
+    ALLOWED_ARTISTS: Array.from(ALLOWED_ARTISTS),
+    ALLOWED_GENRES: Array.from(ALLOWED_GENRES)
+};

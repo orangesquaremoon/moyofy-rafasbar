@@ -5,18 +5,45 @@
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "test": "echo \"No hay tests configurados\" && exit 0",
+    "lint": "echo \"No hay linter configurado\" && exit 0",
+    "setup": "echo \"Configurando MOYOFY...\" && npm install",
+    "deploy": "echo \"Desplegando MOYOFY...\" && git push origin main"
   },
-  "keywords": ["music", "social", "gamification", "bar", "rock"],
+  "keywords": [
+    "music",
+    "social",
+    "gamification",
+    "bar",
+    "rock",
+    "metal",
+    "youtube",
+    "playlist",
+    "entertainment"
+  ],
   "author": "Abundia.io",
   "license": "MIT",
   "engines": {
-    "node": "22.x"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "googleapis": "^131.0.0"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tu-usuario/moyofy-premium.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/moyofy-premium/issues"
+  },
+  "homepage": "https://github.com/tu-usuario/moyofy-premium#readme",
+  "private": true
 }
