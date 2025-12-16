@@ -9,8 +9,8 @@ const path = require("path");
 
 const app = express();
 
-// Permitir solicitudes desde localhost durante el desarrollo y desde tu dominio Railway en producción
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080', process.env.RAILWAY_PUBLIC_DOMAIN || 'https://moyofy.up.railway.app'];
+// Permitir solicitudes desde localhost durante el desarrollo y desde tu dominio Render en producción
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080', process.env.RENDER_EXTERNAL_URL || 'https://movofy-rafasbar.onrender.com'];
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -89,7 +89,14 @@ app.post('/search', async (req, res) => {
         // Aplicar el filtro a los resultados obtenidos
         const filteredItems = filterMusic(response.data.items);
 
-        res.json(filteredItems);
+        // Simular estadísticas de filtrado para el cliente (opcional)
+        const stats = {
+            totalResults: response.data.items.length,
+            approved: filteredItems.length,
+            approvalRate: response.data.items.length > 0 ? Math.round((filteredItems.length / response.data.items.length) * 100) : 0
+        };
+
+        res.json({ items: filteredItems, filterStats: stats });
     } catch (error) {
         console.error('Error buscando videos:', error);
         res.status(500).send('Error al buscar videos en YouTube.');
@@ -98,7 +105,7 @@ app.post('/search', async (req, res) => {
 
 // Ruta para agregar video a la playlist
 app.post('/add-to-playlist', async (req, res) => {
-    const { videoId } = req.body;
+    const { videoId } = req.body; // El cliente ahora envía videoId directamente
     const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
     if (!defaultPlaylistId) {
@@ -120,7 +127,7 @@ app.post('/add-to-playlist', async (req, res) => {
 
         if (existingItemsResponse.data.items.length > 0) {
              console.log(`Video ${videoId} ya está en la playlist.`);
-             return res.status(409).send('Video already in playlist.'); // Código 409: Conflict
+             return res.status(409).json({ ok: false, error: 'Video already in playlist.', requiresAuth: false });
         }
 
         const response = await youtube.playlistItems.insert({
@@ -137,19 +144,44 @@ app.post('/add-to-playlist', async (req, res) => {
         });
 
          console.log(`Video ${videoId} agregado a la playlist ${defaultPlaylistId}.`);
-         res.status(200).send('Video added to playlist successfully.');
+         res.status(200).json({ ok: true, message: 'Video added to playlist successfully.' });
 
     } catch (error) {
         console.error('Error agregando video a la playlist:', error);
         // Podría ser un problema de autenticación si no se han obtenido tokens válidos
         if (error.code === 401) {
-            res.status(401).send('Unauthorized. Please authenticate first.');
+            res.status(401).json({ ok: false, error: 'Unauthorized. Please authenticate first.', requiresAuth: true });
         } else {
-            res.status(500).send('Error adding video to playlist.');
+            res.status(500).json({ ok: false, error: 'Error adding video to playlist.', requiresAuth: false });
         }
     }
 });
 
+// Ruta para obtener el perfil del usuario y el ranking (simulada con datos básicos)
+// En una implementación real, esto leería de una base de datos
+app.get('/user/profile', (req, res) => {
+    const { userId } = req.query;
+    // Simular datos del ranking (en una implementación real, esto vendría de una DB)
+    const mockRanking = [
+        { rank: 1, nickname: 'RockMaster69', points: 500, level: 5 },
+        { rank: 2, nickname: 'MetallicaFan', points: 420, level: 4 },
+        { rank: 3, nickname: 'QueenLover', points: 380, level: 3 },
+        { rank: 4, nickname: 'Sebas', points: 250, level: 2 },
+        { rank: 5, nickname: 'Anon', points: 100, level: 1 }
+    ];
+
+    // Simular datos del usuario actual (si está en el ranking)
+    let user = mockRanking.find(u => u.nickname === 'Sebas'); // Ejemplo, basado en nickname
+    if (!user) {
+        user = { rank: 0, nickname: userId || 'Anon', points: 100, level: 1 }; // Usuario no encontrado en ranking
+    }
+
+    res.json({
+        ok: true,
+        user: user,
+        topUsers: mockRanking
+    });
+});
 
 // Ruta principal (servirá index.html)
 app.get('/', (req, res) => {
@@ -157,7 +189,7 @@ app.get('/', (req, res) => {
 });
 
 // --- INICIAR SERVIDOR ---
-const PORT = process.env.PORT || 8080; // Usa el puerto de Railway o 8080 local
+const PORT = process.env.PORT || 8080; // Usa el puerto de Render o 8080 local
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
 });

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>MOYOFY · Rafa's Bar</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css  ">
   <style>
     :root {
       --primary: #ff004c;
@@ -477,7 +477,7 @@
   <script>
     // Variables globales
     let currentUser = null;
-    let API_BASE = window.location.origin;
+    let API_BASE = window.location.origin; // Esto debería apuntar a la URL de Render
     let requiresAuth = false;
     
     document.addEventListener('DOMContentLoaded', () => {
@@ -555,16 +555,27 @@
       `;
       
       try {
-        const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
+        const response = await fetch(`${API_BASE}/search`, { // Llama a /search
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ q: query }) // Envia query en el body
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json(); // Espera respuesta JSON
         
-        if (!data.ok) {
-          throw new Error(data.error || 'Error al buscar canciones');
+        if (!data.ok && data.error) {
+          throw new Error(data.error);
         }
         
         displaySearchResults(data.items, data.filterStats);
         
-        if (data.items.length > 0) {
+        if (data.items && data.items.length > 0) {
           showMessage(`✅ ¡Encontramos ${data.items.length} canciones para ti!`, 'success');
         } else {
           showMessage('🔍 No encontramos canciones que cumplan con los criterios del bar', 'warning');
@@ -574,7 +585,7 @@
         console.error('Error en búsqueda:', error);
         document.getElementById('results-container').innerHTML = `
           <div class="message error">
-            <i class="fas fa-exclamation-circle"></i> ${error.message}
+            <i class="fas fa-exclamation-circle"></i> ${error.message || 'Error desconocido al buscar canciones'}
           </div>
         `;
       }
@@ -583,7 +594,7 @@
     function displaySearchResults(items, stats) {
       const container = document.getElementById('results-container');
       
-      if (items.length === 0) {
+      if (!items || items.length === 0) {
         container.innerHTML = `
           <div class="message warning">
             <i class="fas fa-music"></i> No se encontraron canciones que cumplan con los criterios de Rafa's Bar.
@@ -608,11 +619,18 @@
       }
       
       items.forEach((item, index) => {
+        // Extraer el artista del título (simplificado, mejorable)
+        let artist = 'Artista desconocido';
+        if (item.snippet.channelTitle && !item.snippet.channelTitle.toLowerCase().includes('vevo')) {
+            artist = item.snippet.channelTitle;
+        } else if (item.snippet.title.includes('-')) {
+            artist = item.snippet.title.split('-')[0].trim();
+        }
         html += `
-          <div class="song-item" onclick="addSong('${item.videoId}', '${item.title.replace(/'/g, "\\'")}', this)">
+          <div class="song-item" onclick="addSong('${item.id.videoId}', '${item.snippet.title.replace(/'/g, "\\'")}', this)">
             <div class="song-info">
-              <div class="song-title">${item.title}</div>
-              <div class="song-artist">${item.artist || 'Artista desconocido'}</div>
+              <div class="song-title">${item.snippet.title}</div>
+              <div class="song-artist">${artist}</div>
             </div>
             <button class="add-btn">
               <i class="fas fa-plus"></i> AGREGAR
@@ -643,19 +661,17 @@
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AGREGANDO...';
         
-        const response = await fetch(`${API_BASE}/add-song`, {
+        const response = await fetch(`${API_BASE}/add-to-playlist`, { // Llama a /add-to-playlist
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            playlistId: 'PLo_v1BZSJlIvJnX7ISeilNokZp58D1nCe', // Reemplaza con tu playlist ID real
-            videoId: videoId,
-            userId: currentUser.id
+            videoId: videoId // Solo envia videoId
           })
         });
         
-        const data = await response.json();
+        const data = await response.json(); // Espera respuesta JSON
         
         if (data.ok) {
           element.classList.add('bounce');
@@ -704,14 +720,27 @@
     
     async function loadUserRanking() {
       try {
+        // Llama a /user/profile
         const response = await fetch(`${API_BASE}/user/profile?userId=${currentUser?.id || 'anonymous'}`);
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json(); // Espera respuesta JSON
         
         if (data.ok) {
           displayRanking(data.topUsers);
+        } else {
+            throw new Error(data.error || 'Error al cargar ranking');
         }
       } catch (error) {
         console.error('Error al cargar ranking:', error);
+        // Mostrar mensaje de error en el panel de ranking
+        const container = document.getElementById('ranking-list');
+        container.innerHTML = `
+          <div class="message error">
+            <i class="fas fa-exclamation-circle"></i> Error al cargar ranking: ${error.message}
+          </div>
+        `;
       }
     }
     
