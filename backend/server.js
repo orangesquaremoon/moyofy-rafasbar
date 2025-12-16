@@ -1,15 +1,15 @@
 // backend/server.js
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 const express = require("express");
-const session = require('express-session'); // <-- Añadido
+const session = require('express-session');
 const cors = require("cors");
 const { google } = require("googleapis");
-const fs = require("fs");
+const fs = require("fs").promises; // Usar la versión basada en promesas
 const path = require("path");
 
 const app = express();
 
-// Configuración de sesión (clave secreta, puede ser cualquier string)
+// Configuración de sesión
 app.use(session({
   secret: 'tu_clave_secreta_para_sesion', // Cambia esto por algo más seguro
   resave: false,
@@ -21,7 +21,7 @@ app.use(session({
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
-  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com' // <- Sin espacios
+  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com'
 ];
 app.use(cors({
   origin: function (origin, callback) {
@@ -42,14 +42,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Configuración de Google OAuth2 (fuera de las rutas)
+// Configuración de Google OAuth2
 const oauth2Client = new google.auth.OAuth2(
   process.env.OAUTH_CLIENT_ID,
   process.env.OAUTH_CLIENT_SECRET,
   process.env.REDIRECT_URI
 );
 
-// Configuración de YouTube API (fuera de las rutas)
+// Configuración de YouTube API
 const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
 // Middleware de logging mejorado
@@ -71,15 +71,63 @@ app.use((err, req, res, next) => {
   next();
 });
 
+// --- FUNCIONES DE PERSISTENCIA EN ARCHIVO ---
+
+const RANKING_FILE_PATH = path.join(__dirname, 'data', 'ranking.json');
+
+// Asegurar que la carpeta 'data' exista
+const ensureDataDirectory = async () => {
+  const dir = path.dirname(RANKING_FILE_PATH);
+  try {
+    await fs.access(dir);
+  } catch (error) {
+    // Si no existe, crear la carpeta
+    await fs.mkdir(dir, { recursive: true });
+    console.log(`📁 Carpeta de datos '${dir}' creada.`);
+  }
+};
+
+// Cargar ranking desde el archivo
+const loadRankingFromFile = async () => {
+  try {
+    await ensureDataDirectory(); // Asegurar carpeta antes de leer
+    const data = await fs.readFile(RANKING_FILE_PATH, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('📁 Archivo de ranking no encontrado, creando uno nuevo...');
+      // Si no existe, devolver un ranking vacío
+      return { users: {}, lastUpdated: new Date().toISOString() };
+    } else {
+      console.error('❌ Error leyendo archivo de ranking:', error.message);
+      // En caso de error, también devolver un ranking vacío
+      return { users: {}, lastUpdated: new Date().toISOString() };
+    }
+  }
+};
+
+// Guardar ranking en el archivo
+const saveRankingToFile = async (rankingData) => {
+  try {
+    await ensureDataDirectory(); // Asegurar carpeta antes de escribir
+    rankingData.lastUpdated = new Date().toISOString();
+    const dataToWrite = JSON.stringify(rankingData, null, 2);
+    await fs.writeFile(RANKING_FILE_PATH, dataToWrite, 'utf8');
+    // console.log('💾 Ranking guardado en archivo.'); // Opcional: log para debugging
+  } catch (error) {
+    console.error('❌ Error escribiendo archivo de ranking:', error.message);
+  }
+};
+
 // --- RUTAS ---
 
 // Ruta para autenticación OAuth
 app.get('/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación OAuth');
   const scopes = [
-    'https://www.googleapis.com/auth/youtube', // <- Sin espacios
-    'https://www.googleapis.com/auth/userinfo.profile', // <- Sin espacios
-    'https://www.googleapis.com/auth/userinfo.email' // <- Sin espacios
+    'https://www.googleapis.com/auth/youtube',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email'
   ];
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -103,9 +151,8 @@ app.get('/oauth2callback', async (req, res) => {
   }
   try {
     const { tokens } = await oauth2Client.getToken(code);
-    // Guardar tokens en la sesión del usuario
     req.session.tokens = tokens;
-    oauth2Client.setCredentials(tokens); // Actualiza el cliente global temporalmente
+    oauth2Client.setCredentials(tokens);
 
     res.send(`
       <html><body><h1>Autenticación Exitosa</h1><p>Ahora puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>
@@ -116,7 +163,7 @@ app.get('/oauth2callback', async (req, res) => {
   }
 });
 
-// Ruta para búsqueda de videos (modificada)
+// Ruta para búsqueda de videos
 app.post('/search', async (req, res) => {
   const { q } = req.body;
   if (!q || q.trim() === '') {
@@ -197,14 +244,13 @@ app.post('/search', async (req, res) => {
   }
 });
 
-// Ruta para agregar a playlist (CORREGIDA)
+// Ruta para agregar a playlist (MODIFICADA para actualizar ranking)
 app.post('/add-to-playlist', async (req, res) => {
-  const { videoId, title } = req.body; // Recibe videoId y title del body
+  const { videoId, title } = req.body;
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
-  console.log(`🎵 Intentando agregar video: ${title || 'Sin título'} (ID: ${videoId}) (Usuario: ${req.sessionID})`); // Log ID de sesión
+  console.log(`🎵 Intentando agregar video: ${title || 'Sin título'} (ID: ${videoId}) (Usuario: ${req.sessionID})`);
 
-  // Validaciones
   if (!defaultPlaylistId) {
     console.error('❌ DEFAULT_PLAYLIST_ID no configurada en variables de entorno');
     return res.status(500).json({
@@ -214,7 +260,7 @@ app.post('/add-to-playlist', async (req, res) => {
     });
   }
 
-  if (!videoId) { // Verifica que videoId no sea undefined, null, o vacío
+  if (!videoId) {
     console.error('❌ Video ID es requerido');
     return res.status(400).json({
       ok: false,
@@ -224,7 +270,6 @@ app.post('/add-to-playlist', async (req, res) => {
   }
 
   // --- VERIFICAR AUTENTICACIÓN ---
-  // Verificar si hay tokens en la sesión
   if (!req.session.tokens) {
     console.error('🔐 No hay tokens de sesión, usuario no autenticado');
     return res.status(401).json({
@@ -234,15 +279,12 @@ app.post('/add-to-playlist', async (req, res) => {
     });
   }
 
-  // Crear un nuevo cliente OAuth con los tokens de la sesión
   const userOauth2Client = new google.auth.OAuth2(
     process.env.OAUTH_CLIENT_ID,
     process.env.OAUTH_CLIENT_SECRET,
     process.env.REDIRECT_URI
   );
-  userOauth2Client.setCredentials(req.session.tokens); // Usar tokens de la sesión
-
-  // Configurar YouTube API con el cliente del usuario
+  userOauth2Client.setCredentials(req.session.tokens);
   const userYoutube = google.youtube({ version: 'v3', auth: userOauth2Client });
 
   // Verificar si el video ya está en la playlist
@@ -250,7 +292,7 @@ app.post('/add-to-playlist', async (req, res) => {
     const existingItemsResponse = await userYoutube.playlistItems.list({
       part: 'snippet',
       playlistId: defaultPlaylistId,
-      videoId: videoId // Usar videoId del body
+      videoId: videoId
     });
 
     if (existingItemsResponse.data.items && existingItemsResponse.data.items.length > 0) {
@@ -263,7 +305,6 @@ app.post('/add-to-playlist', async (req, res) => {
     }
   } catch (error) {
      console.error('Error verificando si video existe:', error);
-     // Podría ser un error de autenticación aquí también
      if (error.code === 401 || error.response?.status === 401) {
         console.log('🔐 Error de autenticación al verificar existencia del video');
         return res.status(401).json({
@@ -272,14 +313,12 @@ app.post('/add-to-playlist', async (req, res) => {
             requiresAuth: true
         });
      }
-     // Otro error, devolver error genérico
      return res.status(500).json({
         ok: false,
         error: 'Error verificando existencia de la canción.',
         requiresAuth: false
     });
   }
-
 
   // Insertar nuevo video en playlist
   try {
@@ -290,7 +329,7 @@ app.post('/add-to-playlist', async (req, res) => {
           playlistId: defaultPlaylistId,
           resourceId: {
             kind: 'youtube#video',
-            videoId: videoId // Usar videoId del body
+            videoId: videoId
           }
         }
       }
@@ -298,17 +337,78 @@ app.post('/add-to-playlist', async (req, res) => {
 
     console.log(`✅ Video agregado exitosamente: ${title || videoId}`);
     console.log(`📝 Playlist Item ID: ${response.data.id}`);
+
+    // --- ACTUALIZAR RANKING LOCAL ---
+    // El userId para el ranking lo obtenemos del cliente (por ejemplo, del localStorage)
+    // Aquí asumimos que el cliente envía un identificador único (por ejemplo, el nickname o un id derivado)
+    // Una mejor práctica sería que el servidor genere un ID único por sesión o lo derive del perfil de usuario de otra manera,
+    // pero para mantenerlo simple y usar el modelo actual de localStorage, lo obtenemos del body o de otra forma.
+    // Por ahora, usaremos un ID derivado del nickname almacenado localmente o del ID de sesión como fallback.
+    // El cliente debería enviar su nickname o ID.
+    // Modifiquémoslo: El cliente debería enviar su 'userId' (el que guarda en localStorage).
+    // Asumiremos que el cliente envía 'userId' en el body.
+    // Si no lo envía, intentamos derivarlo de otra forma o usamos el ID de sesión como último recurso.
+    // El cliente actual no lo envía. Lo que podemos hacer es que el cliente recupere su 'userId' de localStorage
+    // y lo incluya en la solicitud de agregar canción.
+    // Para no modificar el cliente ahora, haremos una suposición simple: el 'userId' es único por sesión
+    // y lo derivamos del ID de sesión de express-session y posiblemente un nickname almacenado localmente.
+    // La forma más robusta es que el cliente envíe su userId (el que tiene en localStorage).
+    // Supongamos que el cliente *debería* enviarlo. Si no lo hace, lo dejamos como 'unknown_user'.
+    // Modifiquemos el cliente para que lo envíe.
+    // O, si el cliente guarda el 'userId' en localStorage, podemos intentar derivarlo de la sesión actual
+    // si almacenamos temporalmente el nickname al iniciar sesión.
+    // La solución más simple ahora es que el cliente envíe su 'userId' en el body de /add-to-playlist.
+    // Supongamos que el cliente envía 'userId' (lo cual es lo ideal).
+    const userIdFromBody = req.body.userId; // El cliente debe enviar su userId (el que guarda en localStorage)
+    if (!userIdFromBody) {
+        console.warn('⚠️ Cliente no envió userId al agregar canción. Ranking no actualizado para este usuario.');
+        // Devolver éxito de la operación de YouTube, pero no actualizar ranking
+        res.status(200).json({
+          ok: true,
+          message: 'Canción agregada exitosamente a la playlist',
+          videoId: videoId,
+          playlistItemId: response.data.id,
+          timestamp: new Date().toISOString()
+        });
+        return;
+    }
+
+    // Cargar ranking actual
+    let rankingData = await loadRankingFromFile();
+
+    // Actualizar perfil del usuario
+    const userKey = userIdFromBody; // Usar el userId enviado por el cliente
+    if (!rankingData.users[userKey]) {
+        // Si el usuario no existe en el ranking, lo creamos
+        rankingData.users[userKey] = {
+            nickname: req.body.nickname || 'Anónimo', // Otra forma de obtener el nombre si el cliente no lo envía bien
+            points: 100,
+            level: 1,
+            songsAdded: 0,
+            lastActive: new Date().toISOString()
+        };
+    }
+    const user = rankingData.users[userKey];
+    user.points += 10; // Sumar 10 puntos
+    user.songsAdded = (user.songsAdded || 0) + 1; // Incrementar canciones
+    user.level = Math.floor(user.points / 100) + 1; // Recalcular nivel
+    user.lastActive = new Date().toISOString(); // Actualizar última actividad
+
+    // Guardar ranking actualizado
+    await saveRankingToFile(rankingData);
+
     res.status(200).json({
       ok: true,
-      message: 'Canción agregada exitosamente a la playlist',
+      message: 'Canción agregada exitosamente a la playlist y puntos actualizados',
       videoId: videoId,
       playlistItemId: response.data.id,
+      userPoints: user.points, // Enviar puntos actualizados al cliente (opcional)
+      userLevel: user.level,   // Enviar nivel actualizado al cliente (opcional)
       timestamp: new Date().toISOString()
     });
 
   } catch (error) {
     console.error('❌ Error agregando video a playlist:', error);
-    // Manejo detallado de errores
     let errorMessage = 'Error al agregar canción';
     let requiresAuth = false;
     let statusCode = 500;
@@ -336,47 +436,60 @@ app.post('/add-to-playlist', async (req, res) => {
   }
 });
 
-// Ruta para obtener perfil y ranking (simulado)
-app.get('/user/profile', (req, res) => {
+
+// Ruta para obtener perfil y ranking (MODIFICADA para leer del archivo)
+app.get('/user/profile', async (req, res) => {
   const { userId } = req.query;
   console.log(`👤 Consulta de perfil: ${userId || 'anonymous'}`);
 
-  // Simular datos del ranking
-  const mockRanking = [
-    { rank: 1, nickname: 'RockMaster69', points: 500, level: 5, songsAdded: 45 },
-    { rank: 2, nickname: 'MetallicaFan', points: 420, level: 4, songsAdded: 38 },
-    { rank: 3, nickname: 'QueenLover', points: 380, level: 3, songsAdded: 32 },
-    { rank: 4, nickname: 'Sebas', points: 250, level: 2, songsAdded: 20 },
-    { rank: 5, nickname: 'Anon', points: 100, level: 1, songsAdded: 5 },
-    { rank: 6, nickname: 'RockAndRoll', points: 220, level: 2, songsAdded: 20 },
-    { rank: 7, nickname: 'LedZeppelinFan', points: 190, level: 1, songsAdded: 18 },
-    { rank: 8, nickname: 'ACDC_Forever', points: 170, level: 1, songsAdded: 15 },
-    { rank: 9, nickname: 'PunkNotDead', points: 150, level: 1, songsAdded: 12 },
-    { rank: 10, nickname: 'ClassicRockHero', points: 120, level: 1, songsAdded: 8 }
-  ];
+  try {
+    // Cargar ranking desde archivo
+    const rankingData = await loadRankingFromFile();
 
-  // Buscar usuario actual
-  let user = { rank: 0, nickname: userId || 'Invitado', points: 100, level: 1, songsAdded: 0 };
+    // Obtener lista de usuarios ordenados por puntos (de mayor a menor)
+    const allUsers = Object.entries(rankingData.users)
+      .map(([id, data]) => ({ id, ...data }))
+      .sort((a, b) => b.points - a.points); // Ordenar por puntos descendente
 
-  if (userId && userId !== 'anonymous' && userId !== 'Invitado') {
-    const foundUser = mockRanking.find(u => u.nickname.toLowerCase() === userId.toLowerCase());
-    if (foundUser) {
-      user = { ...foundUser };
-    } else {
-      // Usuario nuevo, agregar al final del ranking
-      user.rank = mockRanking.length + 1;
+    // Encontrar la posición del usuario solicitado
+    const userIndex = allUsers.findIndex(u => u.id === userId);
+    const user = userIndex !== -1 ? { ...allUsers[userIndex], rank: userIndex + 1 } : null;
+
+    // Si no se encontró, devolver datos simulados o un usuario no clasificado
+    if (!user) {
+      res.json({
+        ok: true,
+        user: { rank: 0, nickname: userId || 'Invitado', points: 100, level: 1, songsAdded: 0 },
+        topUsers: allUsers.slice(0, 10), // Mostrar top 10
+        serverTime: new Date().toISOString(),
+        totalUsers: allUsers.length,
+        rankingUpdated: rankingData.lastUpdated
+      });
+      return;
     }
-  }
 
-  res.json({
-    ok: true,
-    user: user,
-    topUsers: mockRanking,
-    serverTime: new Date().toISOString(),
-    totalUsers: mockRanking.length,
-    rankingUpdated: '2024-01-15T12:00:00Z' // Fecha simulada
-  });
+    // Devolver perfil del usuario y ranking
+    res.json({
+      ok: true,
+      user: user,
+      topUsers: allUsers.slice(0, 10), // Mostrar top 10
+      serverTime: new Date().toISOString(),
+      totalUsers: allUsers.length,
+      rankingUpdated: rankingData.lastUpdated
+    });
+
+  } catch (error) {
+    console.error('❌ Error cargando perfil/ranking:', error);
+    // En caso de error al leer el archivo, devolver un ranking vacío o simulado
+    res.status(500).json({
+      ok: false,
+      error: 'Error interno al cargar el ranking',
+      user: { rank: 0, nickname: userId || 'Invitado', points: 100, level: 1, songsAdded: 0 },
+      topUsers: []
+    });
+  }
 });
+
 
 // Ruta de salud del servidor
 app.get('/health', (req, res) => {
@@ -485,30 +598,35 @@ function checkConfiguration() {
     if (!process.env[varName]) {
       missingVars.push(varName);
       console.error(`❌ ${varName}: NO CONFIGURADO`);
+    } else {
+      console.log(`✅ ${varName}: Configurado`);
     }
   });
   if (missingVars.length > 0) {
     console.warn(`⚠️ ADVERTENCIA: Faltan ${missingVars.length} variables de entorno.`);
+    missingVars.forEach(varName => console.log(` - ${varName}`));
+    console.log('💡 Para desarrollo local, crea un archivo .env con estas variables.');
+    console.log('💡 En Render, configúralas en las variables de entorno del servicio.');
   } else {
     console.log('🎉 ¡Todas las variables requeridas están configuradas!');
   }
 }
 
 app.listen(PORT, HOST, () => {
-  console.log(`🎸 MOYOFY PREMIUM v2.0`);
-  console.log(`==========================================`);
-  console.log(`✅ Servidor iniciado exitosamente`);
-  console.log(`📍 URL: http://${HOST}:${PORT}`);
-  console.log(`⏰ Hora de inicio: ${new Date().toISOString()}`);
-  console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🚀 Node.js: ${process.version}`);
-  console.log(`📦 Memoria: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
-  console.log(`==========================================`);
+  console.log(`
+    🎸 MOYOFY PREMIUM v2.0
+    ==========================================
+    ✅ Servidor iniciado exitosamente
+    📍 URL: http://${HOST}:${PORT}
+    ⏰ Hora de inicio: ${new Date().toISOString()}
+    🌍 Entorno: ${process.env.NODE_ENV || 'development'}
+    🚀 Node.js: ${process.version}
+    📦 Memoria: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB
+    ==========================================
+  `);
 
-  // Verificar configuración
   checkConfiguration();
 
-  // Mostrar rutas disponibles
   console.log('📚 Rutas disponibles:');
   console.log(' GET / - Interfaz web principal');
   console.log(' POST /search - Buscar canciones');
