@@ -1,12 +1,21 @@
 // backend/server.js
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 const express = require("express");
+const session = require('express-session'); // <-- Añadido
 const cors = require("cors");
 const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
 
 const app = express();
+
+// Configuración de sesión (clave secreta, puede ser cualquier string)
+app.use(session({
+  secret: 'tu_clave_secreta_para_sesion', // Cambia esto por algo más seguro
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Cambia a true si usas HTTPS en producción
+}));
 
 // Configuración CORS para desarrollo y producción
 const allowedOrigins = [
@@ -33,14 +42,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Configuración de Google OAuth2
+// Configuración de Google OAuth2 (fuera de las rutas)
 const oauth2Client = new google.auth.OAuth2(
   process.env.OAUTH_CLIENT_ID,
   process.env.OAUTH_CLIENT_SECRET,
   process.env.REDIRECT_URI
 );
 
-// Configuración de YouTube API
+// Configuración de YouTube API (fuera de las rutas)
 const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
 // Middleware de logging mejorado
@@ -94,10 +103,12 @@ app.get('/oauth2callback', async (req, res) => {
   }
   try {
     const { tokens } = await oauth2Client.getToken(code);
-    oauth2Client.setCredentials(tokens);
+    // Guardar tokens en la sesión del usuario
+    req.session.tokens = tokens;
+    oauth2Client.setCredentials(tokens); // Actualiza el cliente global temporalmente
 
     res.send(`
-      <html><body><h1>Autenticación Exitosa</h1></body></html>
+      <html><body><h1>Autenticación Exitosa</h1><p>Ahora puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>
     `);
   } catch (err) {
     console.error('❌ Error procesando callback OAuth:', err);
@@ -186,62 +197,135 @@ app.post('/search', async (req, res) => {
   }
 });
 
-// Ruta para agregar a playlist
+// Ruta para agregar a playlist (CORREGIDA)
 app.post('/add-to-playlist', async (req, res) => {
-  const { videoId, title } = req.body;
+  const { videoId, title } = req.body; // Recibe videoId y title del body
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
+  console.log(`🎵 Intentando agregar video: ${title || 'Sin título'} (ID: ${videoId}) (Usuario: ${req.sessionID})`); // Log ID de sesión
+
+  // Validaciones
   if (!defaultPlaylistId) {
-    console.error('❌ DEFAULT_PLAYLIST_ID no está definida en .env');
-    return res.status(500).json({ ok: false, error: 'Playlist predeterminada no configurada.' });
+    console.error('❌ DEFAULT_PLAYLIST_ID no configurada en variables de entorno');
+    return res.status(500).json({
+      ok: false,
+      error: 'Playlist no configurada en el servidor',
+      requiresAuth: false
+    });
   }
 
-  if (!videoId) {
-    return res.status(400).json({ ok: false, error: 'Video ID es requerido' });
+  if (!videoId) { // Verifica que videoId no sea undefined, null, o vacío
+    console.error('❌ Video ID es requerido');
+    return res.status(400).json({
+      ok: false,
+      error: 'Video ID es requerido',
+      requiresAuth: false
+    });
   }
 
+  // --- VERIFICAR AUTENTICACIÓN ---
+  // Verificar si hay tokens en la sesión
+  if (!req.session.tokens) {
+    console.error('🔐 No hay tokens de sesión, usuario no autenticado');
+    return res.status(401).json({
+      ok: false,
+      error: 'Unauthorized. Please authenticate first.',
+      requiresAuth: true
+    });
+  }
+
+  // Crear un nuevo cliente OAuth con los tokens de la sesión
+  const userOauth2Client = new google.auth.OAuth2(
+    process.env.OAUTH_CLIENT_ID,
+    process.env.OAUTH_CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+  userOauth2Client.setCredentials(req.session.tokens); // Usar tokens de la sesión
+
+  // Configurar YouTube API con el cliente del usuario
+  const userYoutube = google.youtube({ version: 'v3', auth: userOauth2Client });
+
+  // Verificar si el video ya está en la playlist
   try {
-    // Verificar si el video ya está en la playlist
-    const existingItemsResponse = await youtube.playlistItems.list({
+    const existingItemsResponse = await userYoutube.playlistItems.list({
       part: 'snippet',
       playlistId: defaultPlaylistId,
-      videoId: videoId
+      videoId: videoId // Usar videoId del body
     });
 
     if (existingItemsResponse.data.items && existingItemsResponse.data.items.length > 0) {
-      console.log(`🎵 Video ${videoId} ya está en la playlist.`);
-      return res.status(409).json({ ok: false, error: 'Video already in playlist.', requiresAuth: false });
+      console.log(`⚠️ Video ${videoId} ya existe en playlist`);
+      return res.status(409).json({
+        ok: false,
+        error: 'Esta canción ya está en la playlist',
+        requiresAuth: false
+      });
     }
+  } catch (error) {
+     console.error('Error verificando si video existe:', error);
+     // Podría ser un error de autenticación aquí también
+     if (error.code === 401 || error.response?.status === 401) {
+        console.log('🔐 Error de autenticación al verificar existencia del video');
+        return res.status(401).json({
+            ok: false,
+            error: 'Unauthorized. Please authenticate first.',
+            requiresAuth: true
+        });
+     }
+     // Otro error, devolver error genérico
+     return res.status(500).json({
+        ok: false,
+        error: 'Error verificando existencia de la canción.',
+        requiresAuth: false
+    });
+  }
 
-    const response = await youtube.playlistItems.insert({
+
+  // Insertar nuevo video en playlist
+  try {
+    const response = await userYoutube.playlistItems.insert({
       part: 'snippet',
       resource: {
         snippet: {
           playlistId: defaultPlaylistId,
           resourceId: {
             kind: 'youtube#video',
-            videoId: videoId
+            videoId: videoId // Usar videoId del body
           }
         }
       }
     });
 
-    console.log(`✅ Video ${videoId} agregado a la playlist ${defaultPlaylistId}.`);
-    res.status(200).json({ ok: true, message: 'Video added to playlist successfully.' });
+    console.log(`✅ Video agregado exitosamente: ${title || videoId}`);
+    console.log(`📝 Playlist Item ID: ${response.data.id}`);
+    res.status(200).json({
+      ok: true,
+      message: 'Canción agregada exitosamente a la playlist',
+      videoId: videoId,
+      playlistItemId: response.data.id,
+      timestamp: new Date().toISOString()
+    });
 
   } catch (error) {
-    console.error('❌ Error agregando video a la playlist:', error);
-    let errorMessage = 'Error adding video to playlist.';
-    let statusCode = 500;
+    console.error('❌ Error agregando video a playlist:', error);
+    // Manejo detallado de errores
+    let errorMessage = 'Error al agregar canción';
     let requiresAuth = false;
+    let statusCode = 500;
 
-    if (error.code === 401 || (error.response && error.response.status === 401)) {
+    if (error.code === 401 || error.response?.status === 401) {
+      console.log('🔐 Se requiere autenticación');
       errorMessage = 'Unauthorized. Please authenticate first.';
-      statusCode = 401;
       requiresAuth = true;
-    } else if (error.response && error.response.status === 403) {
+      statusCode = 401;
+    } else if (error.response?.status === 403) {
+      console.log('❌ Acceso denegado (verifica permisos de playlist)');
       errorMessage = 'Access denied. Check playlist permissions.';
       statusCode = 403;
+    } else if (error.response?.status === 400) {
+      console.log('❌ Solicitud inválida (verifica ID de video o playlist)');
+      errorMessage = 'Invalid request. Check video ID or playlist ID.';
+      statusCode = 400;
     }
 
     res.status(statusCode).json({
@@ -405,6 +489,8 @@ function checkConfiguration() {
   });
   if (missingVars.length > 0) {
     console.warn(`⚠️ ADVERTENCIA: Faltan ${missingVars.length} variables de entorno.`);
+  } else {
+    console.log('🎉 ¡Todas las variables requeridas están configuradas!');
   }
 }
 
