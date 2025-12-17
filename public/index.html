@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>MOYOFY · Rafa's Bar</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css  ">
   <style>
     :root {
       --primary: #ff004c;
@@ -395,106 +395,6 @@
       color: #4dabf7;
       font-size: 0.9rem;
     }
-
-    /* Nuevos estilos para gamificación */
-    .profile-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .stat-card {
-        background: rgba(50, 50, 70, 0.5);
-        border-radius: 8px;
-        padding: 10px;
-        text-align: center;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--success);
-    }
-
-    .stat-label {
-        font-size: 0.8rem;
-        color: #aaa;
-    }
-
-    .achievements-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .achievement-badge {
-        background: rgba(100, 100, 150, 0.3);
-        border: 1px solid rgba(100, 100, 150, 0.5);
-        border-radius: 8px;
-        padding: 10px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .achievement-badge.unlocked {
-        background: rgba(0, 255, 170, 0.2);
-        border-color: var(--success);
-    }
-
-    .achievement-icon {
-        font-size: 1.5rem;
-        margin-bottom: 5px;
-    }
-
-    .achievement-name {
-        font-size: 0.7rem;
-    }
-
-    .history-list {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
-    .history-item {
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.9rem;
-    }
-
-    .challenge-card {
-        background: rgba(150, 100, 100, 0.2);
-        border: 1px solid rgba(255, 100, 100, 0.3);
-        border-radius: 8px;
-        padding: 10px;
-        margin-top: 10px;
-    }
-
-    .challenge-title {
-        color: var(--warning);
-        font-weight: bold;
-    }
-
-    .challenge-desc {
-        font-size: 0.9rem;
-        margin-top: 5px;
-    }
-
-    .challenge-progress {
-        height: 5px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
-        margin-top: 5px;
-        overflow: hidden;
-    }
-
-    .challenge-progress-bar {
-        height: 100%;
-        background: var(--warning);
-        width: 0%; /* Se actualiza con JS */
-    }
   </style>
 </head>
 <body>
@@ -527,27 +427,6 @@
         <div style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">
           Canciones agregadas: <span id="songs-added">0</span>
         </div>
-
-        <!-- Nueva sección de estadísticas del perfil -->
-        <div class="profile-stats-grid">
-            <div class="stat-card">
-                <div class="stat-value" id="stat-streak">0</div>
-                <div class="stat-label">Días Seguidos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-rock">0</div>
-                <div class="stat-label">Rock</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-metal">0</div>
-                <div class="stat-label">Metal</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-punk">0</div>
-                <div class="stat-label">Punk</div>
-            </div>
-        </div>
-
         <button onclick="changeUsername()" class="change-username-btn">
           <i class="fas fa-user-edit"></i> Cambiar apodo
         </button>
@@ -585,19 +464,17 @@
       </div>
     </div>
 
-    <!-- Nueva sección de gamificación -->
     <div class="ranking-panel">
       <div class="ranking-title">
-        <i class="fas fa-trophy"></i> 🏆 TU PROGRESO
+        <i class="fas fa-trophy"></i> 🏆 RANKING DEL BAR
       </div>
-      <div id="player-progress-container">
+      <div id="ranking-list">
         <div class="loading">
           <div class="spinner"></div>
-          <p>Cargando tu progreso...</p>
+          <p>Cargando ranking...</p>
         </div>
       </div>
     </div>
-
   </div>
 
   <footer>
@@ -613,31 +490,6 @@
     let API_BASE = window.location.origin; // Esto debería apuntar a la URL de Render
     let requiresAuth = false;
 
-    // Definir logros
-    const ACHIEVEMENTS = [
-        { id: 'first_song', name: 'Primer Ritmo', icon: '🎵', condition: (user) => user.songsAdded >= 1 },
-        { id: 'rock_novice', name: 'Rockólogo Novato', icon: '🎸', condition: (user) => user.stats.rock >= 5 },
-        { id: 'metal_faithful', name: 'Metalero Fiel', icon: '🤘', condition: (user) => user.stats.metal >= 10 },
-        { id: 'explorer', name: 'Explorador', icon: '🧭', condition: (user) => user.stats.uniqueArtists >= 3 },
-        { id: 'masterpiece', name: 'Maestro del Éxito', icon: '🏆', condition: (user) => user.stats.duplicatesAdded >= 1 },
-        { id: 'rock_night', name: 'Noche de Rock', icon: '🌙', condition: (user) => user.streak.daily >= 1 }
-    ];
-
-    // Definir desafíos diarios (ejemplos)
-    function generateDailyChallenge() {
-        const genres = ['rock', 'metal', 'punk', 'alternative', 'grunge'];
-        const randomGenre = genres[Math.floor(Math.random() * genres.length)];
-        return {
-            id: 'daily_' + new Date().toISOString().split('T')[0],
-            title: 'Desafío Diario',
-            description: `¡Agrega 3 canciones de ${randomGenre.toUpperCase()} hoy!`,
-            target: 3,
-            progress: 0,
-            genre: randomGenre,
-            completed: false
-        };
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🚀 MOYOFY PREMIUM v2 cargado');
 
@@ -645,37 +497,12 @@
       const savedUser = localStorage.getItem('moyofy_user');
       if (savedUser) {
         currentUser = JSON.parse(savedUser);
-        // Cargar progreso adicional si no existe
-        loadAdditionalUserData();
         showUserProfile();
-        // Cargar y mostrar el progreso del jugador
-        loadPlayerProgress();
+        loadUserRanking();
       } else {
         showNicknameSection();
       }
     });
-
-    function loadAdditionalUserData() {
-        if (!currentUser) return;
-        // Inicializar arrays y objetos si no existen
-        if (!currentUser.history) currentUser.history = [];
-        if (!currentUser.achievements) currentUser.achievements = [];
-        if (!currentUser.stats) currentUser.stats = { rock: 0, metal: 0, punk: 0, duplicatesAdded: 0, uniqueArtists: 0, dailySongs: 0, weeklySongs: 0 };
-        if (!currentUser.streak) currentUser.streak = { daily: 0, currentDay: null, weekly: 0, currentWeek: null };
-        if (!currentUser.challenges) currentUser.challenges = [];
-
-        // Cargar o generar desafío diario
-        const today = new Date().toISOString().split('T')[0];
-        let challenge = currentUser.challenges.find(c => c.id === 'daily_' + today);
-        if (!challenge) {
-            challenge = generateDailyChallenge();
-            currentUser.challenges = [challenge]; // Solo mantengo el actual
-        }
-        // Si ya existía, asegurarme de que esté en el array principal
-        if (!currentUser.challenges.includes(challenge)) {
-            currentUser.challenges.push(challenge);
-        }
-    }
 
     function showNicknameSection() {
       document.getElementById('nickname-section').style.display = 'block';
@@ -692,12 +519,6 @@
       document.getElementById('user-points').textContent = currentUser.points || 100;
       document.getElementById('user-level').textContent = currentUser.level || 1;
       document.getElementById('songs-added').textContent = currentUser.songsAdded || 0;
-
-      // Actualizar estadísticas del perfil
-      document.getElementById('stat-streak').textContent = currentUser.streak.daily || 0;
-      document.getElementById('stat-rock').textContent = currentUser.stats.rock || 0;
-      document.getElementById('stat-metal').textContent = currentUser.stats.metal || 0;
-      document.getElementById('stat-punk').textContent = currentUser.stats.punk || 0;
     }
 
     function setNickname() {
@@ -714,22 +535,12 @@
         nickname: nickname,
         points: 100,
         level: 1,
-        songsAdded: 0,
-        history: [],
-        achievements: [],
-        stats: { rock: 0, metal: 0, punk: 0, duplicatesAdded: 0, uniqueArtists: 0, dailySongs: 0, weeklySongs: 0 },
-        streak: { daily: 0, currentDay: null, weekly: 0, currentWeek: null },
-        challenges: []
+        songsAdded: 0
       };
-
-      // Generar desafío diario
-      const today = new Date().toISOString().split('T')[0];
-      const dailyChallenge = generateDailyChallenge();
-      currentUser.challenges = [dailyChallenge];
 
       localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
       showUserProfile();
-      loadPlayerProgress(); // Cargar progreso después de crear el usuario
+      loadUserRanking();
       showMessage(`🎉 ¡Bienvenido ${nickname} al Rafa's Bar!`, 'success');
     }
 
@@ -754,19 +565,19 @@
       `;
 
       try {
-        const response = await fetch(`${API_BASE}/search`, {
+        const response = await fetch(`${API_BASE}/search`, { // Llama a /search
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ q: query })
+          body: JSON.stringify({ q: query }) // Envia query en el body
         });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = await response.json(); // Espera respuesta JSON
 
         if (!data.ok && data.error) {
           throw new Error(data.error);
@@ -827,8 +638,9 @@
         } else if (item.snippet.title.includes('by')) {
             artist = item.snippet.title.split('by')[1]?.trim() || item.snippet.channelTitle;
         }
+
         html += `
-          <div class="song-item" onclick="addSong('${item.id.videoId}', '${item.snippet.title.replace(/'/g, "\\'")}', '${artist.replace(/'/g, "\\'")}', this)">
+          <div class="song-item" onclick="suggestSong('${item.id.videoId}', '${item.snippet.title.replace(/'/g, "\\'")}', '${artist.replace(/'/g, "\\'")}', this)">
             <div class="song-info">
               <div class="song-title">${item.snippet.title}</div>
               <div class="song-artist">${artist}</div>
@@ -843,7 +655,8 @@
       container.innerHTML = html;
     }
 
-    async function addSong(videoId, title, artist, element) {
+    // Función para SUGERIR una canción (cambiada de addSong)
+    async function suggestSong(videoId, title, artist, element) {
       if (!currentUser) {
         showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
         showNicknameSection();
@@ -860,116 +673,57 @@
         const button = element.querySelector('.add-btn');
         const originalText = button.innerHTML;
         button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AGREGANDO...';
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SUGERIDO...';
 
-        const response = await fetch(`${API_BASE}/add-to-playlist`, {
+        // Llama a la NUEVA ruta /suggest-song
+        const response = await fetch(`${API_BASE}/suggest-song`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             videoId: videoId,
-            title: title, // Enviar título para estadísticas
-            userId: currentUser.id // Enviar userId para posibles usos futuros o verificación
+            title: title,
+            userId: currentUser.id // Enviar el ID del usuario que sugiere
           })
         });
 
-        const data = await response.json();
+        const data = await response.json(); // Espera respuesta JSON
 
         if (data.ok) {
-            // --- ACTUALIZAR ESTADO LOCAL ---
-            // 1. Puntos y nivel
-            currentUser.points = (currentUser.points || 100) + 10;
-            currentUser.level = Math.floor(currentUser.points / 100) + 1;
-            currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;
+          element.classList.add('bounce');
+          element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';
 
-            // 2. Historial
-            const historyEntry = {
-                title: title,
-                artist: artist,
-                videoId: videoId,
-                timestamp: new Date().toISOString()
-            };
-            currentUser.history.unshift(historyEntry); // Añadir al principio
-            currentUser.history = currentUser.history.slice(0, 20); // Limitar a 20
+          // Actualizar puntos y nivel localmente
+          currentUser.points = (currentUser.points || 100) + 10;
+          currentUser.level = Math.floor(currentUser.points / 100) + 1;
+          currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;
 
-            // 3. Estadísticas
-            // Detectar género básico (simplificado)
-            const lowerTitle = title.toLowerCase();
-            const lowerArtist = artist.toLowerCase();
-            if (lowerTitle.includes('rock') || lowerArtist.includes('queen') || lowerArtist.includes('beatles') || lowerArtist.includes('stones')) {
-                currentUser.stats.rock = (currentUser.stats.rock || 0) + 1;
-            }
-            if (lowerTitle.includes('metal') || lowerArtist.includes('metallica') || lowerArtist.includes('pantera') || lowerArtist.includes('tool')) {
-                currentUser.stats.metal = (currentUser.stats.metal || 0) + 1;
-            }
-            if (lowerTitle.includes('punk') || lowerArtist.includes('sex pistols') || lowerArtist.includes('ramones')) {
-                currentUser.stats.punk = (currentUser.stats.punk || 0) + 1;
-            }
+          document.getElementById('user-points').textContent = currentUser.points;
+          document.getElementById('user-level').textContent = currentUser.level;
+          document.getElementById('songs-added').textContent = currentUser.songsAdded;
 
-            // Racha diaria
-            const today = new Date().toISOString().split('T')[0];
-            if (currentUser.streak.currentDay !== today) {
-                if (currentUser.streak.currentDay) {
-                    // Si había un día anterior, verificar si fue ayer
-                    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-                    if (currentUser.streak.currentDay === yesterday) {
-                        currentUser.streak.daily += 1;
-                    } else {
-                        currentUser.streak.daily = 1; // Reiniciar si se saltó un día
-                    }
-                } else {
-                    currentUser.streak.daily = 1; // Primera vez
-                }
-                currentUser.streak.currentDay = today;
-            }
+          // Guardar en localStorage
+          localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
 
-            // Actualizar desafío diario
-            const dailyChallenge = currentUser.challenges.find(c => c.id.startsWith('daily_'));
-            if (dailyChallenge && dailyChallenge.genre) {
-                const lowerGenre = dailyChallenge.genre.toLowerCase();
-                if (lowerTitle.includes(lowerGenre) || lowerArtist.includes(lowerGenre)) {
-                    dailyChallenge.progress = (dailyChallenge.progress || 0) + 1;
-                    if (dailyChallenge.progress >= dailyChallenge.target) {
-                        dailyChallenge.completed = true;
-                        showMessage(`🎉 ¡Desafío completado! +50 MOYOS`, 'success');
-                        currentUser.points += 50; // Bonificación
-                    }
-                }
-            }
+          // Mostrar mensaje de éxito
+          const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
+          showMessage(`✅ ¡"${shortTitle}" sugerida y agregada a la playlist! +10 MOYOS`, 'success');
 
-            // 4. Logros
-            checkAchievements();
+          // Limpiar resultados después de agregar
+          setTimeout(() => {
+            document.getElementById('results-container').innerHTML = `
+              <div class="message success">
+                <i class="fas fa-check-circle"></i> ¡Canción agregada exitosamente!<br>
+                <small>Busca más canciones para agregar</small>
+              </div>
+            `;
+            document.getElementById('song-search').value = '';
+            document.getElementById('song-search').focus();
+          }, 1500);
 
-            // 5. Guardar en localStorage
-            localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
-
-            // 6. Actualizar UI
-            document.getElementById('user-points').textContent = currentUser.points;
-            document.getElementById('user-level').textContent = currentUser.level;
-            document.getElementById('songs-added').textContent = currentUser.songsAdded;
-            document.getElementById('stat-rock').textContent = currentUser.stats.rock;
-            document.getElementById('stat-metal').textContent = currentUser.stats.metal;
-            document.getElementById('stat-punk').textContent = currentUser.stats.punk;
-            document.getElementById('stat-streak').textContent = currentUser.streak.daily;
-
-            // 7. Animación de éxito y confeti
-            element.classList.add('bounce');
-            element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';
-            simulateConfetti(); // Llamar a la función de confeti
-            const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
-            showMessage(`✅ ¡"${shortTitle}" agregada a la playlist! +10 MOYOS`, 'success');
-
-            // 8. Actualizar progreso del jugador
-            updatePlayerProgressDisplay();
-
-            // 9. Limpiar resultados después de agregar (opcional)
-            // document.getElementById('results-container').innerHTML = `
-            //   <div class="message success">
-            //     <i class="fas fa-check-circle"></i> ¡Canción agregada exitosamente!<br>
-            //     <small>Busca más canciones para agregar</small>
-            //   </div>
-            // `;
+          // Actualizar ranking
+          loadUserRanking();
 
         } else {
           if (data.requiresAuth) {
@@ -977,19 +731,11 @@
             showAuthRequiredMessage();
             throw new Error('🔐 Necesitas autenticarte con YouTube para agregar canciones');
           }
-          // Detectar si es un duplicado
-          if (data.error && data.error.includes('already in playlist')) {
-              currentUser.stats.duplicatesAdded = (currentUser.stats.duplicatesAdded || 0) + 1;
-              checkAchievements(); // Verificar logro de duplicado
-              localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
-              showMessage(`ℹ️ "${title}" ya estaba en la playlist.`, 'info');
-          } else {
-              throw new Error(data.error || 'Error al agregar canción');
-          }
+          throw new Error(data.error || 'Error al sugerir canción');
         }
 
       } catch (error) {
-        console.error('Error al agregar canción:', error);
+        console.error('Error al sugerir canción:', error);
         showMessage(`❌ Error: ${error.message}`, 'error');
       } finally {
         const button = element.querySelector('.add-btn');
@@ -1001,74 +747,65 @@
       }
     }
 
-    function checkAchievements() {
-        if (!currentUser) return;
-        ACHIEVEMENTS.forEach(achievement => {
-            if (!currentUser.achievements.includes(achievement.id) && achievement.condition(currentUser)) {
-                currentUser.achievements.push(achievement.id);
-                showMessage(`🏆 ¡Nuevo logro desbloqueado: ${achievement.name}!`, 'success');
-            }
-        });
+    async function loadUserRanking() {
+      try {
+        // Llama a /user/profile
+        const response = await fetch(`${API_BASE}/user/profile?userId=${currentUser?.id || 'anonymous'}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json(); // Espera respuesta JSON
+
+        if (data.ok) {
+          displayRanking(data.topUsers);
+        } else {
+            throw new Error(data.error || 'Error al cargar ranking');
+        }
+      } catch (error) {
+        console.error('Error al cargar ranking:', error);
+        // Mostrar mensaje de error en el panel de ranking
+        const container = document.getElementById('ranking-list');
+        container.innerHTML = `
+          <div class="message error">
+            <i class="fas fa-exclamation-circle"></i> Error al cargar ranking: ${error.message}
+          </div>
+        `;
+      }
     }
 
-    function loadPlayerProgress() {
-        const container = document.getElementById('player-progress-container');
-        if (!currentUser) {
-            container.innerHTML = '<div class="message info">Inicia sesión para ver tu progreso.</div>';
-            return;
-        }
+    function displayRanking(users) {
+      const container = document.getElementById('ranking-list');
 
-        updatePlayerProgressDisplay();
-    }
+      if (!users || users.length === 0) {
+        container.innerHTML = `
+          <div class="message info" style="background: rgba(108, 117, 125, 0.15); border: 1px solid rgba(108, 117, 125, 0.3);">
+            <i class="fas fa-users"></i> Aún no hay usuarios en el ranking
+          </div>
+        `;
+        return;
+      }
 
-    function updatePlayerProgressDisplay() {
-        const container = document.getElementById('player-progress-container');
-        if (!currentUser) return;
+      let html = '';
 
-        let html = '';
+      users.forEach((user, index) => {
+        const isCurrentUser = currentUser && currentUser.nickname === user.nickname;
+        const highlight = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary);"' : '';
 
-        // Logros
-        html += `<h4><i class="fas fa-certificate"></i> Logros</h4>`;
-        html += `<div class="achievements-grid">`;
-        ACHIEVEMENTS.forEach(achievement => {
-            const unlocked = currentUser.achievements.includes(achievement.id);
-            html += `
-            <div class="achievement-badge ${unlocked ? 'unlocked' : ''}" title="${achievement.name}">
-                <div class="achievement-icon">${achievement.icon}</div>
-                <div class="achievement-name">${unlocked ? achievement.name : '???'}</div>
-            </div>`;
-        });
-        html += `</div>`;
+        html += `
+          <div class="rank-item" ${highlight}>
+            <span>
+              <strong>${user.rank}.</strong> ${user.nickname}
+              ${isCurrentUser ? '<span style="color: var(--primary); margin-left: 5px;">(TÚ)</span>' : ''}
+            </span>
+            <span>
+              <i class="fas fa-coins" style="color: var(--success); margin-right: 5px;"></i>
+              ${user.points} MOYOS • Nivel ${user.level}
+            </span>
+          </div>
+        `;
+      });
 
-        // Historial
-        html += `<h4 style="margin-top: 15px;"><i class="fas fa-history"></i> Últimas Agregadas</h4>`;
-        html += `<div class="history-list">`;
-        if (currentUser.history.length === 0) {
-            html += `<div class="history-item">No has agregado canciones aún.</div>`;
-        } else {
-            currentUser.history.slice(0, 10).forEach(entry => { // Mostrar últimas 10
-                const shortTitle = entry.title.length > 40 ? entry.title.substring(0, 40) + '...' : entry.title;
-                html += `<div class="history-item">${shortTitle} <small>(${entry.artist})</small></div>`;
-            });
-        }
-        html += `</div>`;
-
-        // Desafíos
-        html += `<h4 style="margin-top: 15px;"><i class="fas fa-bullseye"></i> Desafíos</h4>`;
-        const dailyChallenge = currentUser.challenges.find(c => c.id.startsWith('daily_'));
-        if (dailyChallenge) {
-            html += `<div class="challenge-card">`;
-            html += `<div class="challenge-title">${dailyChallenge.title}</div>`;
-            html += `<div class="challenge-desc">${dailyChallenge.description}</div>`;
-            html += `<div class="challenge-progress"><div class="challenge-progress-bar" style="width: ${(dailyChallenge.progress / dailyChallenge.target) * 100}%"></div></div>`;
-            html += `<div>${dailyChallenge.progress} / ${dailyChallenge.target}</div>`;
-            if (dailyChallenge.completed) html += `<div style="color: var(--success); font-weight: bold;">¡Completado!</div>`;
-            html += `</div>`;
-        } else {
-            html += `<div class="message info">No hay desafíos activos.</div>`;
-        }
-
-        container.innerHTML = html;
+      container.innerHTML = html;
     }
 
     function showMessage(text, type = 'info') {
@@ -1095,107 +832,63 @@
     }
 
     function changeUsername() {
-      if (confirm('¿Estás seguro de que quieres cambiar tu apodo? Perderás tu progreso actual.')) {
-        localStorage.removeItem('moyofy_user');
-        currentUser = null;
-        showNicknameSection();
-        showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');
-      }
+      localStorage.removeItem('moyofy_user');
+      currentUser = null;
+      showNicknameSection();
+      showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');
     }
 
-    // --- FUNCIÓN DE CONFETI ---
+    // --- FUNCIÓN DE CONFETI (ejemplo simple) ---
     function simulateConfetti() {
       const confettiContainer = document.getElementById('confetti-container');
       confettiContainer.innerHTML = ''; // Limpiar confeti anterior
 
-      // Número de partículas
-      const particleCount = 150;
-
+      const particleCount = 100;
       for (let i = 0; i < particleCount; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti-piece';
-
-        // Colores variados
-        const colors = ['#ff004c', '#00ffaa', '#ffcc00', '#ffffff', '#4dabf7'];
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-
-        // Tamaño aleatorio
-        const size = Math.random() * 10 + 5; // Entre 5px y 15px
-        confetti.style.width = `${size}px`;
-        confetti.style.height = `${size}px`;
-
-        // Forma (puede ser un cuadrado o círculo)
-        if (Math.random() > 0.5) {
-          confetti.style.borderRadius = '50%';
-        }
-
-        // Posición inicial (desde el centro superior)
-        confetti.style.left = '50%';
-        confetti.style.top = '20%';
-
-        // Aplicar estilo inicial para evitar flickering
-        confetti.style.position = 'absolute';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        confetti.style.width = Math.random() * 10 + 5 + 'px';
+        confetti.style.height = confetti.style.width;
+        confetti.style.position = 'fixed';
         confetti.style.opacity = '1';
-        confetti.style.zIndex = '1001'; // Asegurar que esté encima
-
-        // Añadir al contenedor
+        confetti.style.zIndex = '1001';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
         confettiContainer.appendChild(confetti);
 
-        // Parámetros para la animación
-        const angle = Math.random() * Math.PI * 2; // Ángulo aleatorio en radianes
-        const velocity = 2 + Math.random() * 3; // Velocidad radial
-        const vx = Math.cos(angle) * velocity;
-        const vy = Math.sin(angle) * velocity;
-        const gravity = 0.1;
-        const rotationSpeed = (Math.random() - 0.5) * 10; // Rotación aleatoria
-        let posX = 0;
-        let posY = 0;
-        let velY = vy;
-        let rotation = 0;
-
-        // Función de animación
-        const animate = () => {
-          posX += vx;
-          posY += velY;
-          velY += gravity;
-          rotation += rotationSpeed;
-
-          confetti.style.transform = `translate(${posX}px, ${posY}px) rotate(${rotation}deg)`;
-
-          // Continuar animación si no ha caído fuera de la pantalla
-          if (posY < window.innerHeight && confetti.parentNode) {
-            requestAnimationFrame(animate);
-          } else {
-            // Eliminar elemento al finalizar la animación
-            if (confetti.parentNode) {
-              confetti.parentNode.removeChild(confetti);
-            }
-          }
-        };
-
-        // Iniciar animación después de un breve delay para evitar congestión
+        // Eliminar elemento después de la animación
         setTimeout(() => {
-          if (confetti.parentNode) { // Asegurar que aún esté en el DOM
-            requestAnimationFrame(animate);
+          if (confetti.parentNode) {
+            confetti.parentNode.removeChild(confetti);
           }
-        }, i * 5); // Pequeño delay entre partículas
+        }, 5000);
+      }
+
+      // Añadir estilo para la animación si no existe
+      if (!document.querySelector('#confetti-style')) {
+          const style = document.createElement('style');
+          style.id = 'confetti-style';
+          style.textContent = `
+              @keyframes fall {
+                  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+              }
+              .confetti-piece {
+                  position: fixed;
+                  width: 10px;
+                  height: 10px;
+                  background-color: #ff004c;
+                  border-radius: 2px;
+                  opacity: 1;
+                  z-index: 1001;
+              }
+          `;
+          document.head.appendChild(style);
       }
     }
-
-    // --- ESTILO DINÁMICO PARA CONFETI (añadir al estilo CSS si no está) ---
-    const confettiStyle = document.createElement('style');
-    confettiStyle.textContent = `
-        .confetti-piece {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #ff004c;
-            border-radius: 2px;
-            opacity: 1;
-            z-index: 1001;
-        }
-    `;
-    document.head.appendChild(confettiStyle);
 
   </script>
 </body>
