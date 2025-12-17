@@ -147,7 +147,7 @@ app.get('/oauth2callback', async (req, res) => {
   }
 });
 
-// Ruta para búsqueda de videos (SIMPLIFICADA: Sin parámetros adicionales de búsqueda)
+// Ruta para búsqueda de videos (CORREGIDA: Sin parámetros adicionales de búsqueda)
 app.post('/search', async (req, res) => {
   const { q } = req.body;
   if (!q || q.trim() === '') {
@@ -156,7 +156,7 @@ app.post('/search', async (req, res) => {
 
   console.log(`🔍 Búsqueda recibida: "${q}"`);
   try {
-    // Llamada a la API de YouTube con SOLO los parámetros esenciales
+    // Llamada a la API de YouTube CON SOLO los parámetros esenciales
     const response = await userYoutube.search.list({
       part: 'snippet',
       q: q,
