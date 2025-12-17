@@ -12,7 +12,7 @@ const app = express();
 
 // Configuración de sesión
 app.use(session({
-  secret: 'tu_clave_secreta_para_sesion', // Cambia esto por algo más seguro
+  secret: 'tu_clave_secreta_para_sesion_really_long_and_random_here', // Cambia esto por algo más seguro
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false } // Cambia a true si usas HTTPS en producción
@@ -109,8 +109,8 @@ app.use((err, req, res, next) => {
 app.get('/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación de USUARIO');
   const scopes = [
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/userinfo.email'
+    'https://www.googleapis.com/auth/userinfo.profile', // <- Sin espacios
+    'https://www.googleapis.com/auth/userinfo.email'    // <- Sin espacios
   ];
   const url = userOauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -147,7 +147,7 @@ app.get('/oauth2callback', async (req, res) => {
   }
 });
 
-// Ruta para búsqueda de videos (CORREGIDA: Parámetros comentados)
+// Ruta para búsqueda de videos (SIMPLIFICADA: Sin parámetros adicionales de búsqueda)
 app.post('/search', async (req, res) => {
   const { q } = req.body;
   if (!q || q.trim() === '') {
@@ -156,15 +156,13 @@ app.post('/search', async (req, res) => {
 
   console.log(`🔍 Búsqueda recibida: "${q}"`);
   try {
-    // Llamada a la API de YouTube con parámetros comentados para evitar 400 Bad Request
+    // Llamada a la API de YouTube con SOLO los parámetros esenciales
     const response = await userYoutube.search.list({
       part: 'snippet',
       q: q,
       maxResults: 15,
       type: 'video'
-      // videoDuration: 'medium',     // <-- Comentado
-      // relevanceLanguage: 'en,es',  // <-- Comentado
-      // safeSearch: 'none'           // <-- Comentado
+      // videoDuration, relevanceLanguage, safeSearch REMOVIDOS por completo
     });
 
     console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);
@@ -604,7 +602,7 @@ app.listen(PORT, HOST, () => {
 
   console.log('📚 Rutas disponibles:');
   console.log(' GET / - Interfaz web principal');
-  console.log(' POST /search - Buscar canciones');
+  console.log(' POST /search - Buscar canciones (sin parámetros adicionales de YouTube)');
   console.log(' POST /suggest-song - Sugerir canción (usa tokens del propietario)'); // <-- Nueva ruta
   console.log(' GET /auth - Autenticación de USUARIO');
   console.log(' GET /oauth2callback - Callback de autenticación de USUARIO');
@@ -616,7 +614,7 @@ app.listen(PORT, HOST, () => {
   // Verificar filtro
   try {
     const { ALLOWED_ARTISTS } = require('./utils/music-filter');
-    console.log(`🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.length} artistas permitidos`);
+    console.log(`🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.size} artistas permitidos`); // <-- Cambiado a .size
   } catch (error) {
     console.error('❌ Error cargando filtro de música:', error.message);
   }
