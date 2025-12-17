@@ -2,7 +2,7 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 
 const express = require("express");
-const session = require('express-session'); // <-- Añadido
+const session = require('express-session');
 const cors = require("cors");
 const { google } = require("googleapis");
 const fs = require("fs");
@@ -10,7 +10,7 @@ const path = require("path");
 
 const app = express();
 
-// Configuración de sesión (clave secreta, puede ser cualquier string)
+// Configuración de sesión
 app.use(session({
   secret: 'tu_clave_secreta_para_sesion', // Cambia esto por algo más seguro
   resave: false,
@@ -22,7 +22,7 @@ app.use(session({
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
-  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com'
+  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com' // <- Sin espacios
 ];
 app.use(cors({
   origin: function (origin, callback) {
@@ -147,7 +147,7 @@ app.get('/oauth2callback', async (req, res) => {
   }
 });
 
-// Ruta para búsqueda de videos (misma lógica)
+// Ruta para búsqueda de videos (CORREGIDA: Parámetros comentados)
 app.post('/search', async (req, res) => {
   const { q } = req.body;
   if (!q || q.trim() === '') {
@@ -156,14 +156,15 @@ app.post('/search', async (req, res) => {
 
   console.log(`🔍 Búsqueda recibida: "${q}"`);
   try {
+    // Llamada a la API de YouTube con parámetros comentados para evitar 400 Bad Request
     const response = await userYoutube.search.list({
       part: 'snippet',
       q: q,
       maxResults: 15,
       type: 'video'
-      // videoDuration: 'medium',     // Temporalmente comentado
-      // relevanceLanguage: 'en,es',  // Temporalmente comentado
-      // safeSearch: 'none'           // Temporalmente comentado
+      // videoDuration: 'medium',     // <-- Comentado
+      // relevanceLanguage: 'en,es',  // <-- Comentado
+      // safeSearch: 'none'           // <-- Comentado
     });
 
     console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);
@@ -214,7 +215,7 @@ app.post('/search', async (req, res) => {
         errorMessage = 'Límite de cuota de YouTube API excedido';
         statusCode = 429;
       } else if (youtubeError.code === 400) {
-        errorMessage = 'Consulta de búsqueda inválida';
+        errorMessage = 'Consulta de búsqueda inválida (posible error de parámetros)';
         statusCode = 400;
       }
     }
@@ -266,9 +267,8 @@ app.post('/suggest-song', async (req, res) => {
   }
 
   // --- VERIFICAR AUTENTICACIÓN DEL USUARIO (para identificarlo) ---
-  // Opcional: Puedes hacer que esta ruta requiera autenticación de usuario
-  // si quieres forzar que todos los que sugieran estén logueados.
-  // Si no es obligatorio, simplemente usar el userId que envía el cliente (confiable localmente).
+  // (Opcional: Puedes hacer que esta ruta requiera autenticación de usuario
+  //  si quieres forzar que todos los que sugieran estén logueados).
   // const userTokens = req.session.userTokens;
   // if (!userTokens) {
   //   console.error('🔐 Usuario no autenticado para sugerir canción');
@@ -299,7 +299,6 @@ app.post('/suggest-song', async (req, res) => {
     console.log(`📹 Video encontrado: "${video.snippet.title}"`);
 
     // 2. Verificar si el video está disponible para ser agregado
-    // (esto puede ser imperfecto, pero al menos descarta algunos casos)
     if (video.status.embeddable === false) {
       return res.status(403).json({
         ok: false,
@@ -376,9 +375,7 @@ app.post('/suggest-song', async (req, res) => {
           resourceId: {
             kind: 'youtube#video',
             videoId: videoId
-          },
-          // Opcional: Agregar un comentario o título personalizado al ítem
-          // title: `Sugerido por ${userId || 'un usuario'}`
+          }
         }
       }
     });
