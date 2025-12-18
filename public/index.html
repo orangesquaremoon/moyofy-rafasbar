@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>MOYOFY · Rafa's Bar</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css  ">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --primary: #ff004c;
@@ -366,14 +366,13 @@
       }
     }
 
-    /* Efectos de sonido y animaciones */
+    .bounce {
+      animation: bounce 0.5s;
+    }
+
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
-    }
-
-    .bounce {
-      animation: bounce 0.5s;
     }
 
     .confetti {
@@ -387,13 +386,28 @@
     }
 
     .filter-stats {
-      background: rgba(0, 100, 255, 0.1);
-      border: 1px solid rgba(0, 100, 255, 0.3);
-      border-radius: 8px;
-      padding: 10px;
+      background: rgba(108, 117, 125, 0.15);
+      border: 1px solid rgba(108, 117, 125, 0.3);
+      border-radius: 10px;
+      padding: 10px 15px;
       margin: 10px 0;
-      color: #4dabf7;
       font-size: 0.9rem;
+    }
+
+    .change-username-btn {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .change-username-btn:hover {
+      background: rgba(255, 0, 76, 0.1);
     }
   </style>
 </head>
@@ -485,15 +499,13 @@
   <div class="confetti" id="confetti-container"></div>
 
   <script>
-    // Variables globales
     let currentUser = null;
-    let API_BASE = window.location.origin; // Esto debería apuntar a la URL de Render
+    let API_BASE = window.location.origin;
     let requiresAuth = false;
 
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🚀 MOYOFY PREMIUM v2 cargado');
 
-      // Cargar perfil de usuario si existe en localStorage
       const savedUser = localStorage.getItem('moyofy_user');
       if (savedUser) {
         currentUser = JSON.parse(savedUser);
@@ -560,33 +572,36 @@
       document.getElementById('results-container').innerHTML = `
         <div class="loading">
           <div class="spinner"></div>
-          <p>Buscando canciones... <strong>${query}</strong></p>
+          <p>Buscando canciones de rock y metal...</p>
+          <p style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">
+            <strong>${query}</strong>
+          </p>
         </div>
       `;
 
       try {
-        const response = await fetch(`${API_BASE}/search`, { // Llama a /search
+        const response = await fetch(`${API_BASE}/search`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ q: query }) // Envia query en el body
+          body: JSON.stringify({ q: query })
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`Error HTTP: ${response.status}`);
         }
 
-        const data = await response.json(); // Espera respuesta JSON
+        const data = await response.json();
 
-        if (!data.ok && data.error) {
-          throw new Error(data.error);
+        if (!data.ok) {
+          throw new Error(data.error || 'Error en la búsqueda');
         }
 
         displaySearchResults(data.items, data.filterStats);
 
         if (data.items && data.items.length > 0) {
-          showMessage(`✅ ¡Encontramos ${data.items.length} canciones para ti!`, 'success');
+          showMessage(`✅ ¡Encontramos ${data.items.length} canciones apropiadas para el bar!`, 'success');
         } else {
           showMessage('🔍 No encontramos canciones que cumplan con los criterios del bar', 'warning');
         }
@@ -595,7 +610,12 @@
         console.error('Error en búsqueda:', error);
         document.getElementById('results-container').innerHTML = `
           <div class="message error">
-            <i class="fas fa-exclamation-circle"></i> ${error.message || 'Error desconocido al buscar canciones'}
+            <i class="fas fa-exclamation-circle"></i> 
+            <strong>Error al buscar canciones</strong><br>
+            <small>${error.message || 'Intenta de nuevo más tarde'}</small>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+              Tip: Busca por artista o canción específica (ej: "Queen Bohemian Rhapsody", "Metallica Enter Sandman")
+            </p>
           </div>
         `;
       }
@@ -609,9 +629,16 @@
           <div class="message warning">
             <i class="fas fa-music"></i> No se encontraron canciones que cumplan con los criterios de Rafa's Bar.
             <p style="margin-top: 10px; font-size: 0.9rem; color: #ddd;">
-              ⚠️ Recuerda: Solo se permiten géneros rock y sus variantes (incluyendo industrial, alternativo, etc.).
-              <br>Prueba con términos como "<strong>Queen</strong>", "<strong>Rush</strong>", "<strong>Metallica</strong>", "<strong>Pantera</strong>", etc.
+              ⚠ Recuerda: Solo se permiten géneros rock y sus variantes.<br>
+              <strong>Sugerencias:</strong>
             </p>
+            <ul style="text-align: left; margin-top: 10px; padding-left: 20px; font-size: 0.9rem;">
+              <li>"Queen Bohemian Rhapsody"</li>
+              <li>"Metallica Enter Sandman"</li>
+              <li>"Led Zeppelin Stairway to Heaven"</li>
+              <li>"AC/DC Back in Black"</li>
+              <li>"Pantera Cowboys from Hell"</li>
+            </ul>
           </div>
         `;
         return;
@@ -622,27 +649,32 @@
       if (stats) {
         html += `
           <div class="filter-stats">
-            <i class="fas fa-filter"></i> Resultados filtrados: ${stats.approved}/${stats.totalResults}
-            (${stats.approvalRate}%) aprobados para Rafa's Bar
+            <i class="fas fa-filter"></i> 
+            <strong>Filtro activo:</strong> ${stats.approved}/${stats.totalResults} aprobados (${stats.approvalRate}%)<br>
+            <small>Búsqueda: "${stats.query || 'rock'}"</small>
           </div>
         `;
       }
 
       items.forEach((item, index) => {
-        // Extraer el artista del título o canal
+        const title = item.snippet.title;
+        const videoId = item.id.videoId;
+        
         let artist = 'Artista desconocido';
         if (item.snippet.channelTitle && !item.snippet.channelTitle.toLowerCase().includes('vevo')) {
-            artist = item.snippet.channelTitle;
-        } else if (item.snippet.title.includes('-')) {
-            artist = item.snippet.title.split('-')[0].trim();
-        } else if (item.snippet.title.includes('by')) {
-            artist = item.snippet.title.split('by')[1]?.trim() || item.snippet.channelTitle;
+          artist = item.snippet.channelTitle;
+        } else if (title.includes('-')) {
+          artist = title.split('-')[0].trim();
+        } else if (title.includes('by')) {
+          artist = title.split('by')[1]?.trim() || item.snippet.channelTitle;
         }
 
+        const displayTitle = title.length > 60 ? title.substring(0, 60) + '...' : title;
+
         html += `
-          <div class="song-item" onclick="suggestSong('${item.id.videoId}', '${item.snippet.title.replace(/'/g, "\\'")}', '${artist.replace(/'/g, "\\'")}', this)">
+          <div class="song-item" onclick="suggestSong('${videoId}', '${title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${artist.replace(/'/g, "\\'")}', this)">
             <div class="song-info">
-              <div class="song-title">${item.snippet.title}</div>
+              <div class="song-title">${displayTitle}</div>
               <div class="song-artist">${artist}</div>
             </div>
             <button class="add-btn">
@@ -655,7 +687,6 @@
       container.innerHTML = html;
     }
 
-    // Función para SUGERIR una canción (cambiada de addSong)
     async function suggestSong(videoId, title, artist, element) {
       if (!currentUser) {
         showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
@@ -675,7 +706,6 @@
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SUGERIDO...';
 
-        // Llama a la NUEVA ruta /suggest-song
         const response = await fetch(`${API_BASE}/suggest-song`, {
           method: 'POST',
           headers: {
@@ -684,17 +714,17 @@
           body: JSON.stringify({
             videoId: videoId,
             title: title,
-            userId: currentUser.id // Enviar el ID del usuario que sugiere
+            userId: currentUser.id
           })
         });
 
-        const data = await response.json(); // Espera respuesta JSON
+        const data = await response.json();
 
         if (data.ok) {
           element.classList.add('bounce');
           element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';
+          element.style.borderLeftColor = 'var(--success)';
 
-          // Actualizar puntos y nivel localmente
           currentUser.points = (currentUser.points || 100) + 10;
           currentUser.level = Math.floor(currentUser.points / 100) + 1;
           currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;
@@ -703,14 +733,11 @@
           document.getElementById('user-level').textContent = currentUser.level;
           document.getElementById('songs-added').textContent = currentUser.songsAdded;
 
-          // Guardar en localStorage
           localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
 
-          // Mostrar mensaje de éxito
           const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
           showMessage(`✅ ¡"${shortTitle}" sugerida y agregada a la playlist! +10 MOYOS`, 'success');
 
-          // Limpiar resultados después de agregar
           setTimeout(() => {
             document.getElementById('results-container').innerHTML = `
               <div class="message success">
@@ -722,7 +749,6 @@
             document.getElementById('song-search').focus();
           }, 1500);
 
-          // Actualizar ranking
           loadUserRanking();
 
         } else {
@@ -749,21 +775,18 @@
 
     async function loadUserRanking() {
       try {
-        // Llama a /user/profile
         const response = await fetch(`${API_BASE}/user/profile?userId=${currentUser?.id || 'anonymous'}`);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json(); // Espera respuesta JSON
-
+        const data = await response.json();
         if (data.ok) {
-          displayRanking(data.topUsers);
+          displayRanking(data.topUsers, data.user);
         } else {
-            throw new Error(data.error || 'Error al cargar ranking');
+          throw new Error(data.error || 'Error al cargar ranking');
         }
       } catch (error) {
         console.error('Error al cargar ranking:', error);
-        // Mostrar mensaje de error en el panel de ranking
         const container = document.getElementById('ranking-list');
         container.innerHTML = `
           <div class="message error">
@@ -773,9 +796,9 @@
       }
     }
 
-    function displayRanking(users) {
+    function displayRanking(users, currentUserData) {
       const container = document.getElementById('ranking-list');
-
+      
       if (!users || users.length === 0) {
         container.innerHTML = `
           <div class="message info" style="background: rgba(108, 117, 125, 0.15); border: 1px solid rgba(108, 117, 125, 0.3);">
@@ -786,15 +809,20 @@
       }
 
       let html = '';
-
-      users.forEach((user, index) => {
+      
+      users.slice(0, 10).forEach((user, index) => {
         const isCurrentUser = currentUser && currentUser.nickname === user.nickname;
-        const highlight = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary);"' : '';
-
+        const highlightStyle = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary); padding-left: 10px;"' : '';
+        
+        let rankEmoji = '';
+        if (index === 0) rankEmoji = '🥇';
+        else if (index === 1) rankEmoji = '🥈';
+        else if (index === 2) rankEmoji = '🥉';
+        
         html += `
-          <div class="rank-item" ${highlight}>
+          <div class="rank-item" ${highlightStyle}>
             <span>
-              <strong>${user.rank}.</strong> ${user.nickname}
+              <strong>${rankEmoji || ''} ${user.rank}.</strong> ${user.nickname}
               ${isCurrentUser ? '<span style="color: var(--primary); margin-left: 5px;">(TÚ)</span>' : ''}
             </span>
             <span>
@@ -804,21 +832,37 @@
           </div>
         `;
       });
+      
+      if (currentUserData) {
+        html += `
+          <div class="rank-item" style="background: rgba(255, 0, 76, 0.1); border-left: 4px solid var(--primary); margin-top: 10px; padding-left: 10px;">
+            <span><strong>${currentUserData.rank}.</strong> ${currentUserData.nickname}<span style="color: var(--primary); margin-left: 5px;">(TÚ)</span></span>
+            <span><i class="fas fa-coins" style="color: var(--success); margin-right: 5px;"></i>${currentUserData.points} MOYOS</span>
+          </div>
+        `;
+      }
 
       container.innerHTML = html;
     }
 
     function showMessage(text, type = 'info') {
       const container = document.getElementById('message-container');
+      let icon = 'info-circle';
+      if (type === 'success') icon = 'check-circle';
+      else if (type === 'error') icon = 'exclamation-circle';
+      else if (type === 'warning') icon = 'exclamation-triangle';
+      
       container.innerHTML = `
         <div class="message ${type} bounce">
-          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+          <i class="fas fa-${icon}"></i>
           ${text}
         </div>
       `;
-
+      
       setTimeout(() => {
-        container.innerHTML = '';
+        if (container.innerHTML.includes(text)) {
+          container.innerHTML = '';
+        }
       }, 5000);
     }
 
@@ -832,64 +876,53 @@
     }
 
     function changeUsername() {
-      localStorage.removeItem('moyofy_user');
-      currentUser = null;
-      showNicknameSection();
-      showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');
+      if (confirm('¿Estás seguro de que quieres cambiar tu apodo? Perderás tu progreso actual.')) {
+        localStorage.removeItem('moyofy_user');
+        currentUser = null;
+        showNicknameSection();
+        showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');
+      }
     }
 
-    // --- FUNCIÓN DE CONFETI (ejemplo simple) ---
     function simulateConfetti() {
       const confettiContainer = document.getElementById('confetti-container');
-      confettiContainer.innerHTML = ''; // Limpiar confeti anterior
-
-      const particleCount = 100;
-      for (let i = 0; i < particleCount; i++) {
+      confettiContainer.innerHTML = '';
+      
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fall {
+          to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .confetti-piece {
+          position: fixed;
+          width: 10px;
+          height: 10px;
+          background-color: #ff004c;
+          border-radius: 2px;
+          opacity: 1;
+          z-index: 1001;
+          animation: fall ${Math.random() * 3 + 2}s linear forwards;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      for (let i = 0; i < 100; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti-piece';
-        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.left = `${Math.random() * 100}%`;
         confetti.style.top = '-10px';
-        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        confetti.style.width = Math.random() * 10 + 5 + 'px';
+        confetti.style.backgroundColor = ['#ff004c', '#00ffaa', '#ffcc00', '#ffffff'][Math.floor(Math.random() * 4)];
+        confetti.style.width = `${Math.random() * 8 + 2}px`;
         confetti.style.height = confetti.style.width;
-        confetti.style.position = 'fixed';
-        confetti.style.opacity = '1';
-        confetti.style.zIndex = '1001';
-        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-        confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
         confettiContainer.appendChild(confetti);
-
-        // Eliminar elemento después de la animación
+        
         setTimeout(() => {
           if (confetti.parentNode) {
             confetti.parentNode.removeChild(confetti);
           }
         }, 5000);
       }
-
-      // Añadir estilo para la animación si no existe
-      if (!document.querySelector('#confetti-style')) {
-          const style = document.createElement('style');
-          style.id = 'confetti-style';
-          style.textContent = `
-              @keyframes fall {
-                  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-                  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-              }
-              .confetti-piece {
-                  position: fixed;
-                  width: 10px;
-                  height: 10px;
-                  background-color: #ff004c;
-                  border-radius: 2px;
-                  opacity: 1;
-                  z-index: 1001;
-              }
-          `;
-          document.head.appendChild(style);
-      }
     }
-
   </script>
 </body>
 </html>
