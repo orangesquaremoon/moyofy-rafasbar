@@ -10,17 +10,19 @@ const path = require("path");
 
 const app = express();
 
+// Configuración de sesión
 app.use(session({
-  secret: 'tu_clave_secreta_para_sesion_really_long_and_random_here',
+  secret: 'tu_clave_secreta_para_sesion_really_long_and_random_here', // Cambia esto por algo más seguro
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: { secure: false } // Cambia a true si usas HTTPS en producción
 }));
 
+// Configuración CORS para desarrollo y producción
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
-  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com'
+  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com' // Sin espacios
 ];
 app.use(cors({
   origin: function (origin, callback) {
@@ -28,6 +30,7 @@ app.use(cors({
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.warn(`⚠️ CORS bloqueado para origen: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -40,6 +43,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
+// --- CLIENTE DE GOOGLE PARA EL PROPIETARIO ---
 let ownerOauth2Client = null;
 let ownerYoutube = null;
 
@@ -52,28 +56,35 @@ function initializeOwnerClient() {
   try {
     const tokens = JSON.parse(process.env.OWNER_TOKENS_JSON);
     ownerOauth2Client = new google.auth.OAuth2(
-      process.env.OAUTH_CLIENT_ID,
-      process.env.OAUTH_CLIENT_SECRET,
-      process.env.REDIRECT_URI
+      process.env.OAUTH_CLIENT_ID, // Usar el Client ID original para refresh
+      process.env.OAUTH_CLIENT_SECRET, // Usar el Client Secret original para refresh
+      process.env.REDIRECT_URI // No es necesario para refresh, pero lo pasamos por si acaso
     );
     ownerOauth2Client.setCredentials(tokens);
+
+    // Crear cliente de YouTube para el propietario
     ownerYoutube = google.youtube({ version: 'v3', auth: ownerOauth2Client });
+
     console.log('✅ Cliente de YouTube del propietario inicializado.');
   } catch (error) {
     console.error('❌ Error inicializando cliente del propietario:', error.message);
   }
 }
 
+// Inicializar al arrancar el servidor
 initializeOwnerClient();
 
+// --- CLIENTE DE GOOGLE PARA EL USUARIO (PARA IDENTIFICACIÓN) ---
 const userOauth2Client = new google.auth.OAuth2(
   process.env.OAUTH_CLIENT_ID,
   process.env.OAUTH_CLIENT_SECRET,
   process.env.REDIRECT_URI
 );
 
+// Cliente de YouTube para el usuario (solo para verificar video, no para modificar playlist)
 const userYoutube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
+// Middleware de logging mejorado
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -83,6 +94,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware para manejar JSON mal formado
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('JSON mal formado:', err.message);
+    return res.status(400).json({ ok: false, error: 'JSON mal formado en la solicitud' });
+  }
+  next();
+});
+
+// --- RUTAS ---
+
+// Ruta para autenticación del USUARIO (solo para identificarlo)
 app.get('/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación de USUARIO');
   const scopes = [
@@ -98,24 +121,33 @@ app.get('/auth', (req, res) => {
   res.redirect(url);
 });
 
+// Callback de autenticación del USUARIO
 app.get('/oauth2callback', async (req, res) => {
   const { code, error } = req.query;
   if (error) {
     console.error('❌ Error en OAuth del usuario:', error);
-    return res.status(400).send(`<html><body><h1>Error de Autenticación del Usuario</h1><p>${error}</p></body></html>`);
+    return res.status(400).send(`
+      <html>
+      <body><h1>Error de Autenticación del Usuario</h1><p>${error}</p></body>
+      </html>
+    `);
   }
   try {
     const { tokens } = await userOauth2Client.getToken(code);
+    // Guardar tokens del USUARIO en la sesión
     req.session.userTokens = tokens;
-    userOauth2Client.setCredentials(tokens);
+    userOauth2Client.setCredentials(tokens); // Actualiza el cliente global temporalmente
 
-    res.send(`<html><body><h1>Autenticación de Usuario Exitosa</h1><p>Ahora puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>`);
+    res.send(`
+      <html><body><h1>Autenticación de Usuario Exitosa</h1><p>Ahora puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>
+    `);
   } catch (err) {
     console.error('❌ Error procesando callback OAuth del usuario:', err);
     res.status(500).send('<h1>Error en OAuth Callback del Usuario</h1>');
   }
 });
 
+// Ruta para búsqueda de videos (CORREGIDA: Sin parámetros adicionales de búsqueda)
 app.post('/search', async (req, res) => {
   const { q } = req.body;
   if (!q || q.trim() === '') {
@@ -124,11 +156,14 @@ app.post('/search', async (req, res) => {
 
   console.log(`🔍 Búsqueda recibida: "${q}"`);
   try {
+    // Llamada a la API de YouTube CON SOLO los parámetros esenciales
+    // REMOVIDOS: videoDuration, relevanceLanguage, safeSearch
     const response = await userYoutube.search.list({
       part: 'snippet',
       q: q,
       maxResults: 15,
       type: 'video'
+      // NO se incluyen videoDuration, relevanceLanguage, safeSearch
     });
 
     console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);
@@ -179,7 +214,7 @@ app.post('/search', async (req, res) => {
         errorMessage = 'Límite de cuota de YouTube API excedido';
         statusCode = 429;
       } else if (youtubeError.code === 400) {
-        errorMessage = 'Consulta de búsqueda inválida';
+        errorMessage = 'Consulta de búsqueda inválida (posible error de parámetros)';
         statusCode = 400;
       }
     }
@@ -193,8 +228,9 @@ app.post('/search', async (req, res) => {
   }
 });
 
+// Ruta para SUGERIR agregar a playlist (usando tokens del propietario)
 app.post('/suggest-song', async (req, res) => {
-  const { videoId, title, userId } = req.body;
+  const { videoId, title, userId } = req.body; // userId del cliente
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
   console.log(`🎵 Solicitud de agregar video: ${title || 'Sin título'} (ID: ${videoId}) (Usuario: ${userId || 'Anónimo'})`);
@@ -227,7 +263,22 @@ app.post('/suggest-song', async (req, res) => {
     });
   }
 
+  // --- VERIFICAR AUTENTICACIÓN DEL USUARIO (para identificarlo) ---
+  // (Opcional: Puedes hacer que esta ruta requiera autenticación de usuario
+  //  si quieres forzar que todos los que sugieran estén logueados).
+  // const userTokens = req.session.userTokens;
+  // if (!userTokens) {
+  //   console.error('🔐 Usuario no autenticado para sugerir canción');
+  //   return res.status(401).json({
+  //     ok: false,
+  //     error: 'Unauthorized. Please authenticate first.',
+  //     requiresAuth: true
+  //   });
+  // }
+
+  // --- VALIDACIONES ANTES DE AGREGAR ---
   try {
+    // 1. Verificar si el video existe en YouTube (opcional, pero buena práctica)
     const videoResponse = await userYoutube.videos.list({
       part: 'snippet,status',
       id: videoId
@@ -252,6 +303,7 @@ app.post('/suggest-song', async (req, res) => {
       });
     }
 
+    // 2. Verificar si el video YA está en la playlist del propietario
     if (ownerYoutube) {
       const existingItemsResponse = await ownerYoutube.playlistItems.list({
         part: 'snippet',
@@ -276,6 +328,11 @@ app.post('/suggest-song', async (req, res) => {
         });
     }
 
+    // 3. Verificar con el filtro (opcional, pero recomendable)
+    // Simulamos el filtro aquí si es necesario, o confiamos en el filtro del cliente
+    // y lo validamos en el servidor (más complejo).
+    // Por ahora, asumimos que el cliente ya filtró, pero podríamos re-filtrar aquí.
+
   } catch (error) {
      console.error('Error verificando video antes de agregar:', error);
      if (error.code === 401 || error.response?.status === 401) {
@@ -293,6 +350,7 @@ app.post('/suggest-song', async (req, res) => {
     });
   }
 
+  // --- AGREGAR VIDEO A PLAYLIST DEL PROPIETARIO ---
   try {
     if (!ownerYoutube) {
         console.error('❌ Cliente de YouTube del propietario no disponible para agregar.');
@@ -335,9 +393,10 @@ app.post('/suggest-song', async (req, res) => {
 
     if (error.code === 401 || error.response?.status === 401) {
       console.log('🔐 Error de autenticación del propietario (posible expiración de tokens)');
+      // Aquí se podría intentar refrescar el token del propietario si se implementa esa lógica
       errorMessage = 'Error de autenticación del servidor. Contacta al administrador.';
-      requiresAuth = true;
-      statusCode = 500;
+      requiresAuth = true; // Indica que algo está mal con la autenticación del backend
+      statusCode = 500; // No es un error 401 del usuario, sino del servidor
     } else if (error.response?.status === 403) {
       console.log('❌ Acceso denegado (verifica permisos de playlist del propietario)');
       errorMessage = 'Access denied. Check playlist permissions.';
@@ -360,10 +419,13 @@ app.post('/suggest-song', async (req, res) => {
   }
 });
 
+
+// Ruta para obtener perfil y ranking (simulado, como antes)
 app.get('/user/profile', (req, res) => {
   const { userId } = req.query;
   console.log(`👤 Consulta de perfil: ${userId || 'anonymous'}`);
 
+  // Simular datos del ranking
   const mockRanking = [
     { rank: 1, nickname: 'RockMaster69', points: 500, level: 5, songsAdded: 45 },
     { rank: 2, nickname: 'MetallicaFan', points: 420, level: 4, songsAdded: 38 },
@@ -372,6 +434,7 @@ app.get('/user/profile', (req, res) => {
     { rank: 5, nickname: 'Anon', points: 100, level: 1, songsAdded: 5 }
   ];
 
+  // Buscar usuario actual
   let user = { rank: 0, nickname: userId || 'Invitado', points: 100, level: 1, songsAdded: 0 };
 
   if (userId && userId !== 'anonymous' && userId !== 'Invitado') {
@@ -379,6 +442,7 @@ app.get('/user/profile', (req, res) => {
     if (foundUser) {
       user = { ...foundUser };
     } else {
+      // Usuario nuevo, agregar al final del ranking
       user.rank = mockRanking.length + 1;
     }
   }
@@ -389,10 +453,11 @@ app.get('/user/profile', (req, res) => {
     topUsers: mockRanking,
     serverTime: new Date().toISOString(),
     totalUsers: mockRanking.length,
-    rankingUpdated: '2024-01-15T12:00:00Z'
+    rankingUpdated: '2024-01-15T12:00:00Z' // Fecha simulada
   });
 });
 
+// Ruta de salud del servidor
 app.get('/health', (req, res) => {
   const health = {
     ok: true,
@@ -405,11 +470,13 @@ app.get('/health', (req, res) => {
     youtubeApi: process.env.YOUTUBE_API_KEY ? 'Configured' : 'Not Configured',
     oauth: process.env.OAUTH_CLIENT_ID ? 'Configured' : 'Not Configured',
     playlist: process.env.DEFAULT_PLAYLIST_ID ? 'Configured' : 'Not Configured',
-    ownerClient: ownerYoutube ? 'Configured' : 'Not Configured'
+    ownerClient: ownerYoutube ? 'Configured' : 'Not Configured' // Indicar estado del cliente del propietario
   };
+  console.log('🩺 Health check realizado');
   res.json(health);
 });
 
+// Ruta para información del sistema
 app.get('/system/info', (req, res) => {
   res.json({
     ok: true,
@@ -420,14 +487,14 @@ app.get('/system/info', (req, res) => {
       author: 'Abundia.io',
       filters: {
         version: 'v4',
-        allowedArtists: '798 artistas',
+        allowedArtists: '200+ artistas',
         allowedGenres: '40+ géneros',
         smartFiltering: true
       }
     },
     endpoints: {
       search: 'POST /search',
-      suggestSong: 'POST /suggest-song',
+      suggestSong: 'POST /suggest-song', // <-- Nueva ruta
       auth: 'GET /auth',
       profile: 'GET /user/profile',
       health: 'GET /health'
@@ -435,6 +502,7 @@ app.get('/system/info', (req, res) => {
   });
 });
 
+// Ruta principal
 app.get('/', (req, res) => {
   try {
     const indexPath = path.join(__dirname, '../public/index.html');
@@ -449,15 +517,17 @@ app.get('/', (req, res) => {
   }
 });
 
+// Ruta para archivos estáticos fallback
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
     res.status(404).json({
       ok: false,
       error: 'Ruta API no encontrada',
       path: req.path,
-      available: ['/search', '/suggest-song', '/auth', '/user/profile', '/health', '/system/info']
+      available: ['/search', '/suggest-song', '/auth', '/user/profile', '/health', '/system/info'] // Actualizado
     });
   } else {
+    // Intentar servir el archivo estático
     const filePath = path.join(__dirname, '../public', req.path);
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
       res.sendFile(filePath);
@@ -467,6 +537,7 @@ app.get('*', (req, res) => {
   }
 });
 
+// Manejo global de errores
 app.use((error, req, res, next) => {
   console.error('❌ Error global:', error);
   res.status(500).json({
@@ -476,6 +547,7 @@ app.use((error, req, res, next) => {
   });
 });
 
+// --- INICIAR SERVIDOR ---
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || '0.0.0.0';
 
@@ -487,7 +559,7 @@ function checkConfiguration() {
     'OAUTH_CLIENT_SECRET',
     'REDIRECT_URI',
     'DEFAULT_PLAYLIST_ID',
-    'OWNER_TOKENS_JSON'
+    'OWNER_TOKENS_JSON' // <-- Añadido
   ];
   const missingVars = [];
   requiredVars.forEach(varName => {
@@ -525,7 +597,7 @@ app.listen(PORT, HOST, () => {
 
   console.log('📚 Rutas disponibles:');
   console.log(' GET / - Interfaz web principal');
-  console.log(' POST /search - Buscar canciones');
+  console.log(' POST /search - Buscar canciones (sin parámetros adicionales de YouTube)');
   console.log(' POST /suggest-song - Sugerir canción (usa tokens del propietario)');
   console.log(' GET /auth - Autenticación de USUARIO');
   console.log(' GET /oauth2callback - Callback de autenticación de USUARIO');
