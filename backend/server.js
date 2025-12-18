@@ -157,12 +157,13 @@ app.post('/search', async (req, res) => {
   console.log(`🔍 Búsqueda recibida: "${q}"`);
   try {
     // Llamada a la API de YouTube CON SOLO los parámetros esenciales
+    // REMOVIDOS: videoDuration, relevanceLanguage, safeSearch
     const response = await userYoutube.search.list({
       part: 'snippet',
       q: q,
       maxResults: 15,
       type: 'video'
-      // videoDuration, relevanceLanguage, safeSearch REMOVIDOS por completo
+      // NO se incluyen videoDuration, relevanceLanguage, safeSearch
     });
 
     console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);
@@ -229,12 +230,11 @@ app.post('/search', async (req, res) => {
 
 // Ruta para SUGERIR agregar a playlist (usando tokens del propietario)
 app.post('/suggest-song', async (req, res) => {
-  const { videoId, title, userId } = req.body; // userId del cliente
+  const { videoId, title, userId } = req.body;
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
   console.log(`🎵 Solicitud de agregar video: ${title || 'Sin título'} (ID: ${videoId}) (Usuario: ${userId || 'Anónimo'})`);
 
-  // Validaciones
   if (!defaultPlaylistId) {
     console.error('❌ DEFAULT_PLAYLIST_ID no configurada en variables de entorno');
     return res.status(500).json({
@@ -253,7 +253,6 @@ app.post('/suggest-song', async (req, res) => {
     });
   }
 
-  // Validar formato de videoId
   const videoIdRegex = /^[a-zA-Z0-9_-]{11}$/;
   if (!videoIdRegex.test(videoId)) {
     console.error('❌ Video ID con formato inválido');
@@ -296,7 +295,6 @@ app.post('/suggest-song', async (req, res) => {
     const video = videoResponse.data.items[0];
     console.log(`📹 Video encontrado: "${video.snippet.title}"`);
 
-    // 2. Verificar si el video está disponible para ser agregado
     if (video.status.embeddable === false) {
       return res.status(403).json({
         ok: false,
@@ -305,7 +303,7 @@ app.post('/suggest-song', async (req, res) => {
       });
     }
 
-    // 3. Verificar si el video YA está en la playlist del propietario
+    // 2. Verificar si el video YA está en la playlist del propietario
     if (ownerYoutube) {
       const existingItemsResponse = await ownerYoutube.playlistItems.list({
         part: 'snippet',
@@ -330,14 +328,13 @@ app.post('/suggest-song', async (req, res) => {
         });
     }
 
-    // 4. Verificar con el filtro (opcional, pero recomendable)
+    // 3. Verificar con el filtro (opcional, pero recomendable)
     // Simulamos el filtro aquí si es necesario, o confiamos en el filtro del cliente
     // y lo validamos en el servidor (más complejo).
     // Por ahora, asumimos que el cliente ya filtró, pero podríamos re-filtrar aquí.
 
   } catch (error) {
      console.error('Error verificando video antes de agregar:', error);
-     // Manejo de errores de verificación
      if (error.code === 401 || error.response?.status === 401) {
         console.log('🔐 Error de autenticación al verificar video (propietario)');
         return res.status(401).json({
@@ -346,7 +343,6 @@ app.post('/suggest-song', async (req, res) => {
             requiresAuth: true
         });
      }
-     // Otro error, devolver error genérico
      return res.status(500).json({
         ok: false,
         error: 'Error verificando la canción.',
@@ -391,7 +387,6 @@ app.post('/suggest-song', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error agregando video a playlist del propietario:', error);
-    // Manejo detallado de errores
     let errorMessage = 'Error al agregar canción';
     let requiresAuth = false;
     let statusCode = 500;
@@ -587,7 +582,7 @@ function checkConfiguration() {
 
 app.listen(PORT, HOST, () => {
   console.log(`
-    🎸 MOYOFY PREMIUM v2.0
+    🎸 MOYOFY v2.0
     ==========================================
     ✅ Servidor iniciado exitosamente
     📍 URL: http://${HOST}:${PORT}
@@ -603,7 +598,7 @@ app.listen(PORT, HOST, () => {
   console.log('📚 Rutas disponibles:');
   console.log(' GET / - Interfaz web principal');
   console.log(' POST /search - Buscar canciones (sin parámetros adicionales de YouTube)');
-  console.log(' POST /suggest-song - Sugerir canción (usa tokens del propietario)'); // <-- Nueva ruta
+  console.log(' POST /suggest-song - Sugerir canción (usa tokens del propietario)');
   console.log(' GET /auth - Autenticación de USUARIO');
   console.log(' GET /oauth2callback - Callback de autenticación de USUARIO');
   console.log(' GET /user/profile - Perfil de usuario y ranking');
@@ -611,10 +606,9 @@ app.listen(PORT, HOST, () => {
   console.log(' GET /system/info - Información del sistema');
   console.log(`==========================================`);
 
-  // Verificar filtro
   try {
     const { ALLOWED_ARTISTS } = require('./utils/music-filter');
-    console.log(`🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.size} artistas permitidos`); // <-- Cambiado a .size
+    console.log(`🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.size} artistas permitidos`);
   } catch (error) {
     console.error('❌ Error cargando filtro de música:', error.message);
   }
