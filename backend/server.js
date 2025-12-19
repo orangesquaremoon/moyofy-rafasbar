@@ -494,7 +494,7 @@ app.get('/system/info', (req, res) => {
     },
     endpoints: {
       search: 'POST /search',
-      suggestSong: 'POST /suggest-song', // <-- Nueva ruta
+      suggestSong: 'POST /suggest-song',
       auth: 'GET /auth',
       profile: 'GET /user/profile',
       health: 'GET /health'
