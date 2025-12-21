@@ -499,6 +499,16 @@
   <div class="confetti" id="confetti-container"></div>
 
   <script>
+    // ==============================
+    // CONFIGURACIÓN DE GEOLOCALIZACIÓN Y ANTI-SPAM
+    // ==============================
+    const BAR_LOCATION = { 
+        lat: 9.93422, 
+        lng: -84.06894 
+    };
+    const RADIUS_METERS = 200; // 200 metros
+    const COOLDOWN_MS = 5 * 60 * 1000; // 5 minutos
+
     let currentUser = null;
     let API_BASE = window.location.origin;
     let requiresAuth = false;
@@ -516,6 +526,56 @@
       }
     });
 
+    // ==============================
+    // FUNCIONES DE GEOLOCALIZACIÓN
+    // ==============================
+    function isUserNearBar(userLat, userLng) {
+        const barLat = BAR_LOCATION.lat;
+        const barLng = BAR_LOCATION.lng;
+        
+        const toRadians = (degrees) => degrees * Math.PI / 180;
+        const R = 6371000;
+        const dLat = toRadians(userLat - barLat);
+        const dLng = toRadians(userLng - barLng);
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(toRadians(barLat)) * Math.cos(toRadians(userLat)) *
+                  Math.sin(dLng/2) * Math.sin(dLng/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+        
+        return distance <= RADIUS_METERS;
+    }
+
+    function requestLocation() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error('Geolocalización no soportada.'));
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (position) => resolve(position.coords),
+                (error) => reject(error)
+            );
+        });
+    }
+
+    // ==============================
+    // FUNCIONES DE ANTI-SPAM
+    // ==============================
+    function canAddSong() {
+        const lastAddTime = localStorage.getItem('moyofy_last_add');
+        if (!lastAddTime) return true;
+        const now = Date.now();
+        return (now - parseInt(lastAddTime)) >= COOLDOWN_MS;
+    }
+
+    function setLastAddTime() {
+        localStorage.setItem('moyofy_last_add', Date.now().toString());
+    }
+
+    // ==============================
+    // FUNCIONES DE UI PRINCIPALES
+    // ==============================
     function showNicknameSection() {
       document.getElementById('nickname-section').style.display = 'block';
       document.getElementById('user-profile').style.display = 'none';
@@ -523,10 +583,8 @@
 
     function showUserProfile() {
       if (!currentUser) return;
-
       document.getElementById('nickname-section').style.display = 'none';
       document.getElementById('user-profile').style.display = 'block';
-
       document.getElementById('user-nickname').textContent = currentUser.nickname;
       document.getElementById('user-points').textContent = currentUser.points || 100;
       document.getElementById('user-level').textContent = currentUser.level || 1;
@@ -539,9 +597,7 @@
         showMessage('⚠️ Ingresa un apodo válido (mínimo 3 caracteres)', 'warning');
         return;
       }
-
       const userId = `user_${nickname.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`;
-
       currentUser = {
         id: userId,
         nickname: nickname,
@@ -549,7 +605,6 @@
         level: 1,
         songsAdded: 0
       };
-
       localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
       showUserProfile();
       loadUserRanking();
@@ -562,13 +617,11 @@
         showMessage('❌ Ingresa el nombre de una canción o artista', 'error');
         return;
       }
-
       if (!currentUser) {
         showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
         showNicknameSection();
         return;
       }
-
       document.getElementById('results-container').innerHTML = `
         <div class="loading">
           <div class="spinner"></div>
@@ -578,34 +631,21 @@
           </p>
         </div>
       `;
-
       try {
         const response = await fetch(`${API_BASE}/search`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json', },
           body: JSON.stringify({ q: query })
         });
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
         const data = await response.json();
-
-        if (!data.ok) {
-          throw new Error(data.error || 'Error en la búsqueda');
-        }
-
+        if (!data.ok) throw new Error(data.error || 'Error en la búsqueda');
         displaySearchResults(data.items, data.filterStats);
-
         if (data.items && data.items.length > 0) {
           showMessage(`✅ ¡Encontramos ${data.items.length} canciones apropiadas para el bar!`, 'success');
         } else {
           showMessage('🔍 No encontramos canciones que cumplan con los criterios del bar', 'warning');
         }
-
       } catch (error) {
         console.error('Error en búsqueda:', error);
         document.getElementById('results-container').innerHTML = `
@@ -623,7 +663,6 @@
 
     function displaySearchResults(items, stats) {
       const container = document.getElementById('results-container');
-
       if (!items || items.length === 0) {
         container.innerHTML = `
           <div class="message warning">
@@ -643,9 +682,7 @@
         `;
         return;
       }
-
       let html = '';
-
       if (stats) {
         html += `
           <div class="filter-stats">
@@ -655,11 +692,9 @@
           </div>
         `;
       }
-
       items.forEach((item, index) => {
         const title = item.snippet.title;
         const videoId = item.id.videoId;
-        
         let artist = 'Artista desconocido';
         if (item.snippet.channelTitle && !item.snippet.channelTitle.toLowerCase().includes('vevo')) {
           artist = item.snippet.channelTitle;
@@ -668,9 +703,7 @@
         } else if (title.includes('by')) {
           artist = title.split('by')[1]?.trim() || item.snippet.channelTitle;
         }
-
         const displayTitle = title.length > 60 ? title.substring(0, 60) + '...' : title;
-
         html += `
           <div class="song-item" onclick="suggestSong('${videoId}', '${title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${artist.replace(/'/g, "\\'")}', this)">
             <div class="song-info">
@@ -683,10 +716,12 @@
           </div>
         `;
       });
-
       container.innerHTML = html;
     }
 
+    // ==============================
+    // FUNCIÓN PRINCIPAL DE AGREGAR CANCIÓN (CON VERIFICACIONES)
+    // ==============================
     async function suggestSong(videoId, title, artist, element) {
       if (!currentUser) {
         showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
@@ -694,6 +729,30 @@
         return;
       }
 
+      // --- VERIFICACIÓN 1: ANTI-SPAM ---
+      if (!canAddSong()) {
+        const waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(localStorage.getItem('moyofy_last_add')))) / 60000);
+        showMessage(`⏳ Espera ${waitTime} minuto(s) antes de agregar otra canción.`, 'warning');
+        return;
+      }
+
+      // --- VERIFICACIÓN 2: GEOLOCALIZACIÓN ---
+      try {
+        const coords = await requestLocation();
+        if (!isUserNearBar(coords.latitude, coords.longitude)) {
+          showMessage('📍 ¡Solo desde Rafa\'s Bar! Acércate al local para agregar canciones.', 'warning');
+          return;
+        }
+      } catch (error) {
+        if (error.code === 1) {
+          showMessage('📍 Permiso de ubicación requerido. Permite el acceso para agregar canciones.', 'error');
+        } else {
+          showMessage('📍 Error al obtener tu ubicación. ¿Estás en el bar?', 'error');
+        }
+        return;
+      }
+
+      // --- PROCESO NORMAL ---
       if (requiresAuth) {
         showMessage('🔐 Necesitas autenticarte con YouTube para agregar canciones', 'error');
         showAuthRequiredMessage();
@@ -708,19 +767,13 @@
 
         const response = await fetch(`${API_BASE}/suggest-song`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            videoId: videoId,
-            title: title,
-            userId: currentUser.id
-          })
+          headers: { 'Content-Type': 'application/json', },
+          body: JSON.stringify({ videoId: videoId, title: title, userId: currentUser.id })
         });
 
         const data = await response.json();
-
         if (data.ok) {
+          // --- ÉXITO: ACTUALIZAR UI Y DISPARAR CONFETI ---
           element.classList.add('bounce');
           element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';
           element.style.borderLeftColor = 'var(--success)';
@@ -728,15 +781,16 @@
           currentUser.points = (currentUser.points || 100) + 10;
           currentUser.level = Math.floor(currentUser.points / 100) + 1;
           currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;
+          setLastAddTime(); // Registrar el tiempo del último agregado
 
           document.getElementById('user-points').textContent = currentUser.points;
           document.getElementById('user-level').textContent = currentUser.level;
           document.getElementById('songs-added').textContent = currentUser.songsAdded;
-
           localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
 
           const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
           showMessage(`✅ ¡"${shortTitle}" sugerida y agregada a la playlist! +10 MOYOS`, 'success');
+          simulateConfetti(); // ¡Confeti funcionando!
 
           setTimeout(() => {
             document.getElementById('results-container').innerHTML = `
@@ -748,9 +802,7 @@
             document.getElementById('song-search').value = '';
             document.getElementById('song-search').focus();
           }, 1500);
-
           loadUserRanking();
-
         } else {
           if (data.requiresAuth) {
             requiresAuth = true;
@@ -759,7 +811,6 @@
           }
           throw new Error(data.error || 'Error al sugerir canción');
         }
-
       } catch (error) {
         console.error('Error al sugerir canción:', error);
         showMessage(`❌ Error: ${error.message}`, 'error');
@@ -773,12 +824,13 @@
       }
     }
 
+    // ==============================
+    // OTRAS FUNCIONES (RANKING, MENSAJES, ETC.)
+    // ==============================
     async function loadUserRanking() {
       try {
         const response = await fetch(`${API_BASE}/user/profile?userId=${currentUser?.id || 'anonymous'}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         if (data.ok) {
           displayRanking(data.topUsers, data.user);
@@ -798,7 +850,6 @@
 
     function displayRanking(users, currentUserData) {
       const container = document.getElementById('ranking-list');
-      
       if (!users || users.length === 0) {
         container.innerHTML = `
           <div class="message info" style="background: rgba(108, 117, 125, 0.15); border: 1px solid rgba(108, 117, 125, 0.3);">
@@ -807,18 +858,14 @@
         `;
         return;
       }
-
       let html = '';
-      
       users.slice(0, 10).forEach((user, index) => {
         const isCurrentUser = currentUser && currentUser.nickname === user.nickname;
         const highlightStyle = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary); padding-left: 10px;"' : '';
-        
         let rankEmoji = '';
         if (index === 0) rankEmoji = '🥇';
         else if (index === 1) rankEmoji = '🥈';
         else if (index === 2) rankEmoji = '🥉';
-        
         html += `
           <div class="rank-item" ${highlightStyle}>
             <span>
@@ -832,7 +879,6 @@
           </div>
         `;
       });
-      
       if (currentUserData) {
         html += `
           <div class="rank-item" style="background: rgba(255, 0, 76, 0.1); border-left: 4px solid var(--primary); margin-top: 10px; padding-left: 10px;">
@@ -841,7 +887,6 @@
           </div>
         `;
       }
-
       container.innerHTML = html;
     }
 
@@ -851,14 +896,12 @@
       if (type === 'success') icon = 'check-circle';
       else if (type === 'error') icon = 'exclamation-circle';
       else if (type === 'warning') icon = 'exclamation-triangle';
-      
       container.innerHTML = `
         <div class="message ${type} bounce">
           <i class="fas fa-${icon}"></i>
           ${text}
         </div>
       `;
-      
       setTimeout(() => {
         if (container.innerHTML.includes(text)) {
           container.innerHTML = '';
@@ -884,6 +927,9 @@
       }
     }
 
+    // ==============================
+    // FUNCIÓN DE CONFETI CORREGIDA
+    // ==============================
     function simulateConfetti() {
       const confettiContainer = document.getElementById('confetti-container');
       confettiContainer.innerHTML = '';
