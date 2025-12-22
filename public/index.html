@@ -21,14 +21,12 @@
       --blue: #4361ee;
       --pink: #ff006e;
     }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     body {
       background: var(--darker);
       color: white;
@@ -37,7 +35,6 @@
       background: linear-gradient(135deg, var(--darker) 0%, #2d2d4f 100%);
       overflow-x: hidden;
     }
-
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -45,18 +42,15 @@
       position: relative;
       z-index: 1;
     }
-
     header {
       text-align: center;
       margin-bottom: 30px;
       animation: fadeInDown 0.5s ease;
     }
-
     @keyframes fadeInDown {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     h1 {
       font-size: 3.5rem;
       margin-bottom: 10px;
@@ -68,13 +62,11 @@
       position: relative;
       animation: gradientShift 5s ease infinite;
     }
-
     @keyframes gradientShift {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
     h1::after {
       content: '';
       position: absolute;
@@ -86,13 +78,11 @@
       background: var(--primary);
       border-radius: 2px;
     }
-
     h2 {
       font-size: 1.2rem;
       color: #aaa;
       margin-bottom: 20px;
     }
-
     .user-panel {
       background: rgba(30, 30, 50, 0.9);
       backdrop-filter: blur(15px);
@@ -105,13 +95,11 @@
       box-shadow: 0 10px 30px rgba(255, 0, 76, 0.2),
                   inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
-
     .user-panel:hover {
       transform: translateY(-3px);
       box-shadow: 0 15px 40px rgba(255, 0, 76, 0.3),
                   inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
-
     .points-display {
       font-size: 2.8rem;
       font-weight: bold;
@@ -123,12 +111,10 @@
       -webkit-text-fill-color: transparent;
       animation: pulseGlow 2s ease-in-out infinite alternate;
     }
-
     @keyframes pulseGlow {
       0% { text-shadow: 0 0 10px rgba(0, 255, 170, 0.5); }
       100% { text-shadow: 0 0 20px rgba(0, 255, 170, 0.8), 0 0 30px rgba(0, 255, 170, 0.4); }
     }
-
     .level-badge {
       display: inline-block;
       background: linear-gradient(45deg, var(--primary), var(--purple));
@@ -141,12 +127,10 @@
       box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
       animation: badgeFloat 3s ease-in-out infinite;
     }
-
     @keyframes badgeFloat {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
     }
-
     .search-box {
       background: rgba(25, 25, 40, 0.95);
       border: 2px solid var(--primary);
@@ -157,12 +141,10 @@
                   inset 0 1px 0 rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
     }
-
     .search-box:hover {
       box-shadow: 0 15px 50px rgba(255, 0, 76, 0.3),
                   inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
-
     .search-label {
       display: block;
       margin-bottom: 10px;
@@ -170,7 +152,6 @@
       color: var(--light);
       font-weight: 500;
     }
-
     .search-input {
       width: 100%;
       padding: 18px;
@@ -184,18 +165,15 @@
       transition: all 0.3s ease;
       box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
     }
-
     .search-input:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(255, 0, 76, 0.3),
                   inset 0 2px 5px rgba(0, 0, 0, 0.5);
     }
-
     .search-input::placeholder {
       color: #888;
     }
-
     .search-btn {
       width: 100%;
       padding: 18px;
@@ -215,7 +193,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .search-btn::after {
       content: '';
       position: absolute;
@@ -226,16 +203,13 @@
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
       transition: left 0.7s ease;
     }
-
     .search-btn:hover::after {
       left: 100%;
     }
-
     .search-btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 25px rgba(255, 0, 76, 0.6);
     }
-
     .song-item {
       background: rgba(35, 35, 55, 0.9);
       border-left: 5px solid var(--primary);
@@ -251,7 +225,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .song-item::before {
       content: '';
       position: absolute;
@@ -262,39 +235,32 @@
       background: linear-gradient(90deg, transparent, rgba(255, 0, 76, 0.1), transparent);
       transform: translateX(-100%);
     }
-
     .song-item:hover::before {
       animation: shine 0.8s ease;
     }
-
     @keyframes shine {
       0% { transform: translateX(-100%); }
       100% { transform: translateX(100%); }
     }
-
     .song-item:hover {
       background: rgba(45, 45, 65, 0.95);
       transform: translateX(8px) scale(1.02);
       border-left: 5px solid var(--success);
       box-shadow: 0 8px 25px rgba(0, 255, 170, 0.3);
     }
-
     .song-info {
       flex: 1;
     }
-
     .song-title {
       font-weight: bold;
       font-size: 1.1rem;
       margin-bottom: 5px;
       color: var(--light);
     }
-
     .song-artist {
       color: #aaa;
       font-size: 0.9rem;
     }
-
     .add-btn {
       background: linear-gradient(45deg, var(--success), #00cc88);
       color: black;
@@ -309,17 +275,14 @@
       position: relative;
       overflow: hidden;
     }
-
     .add-btn:hover {
       background: linear-gradient(45deg, #00cc88, var(--success));
       transform: scale(1.08);
       box-shadow: 0 6px 20px rgba(0, 255, 170, 0.6);
     }
-
     .add-btn:active {
       transform: scale(0.98);
     }
-
     .message {
       padding: 18px;
       border-radius: 12px;
@@ -331,37 +294,31 @@
       border: 2px solid transparent;
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     }
-
     @keyframes messageAppear {
       0% { opacity: 0; transform: translateY(-10px) scale(0.9); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
-
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-
     .message.success {
       background: rgba(0, 255, 170, 0.2);
       border-color: rgba(0, 255, 170, 0.4);
       color: var(--success);
       animation: pulse 2s infinite;
     }
-
     .message.error {
       background: rgba(255, 107, 107, 0.2);
       border-color: rgba(255, 107, 107, 0.4);
       color: var(--danger);
     }
-
     .message.warning {
       background: rgba(255, 204, 0, 0.2);
       border-color: rgba(255, 204, 0, 0.4);
       color: var(--warning);
     }
-
     .auth-required {
       background: rgba(255, 69, 58, 0.2);
       border: 2px solid rgba(255, 69, 58, 0.4);
@@ -374,18 +331,41 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 5px 20px rgba(255, 69, 58, 0.3);
     }
-
     .auth-required:hover {
       background: rgba(255, 69, 58, 0.3);
       transform: scale(1.03);
       box-shadow: 0 8px 25px rgba(255, 69, 58, 0.4);
     }
-
     .auth-required i {
       margin-right: 10px;
       font-size: 1.2rem;
     }
-
+    .no-results {
+      background: rgba(40, 40, 60, 0.8);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 20px 0;
+      border: 1px solid rgba(255, 204, 0, 0.3);
+    }
+    .suggestions-list {
+      margin-top: 15px;
+      text-align: left;
+    }
+    .suggestions-list ul {
+      padding-left: 25px;
+      margin-top: 10px;
+    }
+    .suggestions-list li {
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    .suggestions-list li strong {
+      color: var(--success);
+    }
+    .suggestions-list li.artist-highlight {
+      color: var(--primary);
+      font-weight: bold;
+    }
     /* ========== SECCIÓN DE GAMIFICACIÓN ========== */
     .gamification-panel {
       background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(45, 45, 70, 0.9));
@@ -398,7 +378,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .gamification-panel::before {
       content: '';
       position: absolute;
@@ -413,7 +392,6 @@
       );
       animation: rotate 8s linear infinite;
     }
-
     .gamification-title {
       display: flex;
       align-items: center;
@@ -425,7 +403,6 @@
       position: relative;
       z-index: 2;
     }
-
     /* Barra de progreso de nivel */
     .progress-container {
       background: rgba(40, 40, 60, 0.8);
@@ -436,7 +413,6 @@
       z-index: 2;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .progress-header {
       display: flex;
       justify-content: space-between;
@@ -444,7 +420,6 @@
       font-size: 0.9rem;
       color: #aaa;
     }
-
     .progress-bar {
       height: 16px;
       background: rgba(0, 0, 0, 0.3);
@@ -453,7 +428,6 @@
       position: relative;
       border: 2px solid rgba(255, 255, 255, 0.1);
     }
-
     .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, #ff004c, #ff7300, #00ffaa);
@@ -463,7 +437,6 @@
       overflow: hidden;
       min-width: 8px;
     }
-
     .progress-fill::after {
       content: '';
       position: absolute;
@@ -480,11 +453,9 @@
       animation: shimmer 2s infinite;
       transform: translateX(-100%);
     }
-
     @keyframes shimmer {
       100% { transform: translateX(100%); }
     }
-
     .xp-display {
       display: flex;
       justify-content: space-between;
@@ -492,7 +463,6 @@
       font-size: 0.85rem;
       color: #888;
     }
-
     /* Logros */
     .achievements-container {
       display: grid;
@@ -502,7 +472,6 @@
       position: relative;
       z-index: 2;
     }
-
     .achievement-card {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -514,42 +483,35 @@
       position: relative;
       overflow: hidden;
     }
-
     .achievement-card:hover {
       transform: translateY(-5px);
       background: rgba(255, 255, 255, 0.1);
       border-color: var(--success);
       box-shadow: 0 5px 15px rgba(0, 255, 170, 0.3);
     }
-
     .achievement-card.locked {
       opacity: 0.5;
       filter: grayscale(1);
     }
-
     .achievement-card.unlocked {
       border-color: var(--success);
       background: rgba(0, 255, 170, 0.05);
     }
-
     .achievement-icon {
       font-size: 2rem;
       margin-bottom: 10px;
       display: block;
     }
-
     .achievement-name {
       font-weight: bold;
       font-size: 0.9rem;
       margin-bottom: 5px;
     }
-
     .achievement-desc {
       font-size: 0.8rem;
       color: #aaa;
       margin-bottom: 10px;
     }
-
     .achievement-progress {
       height: 4px;
       background: rgba(255, 255, 255, 0.1);
@@ -557,14 +519,12 @@
       overflow: hidden;
       margin-top: 8px;
     }
-
     .achievement-progress-fill {
       height: 100%;
       background: var(--success);
       border-radius: 2px;
       transition: width 0.5s ease;
     }
-
     /* Desafíos activos */
     .challenges-container {
       background: rgba(255, 255, 255, 0.05);
@@ -575,7 +535,6 @@
       z-index: 2;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .challenge-item {
       display: flex;
       justify-content: space-between;
@@ -583,15 +542,12 @@
       padding: 12px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .challenge-item:last-child {
       border-bottom: none;
     }
-
     .challenge-info {
       flex: 1;
     }
-
     .challenge-reward {
       background: linear-gradient(45deg, var(--warning), #ff9900);
       color: black;
@@ -602,7 +558,6 @@
       min-width: 80px;
       text-align: center;
     }
-
     /* Estadísticas */
     .stats-container {
       display: grid;
@@ -612,7 +567,6 @@
       position: relative;
       z-index: 2;
     }
-
     .stat-card {
       background: rgba(255, 255, 255, 0.05);
       border-radius: 12px;
@@ -620,26 +574,22 @@
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .stat-value {
       font-size: 1.8rem;
       font-weight: bold;
       color: var(--success);
       margin-bottom: 5px;
     }
-
     .stat-label {
       font-size: 0.8rem;
       color: #aaa;
     }
-
     /* ========== RESTANTE DEL CSS ========== */
     .loading {
       text-align: center;
       padding: 30px;
       color: var(--gray);
     }
-
     .spinner {
       border: 4px solid rgba(255, 255, 255, 0.1);
       border-top: 4px solid var(--primary);
@@ -649,12 +599,10 @@
       animation: spin 1s linear infinite;
       margin: 0 auto 15px;
     }
-
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
     footer {
       text-align: center;
       margin-top: 40px;
@@ -663,38 +611,30 @@
       padding: 20px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     @media (max-width: 768px) {
       h1 {
         font-size: 2.5rem;
       }
-
       .container {
         padding: 10px;
       }
-
       .search-box {
         padding: 20px;
       }
-
       .user-panel {
         padding: 20px;
       }
-
       .achievements-container {
         grid-template-columns: repeat(2, 1fr);
       }
     }
-
     .bounce {
       animation: bounce 0.5s;
     }
-
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
     }
-
     .confetti-container {
       position: fixed;
       top: 0;
@@ -705,7 +645,6 @@
       z-index: 9999;
       overflow: hidden;
     }
-
     .filter-stats {
       background: rgba(108, 117, 125, 0.2);
       border: 1px solid rgba(108, 117, 125, 0.4);
@@ -715,7 +654,6 @@
       font-size: 0.9rem;
       backdrop-filter: blur(5px);
     }
-
     .change-username-btn {
       background: transparent;
       border: 2px solid var(--primary);
@@ -727,13 +665,11 @@
       margin-top: 15px;
       transition: all 0.3s ease;
     }
-
     .change-username-btn:hover {
       background: rgba(255, 0, 76, 0.1);
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(255, 0, 76, 0.3);
     }
-
     /* Efectos de partículas de fondo */
     .particles {
       position: fixed;
@@ -744,21 +680,18 @@
       z-index: 0;
       pointer-events: none;
     }
-
     .particle {
       position: absolute;
       background: rgba(255, 0, 76, 0.1);
       border-radius: 50%;
       animation: float 20s infinite linear;
     }
-
     @keyframes float {
       0% { transform: translateY(0) rotate(0deg); opacity: 0; }
       10% { opacity: 1; }
       90% { opacity: 1; }
       100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
     }
-
     @keyframes rotate {
       100% { transform: rotate(360deg); }
     }
@@ -767,13 +700,11 @@
 <body>
   <!-- Partículas de fondo -->
   <div class="particles" id="particles-container"></div>
-
   <div class="container">
     <header>
       <h1>🎸 MOYOFY</h1>
       <h2>Tu vibra tiene valor · Rafa's Bar</h2>
     </header>
-
     <div class="user-panel">
       <div id="nickname-section" style="display: none;">
         <h3>👤 ¿Cómo te quieres llamar?</h3>
@@ -785,7 +716,6 @@
           * Usa un nombre único para que aparezcas en el ranking
         </p>
       </div>
-
       <div id="user-profile" style="display: none;">
         <h3 id="welcome-text">¡Bienvenido, <span id="user-nickname">usuario</span>!</h3>
         <div class="points-display">
@@ -803,7 +733,6 @@
         </button>
       </div>
     </div>
-
     <div class="search-box">
       <h3>🎵 Buscar canción</h3>
       <p style="color: #aaa; margin-bottom: 15px; font-size: 0.95rem;">
@@ -813,20 +742,16 @@
           <i class="fas fa-check-circle"></i> ¡Gana MOYOS por cada canción que agregues!
         </span>
       </p>
-
       <input type="text" id="song-search" placeholder="Busca tu canción favorita..." class="search-input">
       <button onclick="searchSongs()" class="search-btn">
         <i class="fas fa-search"></i> BUSCAR CANCIONES
       </button>
-
       <div id="auth-required-message" style="display: none;" class="auth-required" onclick="redirectToAuth()">
         <i class="fas fa-lock"></i> <strong>🔐 ¡NECESITAS AUTENTICARTE CON YOUTUBE!</strong><br>
         Para agregar canciones a la playlist, debes autorizar MOYOFY con tu cuenta de Google.<br>
         <small>(Solo una vez por sesión)</small>
       </div>
-
       <div id="message-container"></div>
-
       <div class="results-container" id="results-container">
         <div class="loading">
           <div class="spinner"></div>
@@ -834,13 +759,11 @@
         </div>
       </div>
     </div>
-
     <!-- ========== SECCIÓN DE GAMIFICACIÓN ========== -->
     <div class="gamification-panel">
       <div class="gamification-title">
         <i class="fas fa-trophy"></i> 🏆 TU PROGRESO EN EL BAR
       </div>
-
       <!-- Barra de progreso de nivel -->
       <div class="progress-container">
         <div class="progress-header">
@@ -855,12 +778,10 @@
           <span id="xp-to-next">100 XP para subir</span>
         </div>
       </div>
-
       <!-- Estadísticas rápidas -->
       <div class="stats-container" id="stats-container">
         <!-- Las estadísticas se generarán dinámicamente -->
       </div>
-
       <!-- Logros -->
       <h4 style="margin: 20px 0 10px 0; color: var(--success); position: relative; z-index: 2;">
         <i class="fas fa-medal"></i> LOGROS
@@ -868,7 +789,6 @@
       <div class="achievements-container" id="achievements-container">
         <!-- Los logros se generarán dinámicamente -->
       </div>
-
       <!-- Desafíos activos -->
       <h4 style="margin: 20px 0 10px 0; color: var(--warning); position: relative; z-index: 2;">
         <i class="fas fa-bullseye"></i> DESAFÍOS ACTIVOS
@@ -878,15 +798,12 @@
       </div>
     </div>
   </div>
-
   <footer>
     <p>MOYOFY PREMIUM v2 · Sistema de entretenimiento social para bares</p>
     <p>Música impulsada por YouTube · © 2025 Abundia.io</p>
   </footer>
-
   <!-- Contenedor para confeti -->
   <div class="confetti-container" id="confetti-container"></div>
-
   <script>
     // ==============================
     // CONFIGURACIÓN Y CONSTANTES
@@ -894,16 +811,13 @@
     const BAR_LOCATION = { lat: 9.93422, lng: -84.06894 };
     const RADIUS_METERS = 20000;
     const COOLDOWN_MS = 5 * 60 * 1000;
-
     let currentUser = null;
     let API_BASE = window.location.origin;
     let requiresAuth = false;
-
     // SISTEMA DE GAMIFICACIÓN
     const GAMIFICATION = {
       pointsPerSong: 10,
       xpPerLevel: 100,
-      
       achievements: [
         {
           id: 'first-song',
@@ -954,7 +868,6 @@
           reward: 500
         }
       ],
-      
       challenges: [
         {
           id: 'challenge-1',
@@ -982,7 +895,6 @@
         }
       ]
     };
-
     // ==============================
     // FUNCIONES DE GAMIFICACIÓN
     // ==============================
@@ -991,7 +903,6 @@
       const currentXp = points % GAMIFICATION.xpPerLevel;
       const xpPercentage = (currentXp / GAMIFICATION.xpPerLevel) * 100;
       const xpNeeded = GAMIFICATION.xpPerLevel - currentXp;
-      
       return {
         level,
         currentXp,
@@ -1000,46 +911,36 @@
         nextLevel: level + 1
       };
     }
-
     function updateGamificationUI() {
       if (!currentUser) return;
-      
       const points = currentUser.points || 100;
       const stats = calculateLevel(points);
-      
       // Actualizar barra de progreso
       document.getElementById('level-progress-fill').style.width = `${stats.xpPercentage}%`;
       document.getElementById('current-level-display').textContent = `Nivel ${stats.level}`;
       document.getElementById('next-level-display').textContent = `Nivel ${stats.nextLevel}`;
       document.getElementById('current-xp-display').textContent = `${stats.currentXp}/${GAMIFICATION.xpPerLevel} XP`;
       document.getElementById('xp-to-next').textContent = `${stats.xpNeeded} XP para subir`;
-      
       // Actualizar estadísticas
       updateStatsUI();
-      
       // Actualizar logros
       updateAchievementsUI();
-      
       // Actualizar desafíos
       updateChallengesUI();
     }
-
     function updateStatsUI() {
       const container = document.getElementById('stats-container');
       if (!container) return;
-      
       const songsAdded = currentUser.songsAdded || 0;
       const streak = currentUser.streak || 1;
       const points = currentUser.points || 100;
       const level = calculateLevel(points).level;
-      
       const stats = [
         { label: 'Canciones', value: songsAdded, icon: '🎵' },
         { label: 'Racha', value: `${streak} días`, icon: '🔥' },
         { label: 'Nivel', value: level, icon: '⭐' },
         { label: 'MOYOS', value: points, icon: '💰' }
       ];
-      
       let html = '';
       stats.forEach(stat => {
         html += `
@@ -1050,23 +951,18 @@
           </div>
         `;
       });
-      
       container.innerHTML = html;
     }
-
     function updateAchievementsUI() {
       const container = document.getElementById('achievements-container');
       if (!container) return;
-      
       const songsAdded = currentUser.songsAdded || 0;
       const achievements = currentUser.achievements || {};
-      
       let html = '';
       GAMIFICATION.achievements.forEach(achievement => {
         const progress = achievements[achievement.id] || 0;
         const isUnlocked = progress >= achievement.goal;
         const progressPercent = Math.min((progress / achievement.goal) * 100, 100);
-        
         html += `
           <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}" 
                title="${achievement.description} (${progress}/${achievement.goal})">
@@ -1082,14 +978,11 @@
           </div>
         `;
       });
-      
       container.innerHTML = html;
     }
-
     function updateChallengesUI() {
       const container = document.getElementById('challenges-container');
       if (!container) return;
-      
       let html = '';
       GAMIFICATION.challenges.forEach(challenge => {
         html += `
@@ -1102,21 +995,16 @@
           </div>
         `;
       });
-      
       container.innerHTML = html;
     }
-
     function checkAchievements() {
       if (!currentUser) return;
-      
       const songsAdded = currentUser.songsAdded || 0;
       const achievements = currentUser.achievements || {};
       let newAchievements = [];
-      
       // Actualizar progreso de logros
       GAMIFICATION.achievements.forEach(achievement => {
         let progress = achievements[achievement.id] || 0;
-        
         switch (achievement.id) {
           case 'first-song':
             progress = songsAdded >= 1 ? 1 : 0;
@@ -1139,9 +1027,7 @@
             progress = Math.min(songsAdded, achievement.goal);
             break;
         }
-        
         achievements[achievement.id] = progress;
-        
         // Verificar si se desbloqueó
         if (progress >= achievement.goal && (!currentUser.unlockedAchievements || !currentUser.unlockedAchievements.includes(achievement.id))) {
           newAchievements.push(achievement);
@@ -1149,10 +1035,8 @@
           currentUser.unlockedAchievements.push(achievement.id);
         }
       });
-      
       currentUser.achievements = achievements;
       localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
-      
       // Mostrar notificación de nuevos logros
       if (newAchievements.length > 0) {
         newAchievements.forEach(achievement => {
@@ -1163,7 +1047,6 @@
         });
       }
     }
-
     // ==============================
     // FUNCIONES EXISTENTES (MODIFICADAS)
     // ==============================
@@ -1175,7 +1058,6 @@
         'rgba(157, 78, 221, 0.1)',
         'rgba(67, 97, 238, 0.1)'
       ];
-
       for (let i = 0; i < 20; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
@@ -1189,11 +1071,9 @@
         container.appendChild(particle);
       }
     }
-
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🚀 MOYOFY PREMIUM v2 cargado');
       initBackgroundParticles();
-
       const savedUser = localStorage.getItem('moyofy_user');
       if (savedUser) {
         currentUser = JSON.parse(savedUser);
@@ -1203,33 +1083,27 @@
         showNicknameSection();
       }
     });
-
     function showNicknameSection() {
       document.getElementById('nickname-section').style.display = 'block';
       document.getElementById('user-profile').style.display = 'none';
     }
-
     function showUserProfile() {
       if (!currentUser) return;
       document.getElementById('nickname-section').style.display = 'none';
       document.getElementById('user-profile').style.display = 'block';
       updateUserProfile();
     }
-
     function updateUserProfile() {
       if (!currentUser) return;
-      
       document.getElementById('user-nickname').textContent = currentUser.nickname;
       document.getElementById('user-points').textContent = currentUser.points || 100;
       document.getElementById('user-level').textContent = calculateLevel(currentUser.points || 100).level;
       document.getElementById('songs-added').textContent = currentUser.songsAdded || 0;
       document.getElementById('streak-days').textContent = currentUser.streak || 1;
-      
       // Actualizar gamificación
       updateGamificationUI();
       checkAchievements();
     }
-
     function setNickname() {
       const nickname = document.getElementById('nickname').value.trim();
       if (!nickname || nickname.length < 3) {
@@ -1250,7 +1124,6 @@
       createFireworksEffect();
       showMessage(`🎉 ¡Bienvenido ${nickname} al Rafa's Bar!`, 'success');
     }
-
     async function searchSongs() {
       const query = document.getElementById('song-search').value.trim();
       if (!query) {
@@ -1300,24 +1173,32 @@
         `;
       }
     }
-
     function displaySearchResults(items, stats) {
       const container = document.getElementById('results-container');
       if (!items || items.length === 0) {
         container.innerHTML = `
-          <div class="message warning">
+          <div class="no-results message warning">
             <i class="fas fa-music"></i> No se encontraron canciones que cumplan con los criterios de Rafa's Bar.
             <p style="margin-top: 10px; font-size: 0.9rem; color: #ddd;">
-              ⚠ Recuerda: Solo se permiten géneros rock y sus variantes.<br>
-              <strong>Sugerencias:</strong>
+              🎵 Solo se permiten artistas de rock, metal y géneros afines.
             </p>
-            <ul style="text-align: left; margin-top: 10px; padding-left: 20px; font-size: 0.9rem;">
-              <li>"Queen Bohemian Rhapsody"</li>
-              <li>"Metallica Enter Sandman"</li>
-              <li>"Led Zeppelin Stairway to Heaven"</li>
-              <li>"AC/DC Back in Black"</li>
-              <li>"Pantera Cowboys from Hell"</li>
-            </ul>
+            <div class="suggestions-list">
+              <p style="margin-top: 15px; font-weight: bold; color: var(--success);">
+                <i class="fas fa-lightbulb"></i> Prueba con estos artistas permitidos:
+              </p>
+              <ul>
+                <li class="artist-highlight">"Korn - Freak On a Leash"</li>
+                <li class="artist-highlight">"Marillion - Kayleigh"</li>
+                <li class="artist-highlight">"Rush - Tom Sawyer"</li>
+                <li class="artist-highlight">"System of a Down - Chop Suey!"</li>
+                <li class="artist-highlight">"Tool - Schism"</li>
+              </ul>
+              <p style="margin-top: 15px; font-size: 0.9rem; color: #aaa;">
+                <i class="fas fa-info-circle"></i> 
+                MOYOFY está configurado para permitir <strong>${stats?.allowedArtistsCount || 350} artistas de rock/metal</strong> y 
+                rechazar <strong>${stats?.forbiddenArtistsCount || 100} artistas de otros géneros</strong>.
+              </p>
+            </div>
           </div>
         `;
         return;
@@ -1328,7 +1209,9 @@
           <div class="filter-stats">
             <i class="fas fa-filter"></i> 
             <strong>Filtro activo:</strong> ${stats.approved}/${stats.totalResults} aprobados (${stats.approvalRate}%)<br>
-            <small>Búsqueda: "${stats.query || 'rock'}"</small>
+            <small>Búsqueda: "${stats.query || 'rock'}" • 
+            <strong>${stats.allowedArtistsCount}</strong> artistas permitidos • 
+            <strong>${stats.forbiddenArtistsCount}</strong> artistas prohibidos</small>
           </div>
         `;
       }
@@ -1358,7 +1241,6 @@
       });
       container.innerHTML = html;
     }
-
     // ==============================
     // FUNCIÓN PRINCIPAL DE AGREGAR CANCIÓN
     // ==============================
@@ -1368,14 +1250,12 @@
         showNicknameSection();
         return;
       }
-
       // --- VERIFICACIÓN 1: ANTI-SPAM ---
       if (!canAddSong()) {
-        const waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(localStorage.getItem('moyofy_last_add')))) / 60000);
+        var waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(localStorage.getItem('moyofy_last_add')))) / 60000);
         showMessage(`⏳ Espera ${waitTime} minuto(s) antes de agregar otra canción.`, 'warning');
         return;
       }
-
       // --- VERIFICACIÓN 2: GEOLOCALIZACIÓN ---
       try {
         const coords = await requestLocation();
@@ -1391,52 +1271,43 @@
         }
         return;
       }
-
       // --- PROCESO NORMAL ---
       if (requiresAuth) {
         showMessage('🔐 Necesitas autenticarte con YouTube para agregar canciones', 'error');
         showAuthRequiredMessage();
         return;
       }
-
       try {
         const button = element.querySelector('.add-btn');
         const originalText = button.innerHTML;
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SUGERIDO...';
-
         const response = await fetch(`${API_BASE}/suggest-song`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', },
           body: JSON.stringify({ videoId: videoId, title: title, userId: currentUser.id })
         });
-
         const data = await response.json();
         if (data.ok) {
           // --- ÉXITO: ACTUALIZAR UI Y DISPARAR CONFETI ---
           element.classList.add('bounce');
           element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';
           element.style.borderLeftColor = 'var(--success)';
-
           // Actualizar usuario
           currentUser.points = (currentUser.points || 100) + GAMIFICATION.pointsPerSong;
           currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;
           currentUser.streak = (currentUser.streak || 0) + 1;
           setLastAddTime();
-
           // Guardar y actualizar UI
           localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
           updateUserProfile();
-
           const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
           showMessage(`✅ ¡"${shortTitle}" sugerida y agregada a la playlist! +${GAMIFICATION.pointsPerSong} MOYOS`, 'success');
-          
           // ¡EFECTOS VISUALES MEJORADOS!
           createConfettiStorm();
           createExplosionEffect();
           createStarBurst();
           createPointsAnimation(button);
-
           setTimeout(() => {
             document.getElementById('results-container').innerHTML = `
               <div class="message success">
@@ -1467,14 +1338,12 @@
         }
       }
     }
-
     // ==============================
     // FUNCIONES AUXILIARES EXISTENTES
     // ==============================
     function isUserNearBar(userLat, userLng) {
       const barLat = BAR_LOCATION.lat;
       const barLng = BAR_LOCATION.lng;
-      
       const toRadians = (degrees) => degrees * Math.PI / 180;
       const R = 6371000;
       const dLat = toRadians(userLat - barLat);
@@ -1484,10 +1353,8 @@
                 Math.sin(dLng/2) * Math.sin(dLng/2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       const distance = R * c;
-      
       return distance <= RADIUS_METERS;
     }
-
     function requestLocation() {
       return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
@@ -1500,18 +1367,15 @@
         );
       });
     }
-
     function canAddSong() {
       const lastAddTime = localStorage.getItem('moyofy_last_add');
       if (!lastAddTime) return true;
       const now = Date.now();
       return (now - parseInt(lastAddTime)) >= COOLDOWN_MS;
     }
-
     function setLastAddTime() {
       localStorage.setItem('moyofy_last_add', Date.now().toString());
     }
-
     function showMessage(text, type = 'info') {
       const container = document.getElementById('message-container');
       let icon = 'info-circle';
@@ -1530,16 +1394,13 @@
         }
       }, 5000);
     }
-
     function showAuthRequiredMessage() {
       const container = document.getElementById('auth-required-message');
       container.style.display = 'block';
     }
-
     function redirectToAuth() {
       window.location.href = `${API_BASE}/auth`;
     }
-
     function changeUsername() {
       if (confirm('¿Estás seguro de que quieres cambiar tu apodo? Perderás tu progreso actual.')) {
         localStorage.removeItem('moyofy_user');
@@ -1548,7 +1409,6 @@
         showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');
       }
     }
-
     // ==============================
     // FUNCIONES DE EFECTOS VISUALES (CONFETI MEJORADO)
     // ==============================
@@ -1556,17 +1416,14 @@
       const container = document.getElementById('confetti-container');
       const colors = ['#ff004c', '#00ffaa', '#ffcc00', '#ffffff', '#9d4edd', '#4361ee'];
       const shapes = ['square', 'circle', 'triangle'];
-      
       for (let i = 0; i < 200; i++) {
         const confetti = document.createElement('div');
         confetti.className = `confetti ${shapes[Math.floor(Math.random() * shapes.length)]}`;
-        
         confetti.style.position = 'absolute';
         confetti.style.left = `${Math.random() * 100}%`;
         confetti.style.top = '-10px';
         confetti.style.width = `${Math.random() * 12 + 4}px`;
         confetti.style.height = confetti.style.width;
-        
         if (confetti.className.includes('triangle')) {
           confetti.style.width = '0';
           confetti.style.height = '0';
@@ -1578,20 +1435,16 @@
           confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
           confetti.style.borderRadius = confetti.className.includes('circle') ? '50%' : '2px';
         }
-        
         confetti.style.opacity = '0.8';
         confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
-        
         container.appendChild(confetti);
         setTimeout(() => confetti.remove(), 5000);
       }
     }
-
     function createExplosionEffect() {
       const container = document.getElementById('confetti-container');
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
-      
       for (let i = 0; i < 5; i++) {
         const wave = document.createElement('div');
         wave.style.position = 'absolute';
@@ -1606,12 +1459,10 @@
         setTimeout(() => wave.remove(), 1500);
       }
     }
-
     function createStarBurst() {
       const container = document.getElementById('confetti-container');
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
-      
       for (let i = 0; i < 15; i++) {
         const star = document.createElement('div');
         star.style.position = 'absolute';
@@ -1626,15 +1477,12 @@
         setTimeout(() => star.remove(), 1000);
       }
     }
-
     function createFireworksEffect() {
       const container = document.getElementById('confetti-container');
-      
       for (let i = 0; i < 5; i++) {
         setTimeout(() => {
           const x = 20 + Math.random() * 60;
           const y = 20 + Math.random() * 60;
-          
           for (let j = 0; j < 30; j++) {
             setTimeout(() => {
               const firework = document.createElement('div');
@@ -1653,12 +1501,10 @@
         }, i * 300);
       }
     }
-
     function createPointsAnimation(element) {
       const rect = element.getBoundingClientRect();
       const startX = rect.left + rect.width / 2;
       const startY = rect.top;
-      
       for (let i = 0; i < 5; i++) {
         const point = document.createElement('div');
         point.style.position = 'fixed';
@@ -1677,25 +1523,20 @@
         point.innerHTML = `+${GAMIFICATION.pointsPerSong}`;
         point.style.zIndex = '10000';
         point.style.transition = 'all 1s ease-out';
-        
         document.getElementById('confetti-container').appendChild(point);
-        
         setTimeout(() => {
           const pointsDisplay = document.querySelector('.points-display');
           const pointsRect = pointsDisplay.getBoundingClientRect();
           const endX = pointsRect.left + pointsRect.width / 2;
           const endY = pointsRect.top + pointsRect.height / 2;
-          
           point.style.left = `${endX}px`;
           point.style.top = `${endY}px`;
           point.style.opacity = '0';
           point.style.transform = 'scale(0.5)';
         }, 10);
-        
         setTimeout(() => point.remove(), 1200);
       }
     }
-
     // Añadir estilos CSS para las animaciones
     const style = document.createElement('style');
     style.textContent = `
