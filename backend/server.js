@@ -1,4 +1,3 @@
-// backend/server.js
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 
 const express = require("express");
@@ -12,22 +11,29 @@ const app = express();
 
 // Configuración de sesión
 app.use(session({
-  secret: 'tu_clave_secreta_para_sesion_really_long_and_random_here', // Cambia esto por algo más seguro
+  secret: process.env.SESSION_SECRET || 'moyofy_secret_key_2025',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // Cambia a true si usas HTTPS en producción
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }));
 
-// Configuración CORS para desarrollo y producción
+// Configuración CORS
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
-  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com' // Sin espacios
+  'http://127.0.0.1:8080',
+  process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com'
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin && process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       console.warn(`⚠️ CORS bloqueado para origen: ${origin}`);
@@ -36,11 +42,12 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.options('*', cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 // --- CLIENTE DE GOOGLE PARA EL PROPIETARIO ---
@@ -56,41 +63,46 @@ function initializeOwnerClient() {
   try {
     const tokens = JSON.parse(process.env.OWNER_TOKENS_JSON);
     ownerOauth2Client = new google.auth.OAuth2(
-      process.env.OAUTH_CLIENT_ID, // Usar el Client ID original para refresh
-      process.env.OAUTH_CLIENT_SECRET, // Usar el Client Secret original para refresh
-      process.env.REDIRECT_URI // No es necesario para refresh, pero lo pasamos por si acaso
+      process.env.OAUTH_CLIENT_ID,
+      process.env.OAUTH_CLIENT_SECRET,
+      process.env.REDIRECT_URI
     );
     ownerOauth2Client.setCredentials(tokens);
 
-    // Crear cliente de YouTube para el propietario
-    ownerYoutube = google.youtube({ version: 'v3', auth: ownerOauth2Client });
+    ownerOauth2Client.on('tokens', (tokens) => {
+      if (tokens.refresh_token) {
+        console.log('🔄 Token de refresh recibido para propietario');
+      }
+      console.log('🔄 Token de acceso actualizado para propietario');
+    });
 
+    ownerYoutube = google.youtube({ version: 'v3', auth: ownerOauth2Client });
     console.log('✅ Cliente de YouTube del propietario inicializado.');
   } catch (error) {
     console.error('❌ Error inicializando cliente del propietario:', error.message);
   }
 }
 
-// Inicializar al arrancar el servidor
 initializeOwnerClient();
 
-// --- CLIENTE DE GOOGLE PARA EL USUARIO (PARA IDENTIFICACIÓN) ---
+// --- CLIENTE DE GOOGLE PARA EL USUARIO ---
 const userOauth2Client = new google.auth.OAuth2(
   process.env.OAUTH_CLIENT_ID,
   process.env.OAUTH_CLIENT_SECRET,
   process.env.REDIRECT_URI
 );
 
-// Cliente de YouTube para el usuario (solo para verificar video, no para modificar playlist)
 const userYoutube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
-// Middleware de logging mejorado
+// Middleware de logging
 app.use((req, res, next) => {
   const start = Date.now();
-  res.on('finish', () => {
+  const originalEnd = res.end;
+  res.end = function(...args) {
     const duration = Date.now() - start;
-    console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);
-  });
+    console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);
+    originalEnd.apply(res, args);
+  };
   next();
 });
 
@@ -105,7 +117,7 @@ app.use((err, req, res, next) => {
 
 // --- RUTAS ---
 
-// Ruta para autenticación del USUARIO (solo para identificarlo)
+// Ruta para autenticación
 app.get('/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación de USUARIO');
   const scopes = [
@@ -121,22 +133,27 @@ app.get('/auth', (req, res) => {
   res.redirect(url);
 });
 
-// Callback de autenticación del USUARIO
+// Callback de autenticación
 app.get('/oauth2callback', async (req, res) => {
   const { code, error } = req.query;
+  
   if (error) {
     console.error('❌ Error en OAuth del usuario:', error);
     return res.status(400).send(`
       <html>
-      <body><h1>Error de Autenticación del Usuario</h1><p>${error}</p></body>
+      <body>
+        <h1>Error de Autenticación del Usuario</h1>
+        <p>${error}</p>
+      </body>
       </html>
     `);
   }
+  
   try {
     const { tokens } = await userOauth2Client.getToken(code);
-    // Guardar tokens del USUARIO en la sesión
     req.session.userTokens = tokens;
-    userOauth2Client.setCredentials(tokens); // Actualiza el cliente global temporalmente
+    req.session.userAuthenticated = true;
+    userOauth2Client.setCredentials(tokens);
 
     res.send(`
       <html><body><h1>Autenticación de Usuario Exitosa</h1><p>Ahora puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>
@@ -147,29 +164,30 @@ app.get('/oauth2callback', async (req, res) => {
   }
 });
 
-// Ruta para búsqueda de videos (CORREGIDA: Sin parámetros adicionales de búsqueda)
+// Ruta para búsqueda de videos
 app.post('/search', async (req, res) => {
   const { q } = req.body;
+  
   if (!q || q.trim() === '') {
-    return res.status(400).json({ ok: false, error: 'La consulta de búsqueda no puede estar vacía' });
+    return res.status(400).json({ 
+      ok: false, 
+      error: 'La consulta de búsqueda no puede estar vacía'
+    });
   }
 
   console.log(`🔍 Búsqueda recibida: "${q}"`);
+  
   try {
-    // Llamada a la API de YouTube CON SOLO los parámetros esenciales
-    // REMOVIDOS: videoDuration, relevanceLanguage, safeSearch
     const response = await userYoutube.search.list({
       part: 'snippet',
       q: q,
       maxResults: 15,
       type: 'video'
-      // NO se incluyen videoDuration, relevanceLanguage, safeSearch
     });
 
     console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);
 
-    const { filterMusic } = require('./utils/music-filter');
-    const filteredItems = filterMusic(response.data.items || []);
+    const filteredItems = filterRockMusic(response.data.items || []);
 
     const stats = {
       totalResults: response.data.items?.length || 0,
@@ -178,28 +196,16 @@ app.post('/search', async (req, res) => {
         ? Math.round((filteredItems.length / response.data.items.length) * 100)
         : 0,
       query: q,
-      timestamp: new Date().toISOString(),
-      service: 'MOYOFY Filter v4'
+      timestamp: new Date().toISOString()
     };
 
     console.log(`✅ Resultados filtrados: ${stats.approved}/${stats.totalResults} (${stats.approvalRate}%) aprobados`);
-
-    let suggestions = [];
-    if (stats.approved === 0 && stats.totalResults > 0) {
-      suggestions = [
-        "Intenta buscar el artista específico: 'Metallica'",
-        "Busca por nombre de canción completa: 'Bohemian Rhapsody Queen'",
-        "Usa términos de género: 'heavy metal 80s'",
-        "Prueba con: 'rock clásico' o 'metal'"
-      ];
-    }
 
     res.json({
       ok: true,
       items: filteredItems,
       filterStats: stats,
       originalQuery: q,
-      suggestions: suggestions,
       timestamp: new Date().toISOString()
     });
 
@@ -213,24 +219,20 @@ app.post('/search', async (req, res) => {
       if (youtubeError.code === 403) {
         errorMessage = 'Límite de cuota de YouTube API excedido';
         statusCode = 429;
-      } else if (youtubeError.code === 400) {
-        errorMessage = 'Consulta de búsqueda inválida (posible error de parámetros)';
-        statusCode = 400;
       }
     }
 
     res.status(statusCode).json({
       ok: false,
       error: errorMessage,
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      code: error.code
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
 
-// Ruta para SUGERIR agregar a playlist (usando tokens del propietario)
+// Ruta para SUGERIR agregar a playlist
 app.post('/suggest-song', async (req, res) => {
-  const { videoId, title, userId } = req.body; // userId del cliente
+  const { videoId, title, userId } = req.body;
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
   console.log(`🎵 Solicitud de agregar video: ${title || 'Sin título'} (ID: ${videoId}) (Usuario: ${userId || 'Anónimo'})`);
@@ -263,22 +265,8 @@ app.post('/suggest-song', async (req, res) => {
     });
   }
 
-  // --- VERIFICAR AUTENTICACIÓN DEL USUARIO (para identificarlo) ---
-  // (Opcional: Puedes hacer que esta ruta requiera autenticación de usuario
-  //  si quieres forzar que todos los que sugieran estén logueados).
-  // const userTokens = req.session.userTokens;
-  // if (!userTokens) {
-  //   console.error('🔐 Usuario no autenticado para sugerir canción');
-  //   return res.status(401).json({
-  //     ok: false,
-  //     error: 'Unauthorized. Please authenticate first.',
-  //     requiresAuth: true
-  //   });
-  // }
-
   // --- VALIDACIONES ANTES DE AGREGAR ---
   try {
-    // 1. Verificar si el video existe en YouTube (opcional, pero buena práctica)
     const videoResponse = await userYoutube.videos.list({
       part: 'snippet,status',
       id: videoId
@@ -303,7 +291,6 @@ app.post('/suggest-song', async (req, res) => {
       });
     }
 
-    // 2. Verificar si el video YA está en la playlist del propietario
     if (ownerYoutube) {
       const existingItemsResponse = await ownerYoutube.playlistItems.list({
         part: 'snippet',
@@ -320,45 +307,39 @@ app.post('/suggest-song', async (req, res) => {
         });
       }
     } else {
-        console.error('❌ Cliente de YouTube del propietario no inicializado.');
-        return res.status(500).json({
-          ok: false,
-          error: 'Error interno del servidor (cliente propietario no disponible).',
-          requiresAuth: false
-        });
+      console.error('❌ Cliente de YouTube del propietario no inicializado.');
+      return res.status(500).json({
+        ok: false,
+        error: 'Error interno del servidor (cliente propietario no disponible).',
+        requiresAuth: false
+      });
     }
 
-    // 3. Verificar con el filtro (opcional, pero recomendable)
-    // Simulamos el filtro aquí si es necesario, o confiamos en el filtro del cliente
-    // y lo validamos en el servidor (más complejo).
-    // Por ahora, asumimos que el cliente ya filtró, pero podríamos re-filtrar aquí.
-
   } catch (error) {
-     console.error('Error verificando video antes de agregar:', error);
-     if (error.code === 401 || error.response?.status === 401) {
-        console.log('🔐 Error de autenticación al verificar video (propietario)');
-        return res.status(401).json({
-            ok: false,
-            error: 'Unauthorized. Please authenticate first.',
-            requiresAuth: true
-        });
-     }
-     return res.status(500).json({
+    console.error('Error verificando video antes de agregar:', error);
+    if (error.code === 401 || error.response?.status === 401) {
+      return res.status(500).json({
         ok: false,
-        error: 'Error verificando la canción.',
-        requiresAuth: false
+        error: 'Error de autenticación del servidor.',
+        requiresAuth: true
+      });
+    }
+    return res.status(500).json({
+      ok: false,
+      error: 'Error verificando la canción.',
+      requiresAuth: false
     });
   }
 
   // --- AGREGAR VIDEO A PLAYLIST DEL PROPIETARIO ---
   try {
     if (!ownerYoutube) {
-        console.error('❌ Cliente de YouTube del propietario no disponible para agregar.');
-        return res.status(500).json({
-          ok: false,
-          error: 'Error interno del servidor (cliente propietario no disponible).',
-          requiresAuth: false
-        });
+      console.error('❌ Cliente de YouTube del propietario no disponible para agregar.');
+      return res.status(500).json({
+        ok: false,
+        error: 'Error interno del servidor (cliente propietario no disponible).',
+        requiresAuth: false
+      });
     }
 
     const response = await ownerYoutube.playlistItems.insert({
@@ -392,23 +373,12 @@ app.post('/suggest-song', async (req, res) => {
     let statusCode = 500;
 
     if (error.code === 401 || error.response?.status === 401) {
-      console.log('🔐 Error de autenticación del propietario (posible expiración de tokens)');
-      // Aquí se podría intentar refrescar el token del propietario si se implementa esa lógica
-      errorMessage = 'Error de autenticación del servidor. Contacta al administrador.';
-      requiresAuth = true; // Indica que algo está mal con la autenticación del backend
-      statusCode = 500; // No es un error 401 del usuario, sino del servidor
+      console.log('🔐 Error de autenticación del propietario');
+      errorMessage = 'Error de autenticación del servidor.';
+      requiresAuth = true;
     } else if (error.response?.status === 403) {
-      console.log('❌ Acceso denegado (verifica permisos de playlist del propietario)');
       errorMessage = 'Access denied. Check playlist permissions.';
       statusCode = 403;
-    } else if (error.response?.status === 400) {
-      console.log('❌ Solicitud inválida (verifica ID de video o playlist)');
-      errorMessage = 'Invalid request. Check video ID or playlist ID.';
-      statusCode = 400;
-    } else if (error.response?.status === 404) {
-      console.log('❌ Playlist no encontrada');
-      errorMessage = 'Playlist no encontrada.';
-      statusCode = 404;
     }
 
     res.status(statusCode).json({
@@ -419,30 +389,31 @@ app.post('/suggest-song', async (req, res) => {
   }
 });
 
-
-// Ruta para obtener perfil y ranking (simulado, como antes)
+// Ruta para obtener perfil (simplificada para gamificación)
 app.get('/user/profile', (req, res) => {
   const { userId } = req.query;
   console.log(`👤 Consulta de perfil: ${userId || 'anonymous'}`);
 
-  // Simular datos del ranking
+  // Simular datos básicos para compatibilidad
   const mockRanking = [
-    { rank: 1, nickname: 'RockMaster69', points: 500, level: 5, songsAdded: 45 },
-    { rank: 2, nickname: 'MetallicaFan', points: 420, level: 4, songsAdded: 38 },
-    { rank: 3, nickname: 'QueenLover', points: 380, level: 3, songsAdded: 32 },
-    { rank: 4, nickname: 'Sebas', points: 250, level: 2, songsAdded: 20 },
-    { rank: 5, nickname: 'Anon', points: 100, level: 1, songsAdded: 5 }
+    { rank: 1, nickname: 'RockMaster69', points: 850, level: 8, songsAdded: 75 },
+    { rank: 2, nickname: 'MetallicaFan', points: 720, level: 7, songsAdded: 62 },
+    { rank: 3, nickname: 'QueenLover', points: 680, level: 6, songsAdded: 58 }
   ];
 
-  // Buscar usuario actual
-  let user = { rank: 0, nickname: userId || 'Invitado', points: 100, level: 1, songsAdded: 0 };
+  let user = { 
+    rank: 0, 
+    nickname: userId && userId !== 'anonymous' ? userId : 'Invitado', 
+    points: 100, 
+    level: 1, 
+    songsAdded: 0 
+  };
 
   if (userId && userId !== 'anonymous' && userId !== 'Invitado') {
     const foundUser = mockRanking.find(u => u.nickname.toLowerCase() === userId.toLowerCase());
     if (foundUser) {
       user = { ...foundUser };
     } else {
-      // Usuario nuevo, agregar al final del ranking
       user.rank = mockRanking.length + 1;
     }
   }
@@ -452,8 +423,7 @@ app.get('/user/profile', (req, res) => {
     user: user,
     topUsers: mockRanking,
     serverTime: new Date().toISOString(),
-    totalUsers: mockRanking.length,
-    rankingUpdated: '2024-01-15T12:00:00Z' // Fecha simulada
+    totalUsers: mockRanking.length
   });
 });
 
@@ -466,40 +436,15 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     uptime: process.uptime(),
-    memory: process.memoryUsage(),
-    youtubeApi: process.env.YOUTUBE_API_KEY ? 'Configured' : 'Not Configured',
-    oauth: process.env.OAUTH_CLIENT_ID ? 'Configured' : 'Not Configured',
-    playlist: process.env.DEFAULT_PLAYLIST_ID ? 'Configured' : 'Not Configured',
-    ownerClient: ownerYoutube ? 'Configured' : 'Not Configured' // Indicar estado del cliente del propietario
+    memory: {
+      rss: `${Math.round(process.memoryUsage().rss / 1024 / 1024)}MB`,
+      heapUsed: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`
+    },
+    youtubeApi: process.env.YOUTUBE_API_KEY ? '✅ Configured' : '❌ Not Configured',
+    playlist: process.env.DEFAULT_PLAYLIST_ID ? '✅ Configured' : '❌ Not Configured'
   };
   console.log('🩺 Health check realizado');
   res.json(health);
-});
-
-// Ruta para información del sistema
-app.get('/system/info', (req, res) => {
-  res.json({
-    ok: true,
-    system: {
-      name: 'MOYOFY Premium',
-      version: '2.0.0',
-      description: 'Sistema de entretenimiento social para bares',
-      author: 'Abundia.io',
-      filters: {
-        version: 'v4',
-        allowedArtists: '200+ artistas',
-        allowedGenres: '40+ géneros',
-        smartFiltering: true
-      }
-    },
-    endpoints: {
-      search: 'POST /search',
-      suggestSong: 'POST /suggest-song',
-      auth: 'GET /auth',
-      profile: 'GET /user/profile',
-      health: 'GET /health'
-    }
-  });
 });
 
 // Ruta principal
@@ -509,7 +454,27 @@ app.get('/', (req, res) => {
     if (fs.existsSync(indexPath)) {
       res.sendFile(indexPath);
     } else {
-      res.status(404).send(`<html><body><h1>MOYOFY Premium</h1><p>Archivo index.html no encontrado en /public</p><p>Por favor, asegúrate de que el archivo existe.</p></body></html>`);
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>MOYOFY · Rafa's Bar</title>
+          <style>
+            body { font-family: Arial, sans-serif; background: #12121f; color: white; text-align: center; padding: 50px; }
+            h1 { color: #ff004c; }
+            .container { max-width: 800px; margin: 0 auto; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>🎸 MOYOFY Premium</h1>
+            <p>Sistema de entretenimiento social para Rafa's Bar</p>
+            <p>El servidor está funcionando correctamente.</p>
+            <p><a href="/health" style="color: #00ffaa;">Ver estado del servidor</a></p>
+          </div>
+        </body>
+        </html>
+      `);
     }
   } catch (error) {
     console.error('Error sirviendo index.html:', error);
@@ -524,15 +489,14 @@ app.get('*', (req, res) => {
       ok: false,
       error: 'Ruta API no encontrada',
       path: req.path,
-      available: ['/search', '/suggest-song', '/auth', '/user/profile', '/health', '/system/info'] // Actualizado
+      available: ['/search', '/suggest-song', '/auth', '/user/profile', '/health']
     });
   } else {
-    // Intentar servir el archivo estático
     const filePath = path.join(__dirname, '../public', req.path);
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
       res.sendFile(filePath);
     } else {
-      res.status(404).send(`<html><body><h1>404 - Ruta no encontrada</h1><p>La ruta: ${req.path}</p></body></html>`);
+      res.redirect('/');
     }
   }
 });
@@ -543,9 +507,60 @@ app.use((error, req, res, next) => {
   res.status(500).json({
     ok: false,
     error: 'Error interno del servidor',
-    details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    message: process.env.NODE_ENV === 'development' ? error.message : undefined
   });
 });
+
+// --- FUNCIONES AUXILIARES ---
+function filterRockMusic(items) {
+  if (!items || !Array.isArray(items)) return [];
+  
+  const rockKeywords = [
+    'rock', 'metal', 'punk', 'grunge', 'alternative', 'indie', 'hard rock',
+    'classic rock', 'heavy metal', 'thrash', 'emo', 'gothic', 'industrial'
+  ];
+  
+  const excludedKeywords = [
+    'reggaeton', 'trap', 'hip hop', 'rap', 'pop', 'reggae', 'salsa',
+    'bachata', 'cumbia', 'balada', 'ranchera', 'k-pop', 'j-pop'
+  ];
+  
+  const allowedArtists = [
+    'queen', 'metallica', 'led zeppelin', 'ac/dc', 'guns n roses', 'nirvana',
+    'foo fighters', 'the beatles', 'rolling stones', 'black sabbath', 'iron maiden',
+    'judas priest', 'motorhead', 'slayer', 'pantera', 'megadeth', 'soundgarden',
+    'pearl jam', 'red hot chili peppers', 'the who', 'deep purple', 'aerosmith',
+    'van halen', 'kiss', 'ozzy osbourne', 'rush', 'cream', 'jimi hendrix',
+    'the doors', 'pink floyd', 'the clash', 'ramones', 'sex pistols', 'the cure',
+    'joy division', 'radiohead', 'muse', 'system of a down', 'tool', 'rage against the machine'
+  ];
+  
+  return items.filter(item => {
+    if (!item.snippet || !item.snippet.title || !item.snippet.channelTitle) {
+      return false;
+    }
+    
+    const title = item.snippet.title.toLowerCase();
+    const channel = item.snippet.channelTitle.toLowerCase();
+    const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';
+    
+    const isAllowedArtist = allowedArtists.some(artist => 
+      channel.includes(artist) || title.includes(artist)
+    );
+    
+    if (isAllowedArtist) return true;
+    
+    const hasRockKeyword = rockKeywords.some(keyword => 
+      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
+    );
+    
+    const hasExcludedKeyword = excludedKeywords.some(keyword => 
+      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
+    );
+    
+    return hasRockKeyword && !hasExcludedKeyword;
+  });
+}
 
 // --- INICIAR SERVIDOR ---
 const PORT = process.env.PORT || 8080;
@@ -559,24 +574,26 @@ function checkConfiguration() {
     'OAUTH_CLIENT_SECRET',
     'REDIRECT_URI',
     'DEFAULT_PLAYLIST_ID',
-    'OWNER_TOKENS_JSON' // <-- Añadido
+    'OWNER_TOKENS_JSON'
   ];
+  
   const missingVars = [];
   requiredVars.forEach(varName => {
     if (!process.env[varName]) {
       missingVars.push(varName);
       console.error(`❌ ${varName}: NO CONFIGURADO`);
     } else {
-      console.log(`✅ ${varName}: Configurado`);
+      const value = varName.includes('SECRET') || varName.includes('KEY') 
+        ? '••••••••' 
+        : process.env[varName];
+      console.log(`✅ ${varName}: ${value}`);
     }
   });
+  
   if (missingVars.length > 0) {
-    console.warn(`⚠️ ADVERTENCIA: Faltan ${missingVars.length} variables de entorno.`);
-    missingVars.forEach(varName => console.log(` - ${varName}`));
-    console.log('💡 Para desarrollo local, crea un archivo .env con estas variables.');
-    console.log('💡 En Render, configúralas en las variables de entorno del servicio.');
+    console.error(`\n❌ ADVERTENCIA: Faltan ${missingVars.length} variables requeridas.`);
   } else {
-    console.log('🎉 ¡Todas las variables requeridas están configuradas!');
+    console.log('\n🎉 ¡Todas las variables requeridas están configuradas!');
   }
 }
 
@@ -586,7 +603,7 @@ app.listen(PORT, HOST, () => {
     ==========================================
     ✅ Servidor iniciado exitosamente
     📍 URL: http://${HOST}:${PORT}
-    ⏰ Hora de inicio: ${new Date().toISOString()}
+    ⏰ Hora de inicio: ${new Date().toLocaleString()}
     🌍 Entorno: ${process.env.NODE_ENV || 'development'}
     🚀 Node.js: ${process.version}
     📦 Memoria: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB
@@ -595,21 +612,12 @@ app.listen(PORT, HOST, () => {
 
   checkConfiguration();
 
-  console.log('📚 Rutas disponibles:');
-  console.log(' GET / - Interfaz web principal');
-  console.log(' POST /search - Buscar canciones (sin parámetros adicionales de YouTube)');
-  console.log(' POST /suggest-song - Sugerir canción (usa tokens del propietario)');
-  console.log(' GET /auth - Autenticación de USUARIO');
-  console.log(' GET /oauth2callback - Callback de autenticación de USUARIO');
-  console.log(' GET /user/profile - Perfil de usuario y ranking');
+  console.log('\n📚 Rutas disponibles:');
+  console.log(' GET / - Interfaz web principal con gamificación');
+  console.log(' POST /search - Buscar canciones de rock');
+  console.log(' POST /suggest-song - Agregar canción a playlist');
+  console.log(' GET /auth - Autenticación con Google');
+  console.log(' GET /user/profile - Perfil de usuario (compatibilidad)');
   console.log(' GET /health - Estado del servidor');
-  console.log(' GET /system/info - Información del sistema');
-  console.log(`==========================================`);
-
-  try {
-    const { ALLOWED_ARTISTS } = require('./utils/music-filter');
-    console.log(`🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.size} artistas permitidos`);
-  } catch (error) {
-    console.error('❌ Error cargando filtro de música:', error.message);
-  }
+  console.log('==========================================');
 });
