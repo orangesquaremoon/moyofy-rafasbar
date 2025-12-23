@@ -831,13 +831,16 @@
       text-shadow: 0 0 30px rgba(0, 255, 170, 0.8);
       z-index: 10001;
       pointer-events: none;
-      animation: levelUpPop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: levelUpPop 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     @keyframes levelUpPop {
       0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-      100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+      20% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+      40% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      60% { transform: translate(-50%, -50%) scale(1.2) rotate(5deg); opacity: 1; }
+      80% { transform: translate(-50%, -50%) scale(1.1) rotate(-5deg); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; }
     }
 
     .sound-toggle {
@@ -866,10 +869,139 @@
       font-size: 1.5rem;
       color: var(--primary);
     }
+
+    .confetti {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: var(--primary);
+      top: 0;
+      opacity: 0;
+    }
+
+    .confetti:nth-child(1) { background: #ff004c; }
+    .confetti:nth-child(2) { background: #00ffaa; }
+    .confetti:nth-child(3) { background: #ffcc00; }
+    .confetti:nth-child(4) { background: #9d4edd; }
+    .confetti:nth-child(5) { background: #4361ee; }
+    .confetti:nth-child(6) { background: #ff006e; }
+    .confetti:nth-child(7) { background: #00ccff; }
+    .confetti:nth-child(8) { background: #ff9900; }
+    .confetti:nth-child(9) { background: #aa00ff; }
+    .confetti:nth-child(10) { background: #00ff88; }
+
+    @keyframes confetti-explosion {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0deg) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5 + 100vh)) rotate(calc(var(--r) * 3)) scale(0);
+      }
+    }
+
+    .points-animation {
+      position: fixed;
+      color: #00ffaa;
+      font-weight: bold;
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px rgba(0, 255, 170, 0.8);
+      z-index: 10001;
+      pointer-events: none;
+      animation: pointsFloat 2.5s ease-out forwards;
+    }
+
+    @keyframes pointsFloat {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.8);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(0, -50px) scale(1.5);
+      }
+      40% {
+        opacity: 1;
+        transform: translate(0, -100px) scale(1.2);
+      }
+      60% {
+        opacity: 1;
+        transform: translate(0, -150px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(0, -200px) scale(0.5);
+      }
+    }
+
+    .emoji-explosion {
+      position: fixed;
+      font-size: 2.5rem;
+      z-index: 10001;
+      pointer-events: none;
+      animation: emojiFloat 3s ease-out forwards;
+    }
+
+    @keyframes emojiFloat {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.5) rotate(0deg);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(var(--tx1), var(--ty1)) scale(1.5) rotate(180deg);
+      }
+      40% {
+        opacity: 1;
+        transform: translate(var(--tx2), var(--ty2)) scale(1.2) rotate(360deg);
+      }
+      60% {
+        opacity: 1;
+        transform: translate(var(--tx3), var(--ty3)) scale(1) rotate(540deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx4), var(--ty4)) scale(0) rotate(720deg);
+      }
+    }
+
+    .firework {
+      position: fixed;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+      z-index: 10001;
+      pointer-events: none;
+      animation: fireworkExplode 2s ease-out forwards;
+    }
+
+    @keyframes fireworkExplode {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      30% {
+        opacity: 1;
+        transform: translate(0, -100px) scale(1);
+      }
+      31% {
+        opacity: 1;
+        transform: translate(0, -100px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Intro tipo videojuego -->
   <div class="intro-screen" id="intro-screen">
     <h1 class="intro-title">🎸 MOYOFY</h1>
     <p class="intro-subtitle">Conecta con la música. Conecta con la gente.<br>Tu vibra tiene valor · Rafa's Bar</p>
@@ -883,10 +1015,8 @@
     </div>
   </div>
 
-  <!-- Partículas de fondo -->
   <div class="particles" id="particles-container"></div>
 
-  <!-- Botón de sonido -->
   <div class="sound-toggle" onclick="toggleSound()" id="sound-toggle">
     <i class="fas fa-volume-up" id="sound-icon"></i>
   </div>
@@ -958,13 +1088,11 @@
       </div>
     </div>
 
-    <!-- ========== SECCIÓN DE GAMIFICACIÓN ========== -->
     <div class="gamification-panel">
       <div class="gamification-title">
         <i class="fas fa-trophy"></i> 🏆 TU PROGRESO EN EL BAR
       </div>
 
-      <!-- Barra de progreso de nivel -->
       <div class="progress-container">
         <div class="progress-header">
           <span id="current-level-display">Nivel 1</span>
@@ -979,25 +1107,19 @@
         </div>
       </div>
 
-      <!-- Estadísticas rápidas -->
       <div class="stats-container" id="stats-container">
-        <!-- Las estadísticas se generarán dinámicamente -->
       </div>
 
-      <!-- Logros -->
       <h4 style="margin: 20px 0 10px 0; color: var(--success); position: relative; z-index: 2;">
         <i class="fas fa-medal"></i> LOGROS
       </h4>
       <div class="achievements-container" id="achievements-container">
-        <!-- Los logros se generarán dinámicamente -->
       </div>
 
-      <!-- Desafíos activos -->
       <h4 style="margin: 20px 0 10px 0; color: var(--warning); position: relative; z-index: 2;">
         <i class="fas fa-bullseye"></i> DESAFÍOS ACTIVOS
       </h4>
       <div class="challenges-container" id="challenges-container">
-        <!-- Los desafíos se generarán dinámicamente -->
       </div>
     </div>
   </div>
@@ -1007,10 +1129,8 @@
     <p>Música impulsada por YouTube · © 2025 Abundia.io</p>
   </footer>
 
-  <!-- Contenedor para confeti -->
   <div class="confetti-container" id="confetti-container"></div>
 
-  <!-- Audio para efectos de sonido -->
   <audio id="success-sound" preload="auto">
     <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg">
   </audio>
@@ -1020,23 +1140,21 @@
   <audio id="click-sound" preload="auto">
     <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
   </audio>
+  <audio id="explosion-sound" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-fireworks-explosion-3038.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
-    // ==============================
-    // CONFIGURACIÓN Y CONSTANTES
-    // ==============================
     const BAR_LOCATION = { lat: 9.93422, lng: -84.06894 };
     const RADIUS_METERS = 20000;
     const COOLDOWN_MS = 5 * 60 * 1000;
     
-    // Configuración de sonido
     let soundEnabled = true;
     let currentUser = null;
     let API_BASE = window.location.origin;
     let requiresAuth = false;
     let lastLevel = 1;
 
-    // SISTEMA DE GAMIFICACIÓN
     const GAMIFICATION = {
       pointsPerSong: 10,
       xpPerLevel: 100,
@@ -1120,9 +1238,6 @@
       ]
     };
 
-    // ==============================
-    // FUNCIONES DE SONIDO
-    // ==============================
     function playSound(soundId) {
       if (!soundEnabled) return;
       
@@ -1144,9 +1259,137 @@
       }
     }
 
-    // ==============================
-    // FUNCIONES DE INTRO
-    // ==============================
+    function createEpicConfettiExplosion(x, y, intensity = 100) {
+      playSound('explosion-sound');
+      const container = document.getElementById('confetti-container');
+      
+      for (let i = 0; i < intensity; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        
+        const size = Math.random() * 20 + 8;
+        confetti.style.width = `${size}px`;
+        confetti.style.height = `${size}px`;
+        confetti.style.left = `${x}px`;
+        confetti.style.top = `${y}px`;
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        
+        if (Math.random() > 0.7) {
+          confetti.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+        } else if (Math.random() > 0.5) {
+          confetti.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
+        }
+        
+        const tx = (Math.random() - 0.5) * 1200;
+        const ty = (Math.random() - 0.5) * 1200;
+        const r = Math.random() * 720;
+        
+        confetti.style.setProperty('--tx', `${tx}px`);
+        confetti.style.setProperty('--ty', `${ty}px`);
+        confetti.style.setProperty('--r', `${r}deg`);
+        
+        confetti.style.animation = `confetti-explosion ${Math.random() * 3000 + 4000}ms ease-out forwards`;
+        confetti.style.animationDelay = `${Math.random() * 500}ms`;
+        
+        container.appendChild(confetti);
+        
+        setTimeout(() => {
+          if (confetti.parentNode) {
+            confetti.remove();
+          }
+        }, 7000);
+      }
+      
+      createEmojiExplosion(x, y, 20);
+      createFireworkExplosion(x, y, 15);
+    }
+
+    function createEmojiExplosion(x, y, count = 15) {
+      const container = document.getElementById('confetti-container');
+      const emojis = ['🎸', '🎵', '🎶', '🔥', '💥', '✨', '⭐', '🌟', '🎉', '🎊', '🥳', '🤘', '🎯', '🏆', '💎', '💰', '💯'];
+      
+      for (let i = 0; i < count; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'emoji-explosion';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = `${x}px`;
+        emoji.style.top = `${y}px`;
+        emoji.style.color = ['#ff004c', '#00ffaa', '#ffcc00', '#9d4edd', '#4361ee'][Math.floor(Math.random() * 5)];
+        
+        const tx1 = (Math.random() - 0.5) * 400;
+        const ty1 = (Math.random() - 0.5) * 400;
+        const tx2 = (Math.random() - 0.5) * 600;
+        const ty2 = (Math.random() - 0.5) * 600;
+        const tx3 = (Math.random() - 0.5) * 800;
+        const ty3 = (Math.random() - 0.5) * 800;
+        const tx4 = (Math.random() - 0.5) * 1000;
+        const ty4 = (Math.random() - 0.5) * 1000;
+        
+        emoji.style.setProperty('--tx1', `${tx1}px`);
+        emoji.style.setProperty('--ty1', `${ty1}px`);
+        emoji.style.setProperty('--tx2', `${tx2}px`);
+        emoji.style.setProperty('--ty2', `${ty2}px`);
+        emoji.style.setProperty('--tx3', `${tx3}px`);
+        emoji.style.setProperty('--ty3', `${ty3}px`);
+        emoji.style.setProperty('--tx4', `${tx4}px`);
+        emoji.style.setProperty('--ty4', `${ty4}px`);
+        
+        container.appendChild(emoji);
+        
+        setTimeout(() => {
+          if (emoji.parentNode) {
+            emoji.remove();
+          }
+        }, 3000);
+      }
+    }
+
+    function createFireworkExplosion(x, y, count = 10) {
+      const container = document.getElementById('confetti-container');
+      const colors = ['#ff004c', '#00ffaa', '#ffcc00', '#9d4edd', '#4361ee', '#ffffff'];
+      
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const firework = document.createElement('div');
+          firework.className = 'firework';
+          firework.style.left = `${x}px`;
+          firework.style.top = `${y}px`;
+          firework.style.color = colors[Math.floor(Math.random() * colors.length)];
+          firework.style.backgroundColor = firework.style.color;
+          
+          const tx = (Math.random() - 0.5) * 300;
+          const ty = (Math.random() - 0.5) * 300;
+          firework.style.setProperty('--tx', `${tx}px`);
+          firework.style.setProperty('--ty', `${ty}px`);
+          
+          container.appendChild(firework);
+          
+          setTimeout(() => {
+            if (firework.parentNode) {
+              firework.remove();
+            }
+          }, 2000);
+        }, i * 100);
+      }
+    }
+
+    function createPointsAnimation(x, y, points) {
+      const container = document.getElementById('confetti-container');
+      const pointsElement = document.createElement('div');
+      pointsElement.className = 'points-animation';
+      pointsElement.textContent = `+${points} MOYOS`;
+      pointsElement.style.left = `${x}px`;
+      pointsElement.style.top = `${y}px`;
+      
+      container.appendChild(pointsElement);
+      
+      setTimeout(() => {
+        if (pointsElement.parentNode) {
+          pointsElement.remove();
+        }
+      }, 2500);
+    }
+
     function startGame() {
       playSound('click-sound');
       const introScreen = document.getElementById('intro-screen');
@@ -1168,9 +1411,6 @@
       }, 800);
     }
 
-    // ==============================
-    // FUNCIONES DE GAMIFICACIÓN
-    // ==============================
     function calculateLevel(points) {
       const level = Math.floor(points / GAMIFICATION.xpPerLevel) + 1;
       const currentXp = points % GAMIFICATION.xpPerLevel;
@@ -1192,27 +1432,102 @@
       const points = currentUser.points || 100;
       const stats = calculateLevel(points);
       
-      // Detectar cambio de nivel
       if (stats.level > lastLevel) {
         triggerLevelUpAnimation(stats.level);
         lastLevel = stats.level;
       }
       
-      // Actualizar barra de progreso
       document.getElementById('level-progress-fill').style.width = `${stats.xpPercentage}%`;
       document.getElementById('current-level-display').textContent = `Nivel ${stats.level}`;
       document.getElementById('next-level-display').textContent = `Nivel ${stats.nextLevel}`;
       document.getElementById('current-xp-display').textContent = `${stats.currentXp}/${GAMIFICATION.xpPerLevel} XP`;
       document.getElementById('xp-to-next').textContent = `${stats.xpNeeded} XP para subir`;
       
-      // Actualizar estadísticas
       updateStatsUI();
-      
-      // Actualizar logros
       updateAchievementsUI();
-      
-      // Actualizar desafíos
       updateChallengesUI();
+    }
+
+    function triggerLevelUpAnimation(level) {
+      playSound('level-up-sound');
+      
+      const levelUp = document.createElement('div');
+      levelUp.className = 'level-up-animation';
+      levelUp.textContent = `🎉 NIVEL ${level}!`;
+      document.body.appendChild(levelUp);
+      
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      createEpicConfettiExplosion(centerX, centerY, 200);
+      
+      setTimeout(() => {
+        levelUp.remove();
+      }, 2000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 MOYOFY PREMIUM v2 cargado');
+      
+      const savedUser = localStorage.getItem('moyofy_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        lastLevel = calculateLevel(currentUser.points || 100).level;
+      }
+    });
+
+    function showNicknameSection() {
+      document.getElementById('nickname-section').style.display = 'block';
+      document.getElementById('user-profile').style.display = 'none';
+    }
+
+    function showUserProfile() {
+      if (!currentUser) return;
+      document.getElementById('nickname-section').style.display = 'none';
+      document.getElementById('user-profile').style.display = 'block';
+      updateUserProfile();
+    }
+
+    function updateUserProfile() {
+      if (!currentUser) return;
+      
+      document.getElementById('user-nickname').textContent = currentUser.nickname;
+      document.getElementById('user-points').textContent = currentUser.points || 100;
+      document.getElementById('user-level').textContent = calculateLevel(currentUser.points || 100).level;
+      document.getElementById('songs-added').textContent = currentUser.songsAdded || 0;
+      document.getElementById('streak-days').textContent = currentUser.streak || 1;
+      
+      updateGamificationUI();
+      checkAchievements();
+    }
+
+    function setNickname() {
+      playSound('click-sound');
+      const nickname = document.getElementById('nickname').value.trim();
+      if (!nickname || nickname.length < 3) {
+        showMessage('⚠️ Ingresa un apodo válido (mínimo 3 caracteres)', 'warning');
+        return;
+      }
+      
+      const userId = `user_${nickname.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`;
+      currentUser = {
+        id: userId,
+        nickname: nickname,
+        points: 100,
+        songsAdded: 0,
+        streak: 1,
+        joinDate: new Date().toISOString()
+      };
+      
+      localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
+      showUserProfile();
+      
+      playSound('success-sound');
+      
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      createEpicConfettiExplosion(centerX, centerY, 150);
+      
+      showMessage(`🎉 ¡Bienvenido ${nickname} al Rafa's Bar! 100 MOYOS de regalo`, 'success');
     }
 
     function updateStatsUI() {
@@ -1349,271 +1664,6 @@
       }
     }
 
-    // ==============================
-    // FUNCIONES DE EFECTOS VISUALES OPTIMIZADOS
-    // ==============================
-    function initBackgroundParticles() {
-      const container = document.getElementById('particles-container');
-      const colors = [
-        'rgba(255, 0, 76, 0.1)',
-        'rgba(0, 255, 170, 0.1)',
-        'rgba(157, 78, 221, 0.1)',
-        'rgba(67, 97, 238, 0.1)'
-      ];
-
-      for (let i = 0; i < 15; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.width = `${Math.random() * 15 + 5}px`;
-        particle.style.height = particle.style.width;
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-        particle.style.animationDuration = `${Math.random() * 30 + 20}s`;
-        particle.style.animationDelay = `${Math.random() * 5}s`;
-        container.appendChild(particle);
-      }
-    }
-
-    function createConfettiStorm(level = 1) {
-      const container = document.getElementById('confetti-container');
-      const colors = ['#ff004c', '#00ffaa', '#ffcc00', '#ffffff', '#9d4edd', '#4361ee'];
-      const particleCount = Math.min(80 + (level * 20), 200);
-      
-      for (let i = 0; i < particleCount; i++) {
-        const confetti = document.createElement('div');
-        confetti.style.position = 'absolute';
-        confetti.style.left = `${Math.random() * 100}%`;
-        confetti.style.top = '-10px';
-        confetti.style.width = `${Math.random() * 10 + 3}px`;
-        confetti.style.height = confetti.style.width;
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-        confetti.style.opacity = '0.8';
-        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-        confetti.style.willChange = 'transform, opacity';
-        
-        const animation = confetti.animate([
-          { transform: `translateY(-100px) rotate(0deg)`, opacity: 0 },
-          { transform: `translateY(${window.innerHeight + 100}px) rotate(${Math.random() * 720}deg)`, opacity: 0.8 },
-          { transform: `translateY(${window.innerHeight + 200}px) rotate(${Math.random() * 1080}deg)`, opacity: 0 }
-        ], {
-          duration: Math.random() * 3000 + 2000,
-          easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)'
-        });
-        
-        animation.onfinish = () => confetti.remove();
-        container.appendChild(confetti);
-      }
-    }
-
-    function createExplosionEffect(level = 1) {
-      const container = document.getElementById('confetti-container');
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const explosionCount = Math.min(3 + level, 8);
-      
-      for (let i = 0; i < explosionCount; i++) {
-        setTimeout(() => {
-          for (let j = 0; j < 15; j++) {
-            const dot = document.createElement('div');
-            dot.style.position = 'absolute';
-            dot.style.left = `${centerX}px`;
-            dot.style.top = `${centerY}px`;
-            dot.style.width = '6px';
-            dot.style.height = '6px';
-            dot.style.borderRadius = '50%';
-            dot.style.backgroundColor = i % 2 === 0 ? '#ff004c' : '#00ffaa';
-            dot.style.willChange = 'transform, opacity';
-            
-            const angle = Math.random() * Math.PI * 2;
-            const distance = 50 + Math.random() * 100;
-            const tx = Math.cos(angle) * distance;
-            const ty = Math.sin(angle) * distance;
-            
-            const animation = dot.animate([
-              { transform: 'scale(0) translate(0, 0)', opacity: 1 },
-              { transform: `scale(1) translate(${tx}px, ${ty}px)`, opacity: 0 }
-            ], {
-              duration: 800 + Math.random() * 400,
-              easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-            });
-            
-            animation.onfinish = () => dot.remove();
-            container.appendChild(dot);
-          }
-        }, i * 150);
-      }
-    }
-
-    function createStarBurst(level = 1) {
-      const container = document.getElementById('confetti-container');
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const starCount = Math.min(10 + (level * 3), 25);
-      
-      for (let i = 0; i < starCount; i++) {
-        const star = document.createElement('div');
-        star.style.position = 'absolute';
-        star.style.left = `${centerX}px`;
-        star.style.top = `${centerY}px`;
-        star.style.width = '15px';
-        star.style.height = '15px';
-        star.style.background = Math.random() > 0.5 ? 'gold' : 'silver';
-        star.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
-        star.style.willChange = 'transform, opacity';
-        
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 100 + Math.random() * 200;
-        const tx = Math.cos(angle) * distance;
-        const ty = Math.sin(angle) * distance;
-        
-        const animation = star.animate([
-          { transform: 'scale(0) rotate(0deg) translate(0, 0)', opacity: 1 },
-          { transform: `scale(1.5) rotate(180deg) translate(${tx}px, ${ty}px)`, opacity: 0.5 },
-          { transform: `scale(0.5) rotate(360deg) translate(${tx * 1.5}px, ${ty * 1.5}px)`, opacity: 0 }
-        ], {
-          duration: 1200 + Math.random() * 600,
-          easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-        });
-        
-        animation.onfinish = () => star.remove();
-        container.appendChild(star);
-      }
-    }
-
-    function createPointsAnimation(element, points, level = 1) {
-      const rect = element.getBoundingClientRect();
-      const startX = rect.left + rect.width / 2;
-      const startY = rect.top;
-      const animationCount = Math.min(3 + level, 8);
-      
-      for (let i = 0; i < animationCount; i++) {
-        const point = document.createElement('div');
-        point.style.position = 'fixed';
-        point.style.left = `${startX}px`;
-        point.style.top = `${startY}px`;
-        point.style.width = '20px';
-        point.style.height = '20px';
-        point.style.borderRadius = '50%';
-        point.style.backgroundColor = '#00ffaa';
-        point.style.fontSize = '14px';
-        point.style.display = 'flex';
-        point.style.alignItems = 'center';
-        point.style.justifyContent = 'center';
-        point.style.color = 'black';
-        point.style.fontWeight = 'bold';
-        point.innerHTML = `+${points}`;
-        point.style.zIndex = '10000';
-        point.style.willChange = 'transform, opacity';
-        
-        document.getElementById('confetti-container').appendChild(point);
-        
-        const pointsDisplay = document.querySelector('.points-display');
-        const pointsRect = pointsDisplay.getBoundingClientRect();
-        const endX = pointsRect.left + pointsRect.width / 2;
-        const endY = pointsRect.top + pointsRect.height / 2;
-        
-        const animation = point.animate([
-          { transform: 'scale(1) translate(0, 0)', opacity: 1 },
-          { transform: `scale(0.5) translate(${endX - startX}px, ${endY - startY}px)`, opacity: 0 }
-        ], {
-          duration: 1000,
-          easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-        });
-        
-        animation.onfinish = () => point.remove();
-      }
-    }
-
-    function triggerLevelUpAnimation(level) {
-      playSound('level-up-sound');
-      
-      const levelUp = document.createElement('div');
-      levelUp.className = 'level-up-animation';
-      levelUp.textContent = `🎉 NIVEL ${level}!`;
-      document.body.appendChild(levelUp);
-      
-      // Efectos especiales por nivel
-      const intensity = Math.min(level, 10);
-      createConfettiStorm(intensity);
-      createExplosionEffect(intensity);
-      createStarBurst(intensity);
-      
-      setTimeout(() => {
-        levelUp.remove();
-      }, 1000);
-    }
-
-    // ==============================
-    // FUNCIONES PRINCIPALES
-    // ==============================
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('🚀 MOYOFY PREMIUM v2 cargado');
-      initBackgroundParticles();
-      
-      const savedUser = localStorage.getItem('moyofy_user');
-      if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        lastLevel = calculateLevel(currentUser.points || 100).level;
-      }
-    });
-
-    function showNicknameSection() {
-      document.getElementById('nickname-section').style.display = 'block';
-      document.getElementById('user-profile').style.display = 'none';
-    }
-
-    function showUserProfile() {
-      if (!currentUser) return;
-      document.getElementById('nickname-section').style.display = 'none';
-      document.getElementById('user-profile').style.display = 'block';
-      updateUserProfile();
-    }
-
-    function updateUserProfile() {
-      if (!currentUser) return;
-      
-      document.getElementById('user-nickname').textContent = currentUser.nickname;
-      document.getElementById('user-points').textContent = currentUser.points || 100;
-      document.getElementById('user-level').textContent = calculateLevel(currentUser.points || 100).level;
-      document.getElementById('songs-added').textContent = currentUser.songsAdded || 0;
-      document.getElementById('streak-days').textContent = currentUser.streak || 1;
-      
-      updateGamificationUI();
-      checkAchievements();
-    }
-
-    function setNickname() {
-      playSound('click-sound');
-      const nickname = document.getElementById('nickname').value.trim();
-      if (!nickname || nickname.length < 3) {
-        showMessage('⚠️ Ingresa un apodo válido (mínimo 3 caracteres)', 'warning');
-        return;
-      }
-      
-      const userId = `user_${nickname.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`;
-      currentUser = {
-        id: userId,
-        nickname: nickname,
-        points: 100,
-        songsAdded: 0,
-        streak: 1,
-        joinDate: new Date().toISOString()
-      };
-      
-      localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
-      showUserProfile();
-      
-      // EFECTOS COMPLETOS AL REGISTRARSE
-      playSound('success-sound');
-      createConfettiStorm(3);
-      createExplosionEffect(2);
-      createStarBurst(2);
-      
-      showMessage(`🎉 ¡Bienvenido ${nickname} al Rafa's Bar! 100 MOYOS de regalo`, 'success');
-    }
-
     async function searchSongs() {
       playSound('click-sound');
       const query = document.getElementById('song-search').value.trim();
@@ -1741,7 +1791,7 @@
 
       if (!canAddSong()) {
         const waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(localStorage.getItem('moyofy_last_add')))) / 60000);
-        showMessage(`⏳ Espera ${waitTime} minuto(s) antes de agregar otra canción.`, 'warning');
+        showMessage(`⏳ Espera ${waitTime} minuto(s) antes de agregar otra canción.', 'warning`);
         return;
       }
 
@@ -1768,6 +1818,10 @@
 
       try {
         const button = element.querySelector('.add-btn');
+        const rect = button.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        
         const originalText = button.innerHTML;
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SUGERIDO...';
@@ -1796,11 +1850,9 @@
           showMessage(`✅ ¡"${shortTitle}" sugerida y agregada a la playlist! +${GAMIFICATION.pointsPerSong} MOYOS`, 'success');
           
           playSound('success-sound');
-          const currentLevel = calculateLevel(currentUser.points).level;
-          createConfettiStorm(currentLevel);
-          createExplosionEffect(currentLevel);
-          createStarBurst(currentLevel);
-          createPointsAnimation(button, GAMIFICATION.pointsPerSong, currentLevel);
+          
+          createEpicConfettiExplosion(x, y, 120);
+          createPointsAnimation(x, y, GAMIFICATION.pointsPerSong);
 
           setTimeout(() => {
             document.getElementById('results-container').innerHTML = `
@@ -1833,9 +1885,6 @@
       }
     }
 
-    // ==============================
-    // FUNCIONES AUXILIARES
-    // ==============================
     function isUserNearBar(userLat, userLng) {
       const barLat = BAR_LOCATION.lat;
       const barLng = BAR_LOCATION.lng;
