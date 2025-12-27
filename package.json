@@ -28,11 +28,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.22.1",
-    "express-rate-limit": "^7.4.1",
     "express-session": "^1.18.2",
-    "googleapis": "^131.0.0",
-    "lru-cache": "^10.4.3",
-    "md5": "^2.3.0"
+    "googleapis": "^131.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

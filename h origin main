@@ -9,67 +9,123 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [1m--- a/.gitignore[m
 [1m+++ b/.gitignore[m
 [36m@@ -1,4 +1,60 @@[m
-[32m+[m[32m# Dependencias[m[41m[m
+[32m+[m[32m# Dependencias[m[41m
+[m
  node_modules/[m
-[32m+[m[32mnpm-debug.log*[m[41m[m
-[32m+[m[32myarn-debug.log*[m[41m[m
-[32m+[m[32myarn-error.log*[m[41m[m
-[32m+[m[32m.pnp/[m[41m[m
-[32m+[m[32m.pnp.js[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Variables de entorno[m[41m[m
+[32m+[m[32mnpm-debug.log*[m[41m
+[m
+[32m+[m[32myarn-debug.log*[m[41m
+[m
+[32m+[m[32myarn-error.log*[m[41m
+[m
+[32m+[m[32m.pnp/[m[41m
+[m
+[32m+[m[32m.pnp.js[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Variables de entorno[m[41m
+[m
  .env[m
-[32m+[m[32m.env.local[m[41m[m
-[32m+[m[32m.env.development.local[m[41m[m
-[32m+[m[32m.env.test.local[m[41m[m
-[32m+[m[32m.env.production.local[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Logs[m[41m[m
-[32m+[m[32mlogs[m[41m[m
+[32m+[m[32m.env.local[m[41m
+[m
+[32m+[m[32m.env.development.local[m[41m
+[m
+[32m+[m[32m.env.test.local[m[41m
+[m
+[32m+[m[32m.env.production.local[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Logs[m[41m
+[m
+[32m+[m[32mlogs[m[41m
+[m
  *.log[m
 [31m-.DS_Store[m
 \ No newline at end of file[m
-[32m+[m[41m[m
-[32m+[m[32m# Sistema operativo[m[41m[m
-[32m+[m[32m.DS_Store[m[41m[m
-[32m+[m[32m.DS_Store?[m[41m[m
-[32m+[m[32m._*[m[41m[m
-[32m+[m[32m.Spotlight-V100[m[41m[m
-[32m+[m[32m.Trashes[m[41m[m
-[32m+[m[32mehthumbs.db[m[41m[m
-[32m+[m[32mThumbs.db[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# IDE[m[41m[m
-[32m+[m[32m.vscode/[m[41m[m
-[32m+[m[32m.idea/[m[41m[m
-[32m+[m[32m*.swp[m[41m[m
-[32m+[m[32m*.swo[m[41m[m
-[32m+[m[32m*~[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Build/Output[m[41m[m
-[32m+[m[32mdist/[m[41m[m
-[32m+[m[32mbuild/[m[41m[m
-[32m+[m[32mout/[m[41m[m
-[32m+[m[32mpublic/build/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Temp[m[41m[m
-[32m+[m[32mtmp/[m[41m[m
-[32m+[m[32mtemp/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Cache[m[41m[m
-[32m+[m[32m.cache/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Coverage[m[41m[m
-[32m+[m[32mcoverage/[m[41m[m
-[32m+[m[32m.nyc_output/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Misc[m[41m[m
-[32m+[m[32m*.pid[m[41m[m
-[32m+[m[32m*.seed[m[41m[m
-[32m+[m[32m*.pid.lock[m[41m[m
-[32m+[m[32m*.tgz[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Render specific[m[41m[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Sistema operativo[m[41m
+[m
+[32m+[m[32m.DS_Store[m[41m
+[m
+[32m+[m[32m.DS_Store?[m[41m
+[m
+[32m+[m[32m._*[m[41m
+[m
+[32m+[m[32m.Spotlight-V100[m[41m
+[m
+[32m+[m[32m.Trashes[m[41m
+[m
+[32m+[m[32mehthumbs.db[m[41m
+[m
+[32m+[m[32mThumbs.db[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# IDE[m[41m
+[m
+[32m+[m[32m.vscode/[m[41m
+[m
+[32m+[m[32m.idea/[m[41m
+[m
+[32m+[m[32m*.swp[m[41m
+[m
+[32m+[m[32m*.swo[m[41m
+[m
+[32m+[m[32m*~[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Build/Output[m[41m
+[m
+[32m+[m[32mdist/[m[41m
+[m
+[32m+[m[32mbuild/[m[41m
+[m
+[32m+[m[32mout/[m[41m
+[m
+[32m+[m[32mpublic/build/[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Temp[m[41m
+[m
+[32m+[m[32mtmp/[m[41m
+[m
+[32m+[m[32mtemp/[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Cache[m[41m
+[m
+[32m+[m[32m.cache/[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Coverage[m[41m
+[m
+[32m+[m[32mcoverage/[m[41m
+[m
+[32m+[m[32m.nyc_output/[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Misc[m[41m
+[m
+[32m+[m[32m*.pid[m[41m
+[m
+[32m+[m[32m*.seed[m[41m
+[m
+[32m+[m[32m*.pid.lock[m[41m
+[m
+[32m+[m[32m*.tgz[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m# Render specific[m[41m
+[m
 [32m+[m[32m.render.yaml[m
 \ No newline at end of file[m
 [1mdiff --git a/README.md b/README.md[m
@@ -78,21 +134,36 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [1m--- /dev/null[m
 [1m+++ b/README.md[m
 [36m@@ -0,0 +1,15 @@[m
-[32m+[m[32m# 🎸 MOYOFY PREMIUM v2.0[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mSistema de entretenimiento social para bares - Rafa's Bar Edition[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m## 🚀 Características[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m- ✅ Búsqueda inteligente de canciones de rock/metal[m[41m[m
-[32m+[m[32m- ✅ Filtro avanzado con más de 200 artistas permitidos[m[41m[m
-[32m+[m[32m- ✅ Sistema de puntos y ranking de usuarios[m[41m[m
-[32m+[m[32m- ✅ Integración con YouTube API[m[41m[m
-[32m+[m[32m- ✅ Autenticación OAuth 2.0 con Google[m[41m[m
-[32m+[m[32m- ✅ Playlist colaborativa en tiempo real[m[41m[m
-[32m+[m[32m- ✅ Interfaz web responsive y moderna[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m## 📁 Estructura del Proyecto[m[41m[m
+[32m+[m[32m# 🎸 MOYOFY PREMIUM v2.0[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32mSistema de entretenimiento social para bares - Rafa's Bar Edition[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m## 🚀 Características[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m- ✅ Búsqueda inteligente de canciones de rock/metal[m[41m
+[m
+[32m+[m[32m- ✅ Filtro avanzado con más de 200 artistas permitidos[m[41m
+[m
+[32m+[m[32m- ✅ Sistema de puntos y ranking de usuarios[m[41m
+[m
+[32m+[m[32m- ✅ Integración con YouTube API[m[41m
+[m
+[32m+[m[32m- ✅ Autenticación OAuth 2.0 con Google[m[41m
+[m
+[32m+[m[32m- ✅ Playlist colaborativa en tiempo real[m[41m
+[m
+[32m+[m[32m- ✅ Interfaz web responsive y moderna[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m## 📁 Estructura del Proyecto[m[41m
+[m
 [1mdiff --git a/backend/server.js b/backend/server.js[m
 [1mindex 0902056..fa556ed 100644[m
 [1m--- a/backend/server.js[m
@@ -103,137 +174,227 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
  [m
 [31m-// Permitir solicitudes desde localhost durante el desarrollo y desde tu dominio Render en producción[m
 [31m-const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080', process.env.RENDER_EXTERNAL_URL || 'https://movofy-rafasbar.onrender.com'];[m
-[32m+[m[32m// Configuración CORS para desarrollo y producción[m[41m[m
-[32m+[m[32mconst allowedOrigins = [[m[41m[m
-[32m+[m[32m    'http://localhost:3000',[m[41m [m
-[32m+[m[32m    'http://localhost:8080',[m[41m [m
-[32m+[m[32m    process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com'[m[41m[m
-[32m+[m[32m];[m[41m[m
+[32m+[m[32m// Configuración CORS para desarrollo y producción[m[41m
+[m
+[32m+[m[32mconst allowedOrigins = [[m[41m
+[m
+[32m+[m[32m    'http://localhost:3000',[m[41m 
+[m
+[32m+[m[32m    'http://localhost:8080',[m[41m 
+[m
+[32m+[m[32m    process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com'[m[41m
+[m
+[32m+[m[32m];[m[41m
+[m
  [m
  app.use(cors({[m
      origin: function (origin, callback) {[m
 [31m-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {[m
-[32m+[m[32m        // Permitir solicitudes sin origen (como apps móviles o curl)[m[41m[m
-[32m+[m[32m        if (!origin) return callback(null, true);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        if (allowedOrigins.indexOf(origin) !== -1) {[m[41m[m
+[32m+[m[32m        // Permitir solicitudes sin origen (como apps móviles o curl)[m[41m
+[m
+[32m+[m[32m        if (!origin) return callback(null, true);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        if (allowedOrigins.indexOf(origin) !== -1) {[m[41m
+[m
              callback(null, true);[m
          } else {[m
-[32m+[m[32m            console.warn(`⚠️  CORS bloqueado para origen: ${origin}`);[m[41m[m
+[32m+[m[32m            console.warn(`⚠️  CORS bloqueado para origen: ${origin}`);[m[41m
+[m
              callback(new Error('Not allowed by CORS'));[m
          }[m
 [31m-    }[m
-[32m+[m[32m    },[m[41m[m
-[32m+[m[32m    credentials: true,[m[41m[m
-[32m+[m[32m    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],[m[41m[m
-[32m+[m[32m    allowedHeaders: ['Content-Type', 'Authorization'][m[41m[m
+[32m+[m[32m    },[m[41m
+[m
+[32m+[m[32m    credentials: true,[m[41m
+[m
+[32m+[m[32m    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],[m[41m
+[m
+[32m+[m[32m    allowedHeaders: ['Content-Type', 'Authorization'][m[41m
+[m
  }));[m
  [m
-[32m+[m[32m// Middleware para preflight requests[m[41m[m
-[32m+[m[32mapp.options('*', cors());[m[41m[m
-[32m+[m[41m[m
+[32m+[m[32m// Middleware para preflight requests[m[41m
+[m
+[32m+[m[32mapp.options('*', cors());[m[41m
+[m
+[32m+[m[41m
+[m
  app.use(express.json());[m
 [31m-app.use(express.static(path.join(__dirname, '../public'))); // Sirve archivos estáticos desde /public[m
-[32m+[m[32mapp.use(express.urlencoded({ extended: true }));[m[41m[m
-[32m+[m[32mapp.use(express.static(path.join(__dirname, '../public')));[m[41m[m
+[32m+[m[32mapp.use(express.urlencoded({ extended: true }));[m[41m
+[m
+[32m+[m[32mapp.use(express.static(path.join(__dirname, '../public')));[m[41m
+[m
  [m
-[32m+[m[32m// Configuración de Google OAuth2[m[41m[m
+[32m+[m[32m// Configuración de Google OAuth2[m[41m
+[m
  const oauth2Client = new google.auth.OAuth2([m
      process.env.OAUTH_CLIENT_ID,[m
      process.env.OAUTH_CLIENT_SECRET,[m
 [31m-    process.env.REDIRECT_URI // Esta variable debe apuntar al entorno correcto[m
-[32m+[m[32m    process.env.REDIRECT_URI[m[41m[m
+[32m+[m[32m    process.env.REDIRECT_URI[m[41m
+[m
  );[m
  [m
-[32m+[m[32m// Configuración de YouTube API[m[41m[m
+[32m+[m[32m// Configuración de YouTube API[m[41m
+[m
  const youtube = google.youtube({[m
      version: 'v3',[m
      auth: process.env.YOUTUBE_API_KEY[m
  });[m
  [m
-[32m+[m[32m// Middleware de logging mejorado[m[41m[m
-[32m+[m[32mapp.use((req, res, next) => {[m[41m[m
-[32m+[m[32m    const start = Date.now();[m[41m[m
-[32m+[m[32m    res.on('finish', () => {[m[41m[m
-[32m+[m[32m        const duration = Date.now() - start;[m[41m[m
-[32m+[m[32m        console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);[m[41m[m
-[32m+[m[32m    });[m[41m[m
-[32m+[m[32m    next();[m[41m[m
-[32m+[m[32m});[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Middleware para manejar JSON mal formado[m[41m[m
-[32m+[m[32mapp.use((err, req, res, next) => {[m[41m[m
-[32m+[m[32m    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {[m[41m[m
-[32m+[m[32m        console.error('JSON mal formado:', err.message);[m[41m[m
-[32m+[m[32m        return res.status(400).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: 'JSON mal formado en la solicitud'[m[41m [m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[32m    next();[m[41m[m
-[32m+[m[32m});[m[41m[m
-[32m+[m[41m[m
+[32m+[m[32m// Middleware de logging mejorado[m[41m
+[m
+[32m+[m[32mapp.use((req, res, next) => {[m[41m
+[m
+[32m+[m[32m    const start = Date.now();[m[41m
+[m
+[32m+[m[32m    res.on('finish', () => {[m[41m
+[m
+[32m+[m[32m        const duration = Date.now() - start;[m[41m
+[m
+[32m+[m[32m        console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);[m[41m
+[m
+[32m+[m[32m    });[m[41m
+[m
+[32m+[m[32m    next();[m[41m
+[m
+[32m+[m[32m});[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Middleware para manejar JSON mal formado[m[41m
+[m
+[32m+[m[32mapp.use((err, req, res, next) => {[m[41m
+[m
+[32m+[m[32m    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {[m[41m
+[m
+[32m+[m[32m        console.error('JSON mal formado:', err.message);[m[41m
+[m
+[32m+[m[32m        return res.status(400).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: 'JSON mal formado en la solicitud'[m[41m 
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[32m    next();[m[41m
+[m
+[32m+[m[32m});[m[41m
+[m
+[32m+[m[41m
+[m
  // --- RUTAS ---[m
  [m
 [31m-// Ruta para iniciar la autenticación OAuth[m
-[32m+[m[32m// Ruta para autenticación OAuth[m[41m[m
+[32m+[m[32m// Ruta para autenticación OAuth[m[41m
+[m
  app.get('/auth', (req, res) => {[m
 [31m-    const scopes = ['https://www.googleapis.com/auth/youtube', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'];[m
-[32m+[m[32m    console.log('🔐 Iniciando autenticación OAuth');[m[41m[m
-[32m+[m[32m    const scopes = [[m[41m[m
-[32m+[m[32m        'https://www.googleapis.com/auth/youtube',[m[41m[m
-[32m+[m[32m        'https://www.googleapis.com/auth/userinfo.profile',[m[41m[m
-[32m+[m[32m        'https://www.googleapis.com/auth/userinfo.email'[m[41m[m
-[32m+[m[32m    ];[m[41m[m
-[32m+[m[41m    [m
+[32m+[m[32m    console.log('🔐 Iniciando autenticación OAuth');[m[41m
+[m
+[32m+[m[32m    const scopes = [[m[41m
+[m
+[32m+[m[32m        'https://www.googleapis.com/auth/youtube',[m[41m
+[m
+[32m+[m[32m        'https://www.googleapis.com/auth/userinfo.profile',[m[41m
+[m
+[32m+[m[32m        'https://www.googleapis.com/auth/userinfo.email'[m[41m
+[m
+[32m+[m[32m    ];[m[41m
+[m
+[32m+[m[41m    
+[m
      const url = oauth2Client.generateAuthUrl({[m
          access_type: 'offline',[m
          scope: scopes,[m
 [31m-        prompt: 'consent' // Fuerza la pantalla de consentimiento para obtener refresh_token si es necesario[m
-[32m+[m[32m        prompt: 'consent',[m[41m[m
-[32m+[m[32m        include_granted_scopes: true[m[41m[m
+[32m+[m[32m        prompt: 'consent',[m[41m
+[m
+[32m+[m[32m        include_granted_scopes: true[m[41m
+[m
      });[m
-[32m+[m[41m    [m
+[32m+[m[41m    
+[m
      res.redirect(url);[m
  });[m
  [m
  // Callback de OAuth[m
  app.get('/oauth2callback', async (req, res) => {[m
 [31m-    const { code } = req.query;[m
-[32m+[m[32m    console.log('🔄 Procesando callback OAuth');[m[41m[m
-[32m+[m[32m    const { code, error } = req.query;[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    if (error) {[m[41m[m
-[32m+[m[32m        console.error('❌ Error en OAuth:', error);[m[41m[m
-[32m+[m[32m        return res.status(400).send(`[m[41m[m
-[32m+[m[32m            <html>[m[41m[m
-[32m+[m[32m                <head>[m[41m[m
-[32m+[m[32m                    <title>Error de Autenticación</title>[m[41m[m
-[32m+[m[32m                    <style>[m[41m[m
-[32m+[m[32m                        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }[m[41m[m
-[32m+[m[32m                        .error { color: #ff004c; }[m[41m[m
-[32m+[m[32m                        .button {[m[41m [m
-[32m+[m[32m                            background: #ff004c;[m[41m [m
-[32m+[m[32m                            color: white;[m[41m [m
-[32m+[m[32m                            padding: 10px 20px;[m[41m [m
-[32m+[m[32m                            border: none;[m[41m [m
-[32m+[m[32m                            border-radius: 5px;[m[41m [m
-[32m+[m[32m                            cursor: pointer;[m[41m [m
-[32m+[m[32m                            margin-top: 20px;[m[41m[m
-[32m+[m[32m                            text-decoration: none;[m[41m[m
-[32m+[m[32m                            display: inline-block;[m[41m[m
-[32m+[m[32m                        }[m[41m[m
-[32m+[m[32m                    </style>[m[41m[m
-[32m+[m[32m                </head>[m[41m[m
-[32m+[m[32m                <body>[m[41m[m
-[32m+[m[32m                    <h1 class="error">❌ Error de Autenticación</h1>[m[41m[m
-[32m+[m[32m                    <p>No se pudo completar la autenticación con Google: ${error}</p>[m[41m[m
-[32m+[m[32m                    <a href="/" class="button">Volver al inicio</a>[m[41m[m
-[32m+[m[32m                </body>[m[41m[m
-[32m+[m[32m            </html>[m[41m[m
-[32m+[m[32m        `);[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
+[32m+[m[32m    console.log('🔄 Procesando callback OAuth');[m[41m
+[m
+[32m+[m[32m    const { code, error } = req.query;[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    if (error) {[m[41m
+[m
+[32m+[m[32m        console.error('❌ Error en OAuth:', error);[m[41m
+[m
+[32m+[m[32m        return res.status(400).send(`[m[41m
+[m
+[32m+[m[32m            <html>[m[41m
+[m
+[32m+[m[32m                <head>[m[41m
+[m
+[32m+[m[32m                    <title>Error de Autenticación</title>[m[41m
+[m
+[32m+[m[32m                    <style>[m[41m
+[m
+[32m+[m[32m                        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }[m[41m
+[m
+[32m+[m[32m                        .error { color: #ff004c; }[m[41m
+[m
+[32m+[m[32m                        .button {[m[41m 
+[m
+[32m+[m[32m                            background: #ff004c;[m[41m 
+[m
+[32m+[m[32m                            color: white;[m[41m 
+[m
+[32m+[m[32m                            padding: 10px 20px;[m[41m 
+[m
+[32m+[m[32m                            border: none;[m[41m 
+[m
+[32m+[m[32m                            border-radius: 5px;[m[41m 
+[m
+[32m+[m[32m                            cursor: pointer;[m[41m 
+[m
+[32m+[m[32m                            margin-top: 20px;[m[41m
+[m
+[32m+[m[32m                            text-decoration: none;[m[41m
+[m
+[32m+[m[32m                            display: inline-block;[m[41m
+[m
+[32m+[m[32m                        }[m[41m
+[m
+[32m+[m[32m                    </style>[m[41m
+[m
+[32m+[m[32m                </head>[m[41m
+[m
+[32m+[m[32m                <body>[m[41m
+[m
+[32m+[m[32m                    <h1 class="error">❌ Error de Autenticación</h1>[m[41m
+[m
+[32m+[m[32m                    <p>No se pudo completar la autenticación con Google: ${error}</p>[m[41m
+[m
+[32m+[m[32m                    <a href="/" class="button">Volver al inicio</a>[m[41m
+[m
+[32m+[m[32m                </body>[m[41m
+[m
+[32m+[m[32m            </html>[m[41m
+[m
+[32m+[m[32m        `);[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
      try {[m
          const { tokens } = await oauth2Client.getToken(code);[m
          oauth2Client.setCredentials(tokens);[m
@@ -244,285 +405,496 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-        oauth2Client.credentials = tokens; // Actualiza el cliente OAuth con nuevos tokens[m
 [31m-[m
 [31m-        res.redirect('/'); // Redirige a la página principal después de autenticar[m
-[32m+[m[41m        [m
-[32m+[m[32m        // En producción, guardar tokens en base de datos[m[41m[m
-[32m+[m[32m        console.log('✅ Autenticación exitosa');[m[41m[m
-[32m+[m[32m        console.log('📝 Tokens recibidos:', {[m[41m[m
-[32m+[m[32m            access_token: tokens.access_token ? 'Presente' : 'Ausente',[m[41m[m
-[32m+[m[32m            refresh_token: tokens.refresh_token ? 'Presente' : 'Ausente',[m[41m[m
-[32m+[m[32m            expiry_date: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : 'N/A'[m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        res.send(`[m[41m[m
-[32m+[m[32m            <html>[m[41m[m
-[32m+[m[32m                <head>[m[41m[m
-[32m+[m[32m                    <title>Autenticación Exitosa</title>[m[41m[m
-[32m+[m[32m                    <style>[m[41m[m
-[32m+[m[32m                        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }[m[41m[m
-[32m+[m[32m                        .success { color: #00ffaa; }[m[41m[m
-[32m+[m[32m                        .button {[m[41m [m
-[32m+[m[32m                            background: #00ffaa;[m[41m [m
-[32m+[m[32m                            color: black;[m[41m [m
-[32m+[m[32m                            padding: 10px 20px;[m[41m [m
-[32m+[m[32m                            border: none;[m[41m [m
-[32m+[m[32m                            border-radius: 5px;[m[41m [m
-[32m+[m[32m                            cursor: pointer;[m[41m [m
-[32m+[m[32m                            margin-top: 20px;[m[41m[m
-[32m+[m[32m                            text-decoration: none;[m[41m[m
-[32m+[m[32m                            display: inline-block;[m[41m[m
-[32m+[m[32m                            font-weight: bold;[m[41m[m
-[32m+[m[32m                        }[m[41m[m
-[32m+[m[32m                    </style>[m[41m[m
-[32m+[m[32m                </head>[m[41m[m
-[32m+[m[32m                <body>[m[41m[m
-[32m+[m[32m                    <h1 class="success">✅ ¡Autenticación Exitosa!</h1>[m[41m[m
-[32m+[m[32m                    <p>Ya puedes agregar canciones a la playlist de Rafa's Bar</p>[m[41m[m
-[32m+[m[32m                    <a href="/" class="button">Continuar a MOYOFY</a>[m[41m[m
-[32m+[m[32m                    <script>[m[41m[m
-[32m+[m[32m                        // Cerrar ventana después de 3 segundos si se abrió en popup[m[41m[m
-[32m+[m[32m                        setTimeout(() => {[m[41m[m
-[32m+[m[32m                            if (window.opener) {[m[41m[m
-[32m+[m[32m                                window.close();[m[41m[m
-[32m+[m[32m                            }[m[41m[m
-[32m+[m[32m                        }, 3000);[m[41m[m
-[32m+[m[32m                    </script>[m[41m[m
-[32m+[m[32m                </body>[m[41m[m
-[32m+[m[32m            </html>[m[41m[m
-[32m+[m[32m        `);[m[41m[m
-[32m+[m[41m        [m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // En producción, guardar tokens en base de datos[m[41m
+[m
+[32m+[m[32m        console.log('✅ Autenticación exitosa');[m[41m
+[m
+[32m+[m[32m        console.log('📝 Tokens recibidos:', {[m[41m
+[m
+[32m+[m[32m            access_token: tokens.access_token ? 'Presente' : 'Ausente',[m[41m
+[m
+[32m+[m[32m            refresh_token: tokens.refresh_token ? 'Presente' : 'Ausente',[m[41m
+[m
+[32m+[m[32m            expiry_date: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : 'N/A'[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        res.send(`[m[41m
+[m
+[32m+[m[32m            <html>[m[41m
+[m
+[32m+[m[32m                <head>[m[41m
+[m
+[32m+[m[32m                    <title>Autenticación Exitosa</title>[m[41m
+[m
+[32m+[m[32m                    <style>[m[41m
+[m
+[32m+[m[32m                        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }[m[41m
+[m
+[32m+[m[32m                        .success { color: #00ffaa; }[m[41m
+[m
+[32m+[m[32m                        .button {[m[41m 
+[m
+[32m+[m[32m                            background: #00ffaa;[m[41m 
+[m
+[32m+[m[32m                            color: black;[m[41m 
+[m
+[32m+[m[32m                            padding: 10px 20px;[m[41m 
+[m
+[32m+[m[32m                            border: none;[m[41m 
+[m
+[32m+[m[32m                            border-radius: 5px;[m[41m 
+[m
+[32m+[m[32m                            cursor: pointer;[m[41m 
+[m
+[32m+[m[32m                            margin-top: 20px;[m[41m
+[m
+[32m+[m[32m                            text-decoration: none;[m[41m
+[m
+[32m+[m[32m                            display: inline-block;[m[41m
+[m
+[32m+[m[32m                            font-weight: bold;[m[41m
+[m
+[32m+[m[32m                        }[m[41m
+[m
+[32m+[m[32m                    </style>[m[41m
+[m
+[32m+[m[32m                </head>[m[41m
+[m
+[32m+[m[32m                <body>[m[41m
+[m
+[32m+[m[32m                    <h1 class="success">✅ ¡Autenticación Exitosa!</h1>[m[41m
+[m
+[32m+[m[32m                    <p>Ya puedes agregar canciones a la playlist de Rafa's Bar</p>[m[41m
+[m
+[32m+[m[32m                    <a href="/" class="button">Continuar a MOYOFY</a>[m[41m
+[m
+[32m+[m[32m                    <script>[m[41m
+[m
+[32m+[m[32m                        // Cerrar ventana después de 3 segundos si se abrió en popup[m[41m
+[m
+[32m+[m[32m                        setTimeout(() => {[m[41m
+[m
+[32m+[m[32m                            if (window.opener) {[m[41m
+[m
+[32m+[m[32m                                window.close();[m[41m
+[m
+[32m+[m[32m                            }[m[41m
+[m
+[32m+[m[32m                        }, 3000);[m[41m
+[m
+[32m+[m[32m                    </script>[m[41m
+[m
+[32m+[m[32m                </body>[m[41m
+[m
+[32m+[m[32m            </html>[m[41m
+[m
+[32m+[m[32m        `);[m[41m
+[m
+[32m+[m[41m        
+[m
      } catch (error) {[m
 [31m-        console.error('Error obteniendo tokens:', error);[m
 [31m-        res.status(500).send('Error al autenticar con Google.');[m
-[32m+[m[32m        console.error('❌ Error en OAuth callback:', error);[m[41m[m
-[32m+[m[32m        res.status(500).send(`[m[41m[m
-[32m+[m[32m            <html>[m[41m[m
-[32m+[m[32m                <body>[m[41m[m
-[32m+[m[32m                    <h1>Error de autenticación</h1>[m[41m[m
-[32m+[m[32m                    <p>No se pudo completar la autenticación con Google.</p>[m[41m[m
-[32m+[m[32m                    <p><small>Detalles: ${error.message}</small></p>[m[41m[m
-[32m+[m[32m                    <a href="/">Volver al inicio</a>[m[41m[m
-[32m+[m[32m                </body>[m[41m[m
-[32m+[m[32m            </html>[m[41m[m
-[32m+[m[32m        `);[m[41m[m
+[32m+[m[32m        console.error('❌ Error en OAuth callback:', error);[m[41m
+[m
+[32m+[m[32m        res.status(500).send(`[m[41m
+[m
+[32m+[m[32m            <html>[m[41m
+[m
+[32m+[m[32m                <body>[m[41m
+[m
+[32m+[m[32m                    <h1>Error de autenticación</h1>[m[41m
+[m
+[32m+[m[32m                    <p>No se pudo completar la autenticación con Google.</p>[m[41m
+[m
+[32m+[m[32m                    <p><small>Detalles: ${error.message}</small></p>[m[41m
+[m
+[32m+[m[32m                    <a href="/">Volver al inicio</a>[m[41m
+[m
+[32m+[m[32m                </body>[m[41m
+[m
+[32m+[m[32m            </html>[m[41m
+[m
+[32m+[m[32m        `);[m[41m
+[m
      }[m
  });[m
  [m
 [31m-// Ruta para buscar videos[m
-[32m+[m[32m// Ruta para búsqueda de videos[m[41m[m
+[32m+[m[32m// Ruta para búsqueda de videos[m[41m
+[m
  app.post('/search', async (req, res) => {[m
      const { q } = req.body;[m
 [31m-    if (!q) {[m
 [31m-        return res.status(400).send('Consulta de búsqueda vacía');[m
-[32m+[m[41m    [m
-[32m+[m[32m    if (!q || q.trim() === '') {[m[41m[m
-[32m+[m[32m        return res.status(400).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: 'La consulta de búsqueda no puede estar vacía'[m[41m [m
-[32m+[m[32m        });[m[41m[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    if (!q || q.trim() === '') {[m[41m
+[m
+[32m+[m[32m        return res.status(400).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: 'La consulta de búsqueda no puede estar vacía'[m[41m 
+[m
+[32m+[m[32m        });[m[41m
+[m
      }[m
 [31m-[m
-[32m+[m[41m    [m
-[32m+[m[32m    console.log(`🔍 Búsqueda recibida: "${q}"`);[m[41m[m
-[32m+[m[41m    [m
+[32m+[m[41m    
+[m
+[32m+[m[32m    console.log(`🔍 Búsqueda recibida: "${q}"`);[m[41m
+[m
+[32m+[m[41m    
+[m
      try {[m
          const response = await youtube.search.list({[m
              part: 'snippet',[m
              q: q,[m
 [31m-            maxResults: 10,[m
 [31m-            type: 'video'[m
-[32m+[m[32m            maxResults: 15,[m[41m[m
-[32m+[m[32m            type: 'video',[m[41m[m
-[32m+[m[32m            videoDuration: 'medium',[m[41m[m
-[32m+[m[32m            relevanceLanguage: 'en,es',[m[41m[m
-[32m+[m[32m            safeSearch: 'none'[m[41m[m
+[32m+[m[32m            maxResults: 15,[m[41m
+[m
+[32m+[m[32m            type: 'video',[m[41m
+[m
+[32m+[m[32m            videoDuration: 'medium',[m[41m
+[m
+[32m+[m[32m            relevanceLanguage: 'en,es',[m[41m
+[m
+[32m+[m[32m            safeSearch: 'none'[m[41m
+[m
          });[m
 [31m-[m
 [31m-        // Importar la función de filtro desde el archivo utils/music-filter.js[m
-[32m+[m[41m        [m
-[32m+[m[32m        console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Importar el filtro optimizado[m[41m[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Importar el filtro optimizado[m[41m
+[m
          const { filterMusic } = require('./utils/music-filter');[m
 [31m-[m
 [31m-        // Aplicar el filtro a los resultados obtenidos[m
 [31m-        const filteredItems = filterMusic(response.data.items);[m
 [31m-[m
 [31m-        // Simular estadísticas de filtrado para el cliente (opcional)[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Aplicar filtro inteligente[m[41m[m
-[32m+[m[32m        const filteredItems = filterMusic(response.data.items || []);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Estadísticas detalladas[m[41m[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Aplicar filtro inteligente[m[41m
+[m
+[32m+[m[32m        const filteredItems = filterMusic(response.data.items || []);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Estadísticas detalladas[m[41m
+[m
          const stats = {[m
 [31m-            totalResults: response.data.items.length,[m
-[32m+[m[32m            totalResults: response.data.items?.length || 0,[m[41m[m
+[32m+[m[32m            totalResults: response.data.items?.length || 0,[m[41m
+[m
              approved: filteredItems.length,[m
 [31m-            approvalRate: response.data.items.length > 0 ? Math.round((filteredItems.length / response.data.items.length) * 100) : 0[m
-[32m+[m[32m            approvalRate: response.data.items?.length > 0[m[41m [m
-[32m+[m[32m                ? Math.round((filteredItems.length / response.data.items.length) * 100)[m[41m [m
-[32m+[m[32m                : 0,[m[41m[m
-[32m+[m[32m            query: q,[m[41m[m
-[32m+[m[32m            timestamp: new Date().toISOString(),[m[41m[m
-[32m+[m[32m            service: 'MOYOFY Filter v4'[m[41m[m
+[32m+[m[32m            approvalRate: response.data.items?.length > 0[m[41m 
+[m
+[32m+[m[32m                ? Math.round((filteredItems.length / response.data.items.length) * 100)[m[41m 
+[m
+[32m+[m[32m                : 0,[m[41m
+[m
+[32m+[m[32m            query: q,[m[41m
+[m
+[32m+[m[32m            timestamp: new Date().toISOString(),[m[41m
+[m
+[32m+[m[32m            service: 'MOYOFY Filter v4'[m[41m
+[m
          };[m
 [31m-[m
 [31m-        res.json({ items: filteredItems, filterStats: stats });[m
-[32m+[m[41m        [m
-[32m+[m[32m        console.log(`✅ Resultados filtrados: ${stats.approved}/${stats.totalResults} (${stats.approvalRate}%) aprobados`);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Si no hay resultados aprobados, sugerir búsquedas alternativas[m[41m[m
-[32m+[m[32m        let suggestions = [];[m[41m[m
-[32m+[m[32m        if (stats.approved === 0 && stats.totalResults > 0) {[m[41m[m
-[32m+[m[32m            suggestions = [[m[41m[m
-[32m+[m[32m                "Intenta buscar el artista específico: 'Metallica'",[m[41m[m
-[32m+[m[32m                "Busca por nombre de canción completa: 'Bohemian Rhapsody Queen'",[m[41m[m
-[32m+[m[32m                "Usa términos de género: 'heavy metal 80s'",[m[41m[m
-[32m+[m[32m                "Prueba con: 'rock clásico' o 'metal'"[m[41m[m
-[32m+[m[32m            ];[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        res.json({[m[41m [m
-[32m+[m[32m            ok: true,[m[41m [m
-[32m+[m[32m            items: filteredItems,[m[41m [m
-[32m+[m[32m            filterStats: stats,[m[41m[m
-[32m+[m[32m            originalQuery: q,[m[41m[m
-[32m+[m[32m            suggestions: suggestions,[m[41m[m
-[32m+[m[32m            timestamp: new Date().toISOString()[m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[41m        [m
+[32m+[m[41m        
+[m
+[32m+[m[32m        console.log(`✅ Resultados filtrados: ${stats.approved}/${stats.totalResults} (${stats.approvalRate}%) aprobados`);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Si no hay resultados aprobados, sugerir búsquedas alternativas[m[41m
+[m
+[32m+[m[32m        let suggestions = [];[m[41m
+[m
+[32m+[m[32m        if (stats.approved === 0 && stats.totalResults > 0) {[m[41m
+[m
+[32m+[m[32m            suggestions = [[m[41m
+[m
+[32m+[m[32m                "Intenta buscar el artista específico: 'Metallica'",[m[41m
+[m
+[32m+[m[32m                "Busca por nombre de canción completa: 'Bohemian Rhapsody Queen'",[m[41m
+[m
+[32m+[m[32m                "Usa términos de género: 'heavy metal 80s'",[m[41m
+[m
+[32m+[m[32m                "Prueba con: 'rock clásico' o 'metal'"[m[41m
+[m
+[32m+[m[32m            ];[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        res.json({[m[41m 
+[m
+[32m+[m[32m            ok: true,[m[41m 
+[m
+[32m+[m[32m            items: filteredItems,[m[41m 
+[m
+[32m+[m[32m            filterStats: stats,[m[41m
+[m
+[32m+[m[32m            originalQuery: q,[m[41m
+[m
+[32m+[m[32m            suggestions: suggestions,[m[41m
+[m
+[32m+[m[32m            timestamp: new Date().toISOString()[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[41m        
+[m
      } catch (error) {[m
 [31m-        console.error('Error buscando videos:', error);[m
 [31m-        res.status(500).send('Error al buscar videos en YouTube.');[m
-[32m+[m[32m        console.error('❌ Error en búsqueda de YouTube:', error);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Manejo específico de errores de API[m[41m[m
-[32m+[m[32m        let errorMessage = 'Error al buscar videos en YouTube';[m[41m[m
-[32m+[m[32m        let statusCode = 500;[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        if (error.response) {[m[41m[m
-[32m+[m[32m            // Error de la API de YouTube[m[41m[m
-[32m+[m[32m            const youtubeError = error.response.data.error;[m[41m[m
-[32m+[m[32m            console.error('YouTube API Error:', youtubeError);[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m            if (youtubeError.code === 403) {[m[41m[m
-[32m+[m[32m                errorMessage = 'Límite de cuota de YouTube API excedido';[m[41m[m
-[32m+[m[32m                statusCode = 429;[m[41m[m
-[32m+[m[32m            } else if (youtubeError.code === 400) {[m[41m[m
-[32m+[m[32m                errorMessage = 'Consulta de búsqueda inválida';[m[41m[m
-[32m+[m[32m                statusCode = 400;[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        res.status(statusCode).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: errorMessage,[m[41m[m
-[32m+[m[32m            details: process.env.NODE_ENV === 'development' ? error.message : undefined,[m[41m[m
-[32m+[m[32m            code: error.code[m[41m[m
-[32m+[m[32m        });[m[41m[m
+[32m+[m[32m        console.error('❌ Error en búsqueda de YouTube:', error);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Manejo específico de errores de API[m[41m
+[m
+[32m+[m[32m        let errorMessage = 'Error al buscar videos en YouTube';[m[41m
+[m
+[32m+[m[32m        let statusCode = 500;[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        if (error.response) {[m[41m
+[m
+[32m+[m[32m            // Error de la API de YouTube[m[41m
+[m
+[32m+[m[32m            const youtubeError = error.response.data.error;[m[41m
+[m
+[32m+[m[32m            console.error('YouTube API Error:', youtubeError);[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m            if (youtubeError.code === 403) {[m[41m
+[m
+[32m+[m[32m                errorMessage = 'Límite de cuota de YouTube API excedido';[m[41m
+[m
+[32m+[m[32m                statusCode = 429;[m[41m
+[m
+[32m+[m[32m            } else if (youtubeError.code === 400) {[m[41m
+[m
+[32m+[m[32m                errorMessage = 'Consulta de búsqueda inválida';[m[41m
+[m
+[32m+[m[32m                statusCode = 400;[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        res.status(statusCode).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: errorMessage,[m[41m
+[m
+[32m+[m[32m            details: process.env.NODE_ENV === 'development' ? error.message : undefined,[m[41m
+[m
+[32m+[m[32m            code: error.code[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
      }[m
  });[m
  [m
 [31m-// Ruta para agregar video a la playlist[m
-[32m+[m[32m// Ruta para agregar a playlist[m[41m[m
+[32m+[m[32m// Ruta para agregar a playlist[m[41m
+[m
  app.post('/add-to-playlist', async (req, res) => {[m
 [31m-    const { videoId } = req.body; // El cliente ahora envía videoId directamente[m
-[32m+[m[32m    const { videoId, title } = req.body;[m[41m[m
+[32m+[m[32m    const { videoId, title } = req.body;[m[41m
+[m
      const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;[m
 [31m-[m
-[32m+[m[41m    [m
-[32m+[m[32m    console.log(`🎵 Intentando agregar video: ${title || 'Sin título'} (ID: ${videoId})`);[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Validaciones[m[41m[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    console.log(`🎵 Intentando agregar video: ${title || 'Sin título'} (ID: ${videoId})`);[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Validaciones[m[41m
+[m
      if (!defaultPlaylistId) {[m
 [31m-        console.error('DEFAULT_PLAYLIST_ID no está definida en .env');[m
 [31m-        return res.status(500).send('Playlist predeterminada no configurada.');[m
-[32m+[m[32m        console.error('❌ DEFAULT_PLAYLIST_ID no configurada en variables de entorno');[m[41m[m
-[32m+[m[32m        return res.status(500).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: 'Playlist no configurada en el servidor',[m[41m[m
-[32m+[m[32m            requiresAuth: false[m[41m [m
-[32m+[m[32m        });[m[41m[m
+[32m+[m[32m        console.error('❌ DEFAULT_PLAYLIST_ID no configurada en variables de entorno');[m[41m
+[m
+[32m+[m[32m        return res.status(500).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: 'Playlist no configurada en el servidor',[m[41m
+[m
+[32m+[m[32m            requiresAuth: false[m[41m 
+[m
+[32m+[m[32m        });[m[41m
+[m
      }[m
 [31m-[m
-[32m+[m[41m    [m
+[32m+[m[41m    
+[m
      if (!videoId) {[m
 [31m-        return res.status(400).send('Video ID es requerido');[m
-[32m+[m[32m        return res.status(400).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: 'Video ID es requerido',[m[41m[m
-[32m+[m[32m            requiresAuth: false[m[41m [m
-[32m+[m[32m        });[m[41m[m
+[32m+[m[32m        return res.status(400).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: 'Video ID es requerido',[m[41m
+[m
+[32m+[m[32m            requiresAuth: false[m[41m 
+[m
+[32m+[m[32m        });[m[41m
+[m
      }[m
 [31m-[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Validar formato de videoId[m[41m[m
-[32m+[m[32m    const videoIdRegex = /^[a-zA-Z0-9_-]{11}$/;[m[41m[m
-[32m+[m[32m    if (!videoIdRegex.test(videoId)) {[m[41m[m
-[32m+[m[32m        return res.status(400).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: 'Video ID con formato inválido',[m[41m[m
-[32m+[m[32m            requiresAuth: false[m[41m [m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Validar formato de videoId[m[41m
+[m
+[32m+[m[32m    const videoIdRegex = /^[a-zA-Z0-9_-]{11}$/;[m[41m
+[m
+[32m+[m[32m    if (!videoIdRegex.test(videoId)) {[m[41m
+[m
+[32m+[m[32m        return res.status(400).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: 'Video ID con formato inválido',[m[41m
+[m
+[32m+[m[32m            requiresAuth: false[m[41m 
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
      try {[m
 [31m-        // Verifica si el video ya está en la playlist[m
-[32m+[m[32m        // Verificar si el video existe en YouTube[m[41m[m
-[32m+[m[32m        try {[m[41m[m
-[32m+[m[32m            const videoResponse = await youtube.videos.list({[m[41m[m
-[32m+[m[32m                part: 'snippet,status',[m[41m[m
-[32m+[m[32m                id: videoId[m[41m[m
-[32m+[m[32m            });[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m            if (!videoResponse.data.items || videoResponse.data.items.length === 0) {[m[41m[m
-[32m+[m[32m                return res.status(404).json({[m[41m[m
-[32m+[m[32m                    ok: false,[m[41m[m
-[32m+[m[32m                    error: 'Video no encontrado en YouTube',[m[41m[m
-[32m+[m[32m                    requiresAuth: false[m[41m[m
-[32m+[m[32m                });[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m            const video = videoResponse.data.items[0];[m[41m[m
-[32m+[m[32m            console.log(`📹 Video encontrado: "${video.snippet.title}"`);[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m            // Verificar si el video está disponible[m[41m[m
-[32m+[m[32m            if (video.status.embeddable === false) {[m[41m[m
-[32m+[m[32m                return res.status(403).json({[m[41m[m
-[32m+[m[32m                    ok: false,[m[41m[m
-[32m+[m[32m                    error: 'Este video no se puede agregar a playlists',[m[41m[m
-[32m+[m[32m                    requiresAuth: false[m[41m[m
-[32m+[m[32m                });[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m        } catch (videoError) {[m[41m[m
-[32m+[m[32m            console.error('Error verificando video:', videoError);[m[41m[m
-[32m+[m[32m            // Continuar aunque falle la verificación[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Verificar si el video ya está en la playlist[m[41m[m
+[32m+[m[32m        // Verificar si el video existe en YouTube[m[41m
+[m
+[32m+[m[32m        try {[m[41m
+[m
+[32m+[m[32m            const videoResponse = await youtube.videos.list({[m[41m
+[m
+[32m+[m[32m                part: 'snippet,status',[m[41m
+[m
+[32m+[m[32m                id: videoId[m[41m
+[m
+[32m+[m[32m            });[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m            if (!videoResponse.data.items || videoResponse.data.items.length === 0) {[m[41m
+[m
+[32m+[m[32m                return res.status(404).json({[m[41m
+[m
+[32m+[m[32m                    ok: false,[m[41m
+[m
+[32m+[m[32m                    error: 'Video no encontrado en YouTube',[m[41m
+[m
+[32m+[m[32m                    requiresAuth: false[m[41m
+[m
+[32m+[m[32m                });[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m            const video = videoResponse.data.items[0];[m[41m
+[m
+[32m+[m[32m            console.log(`📹 Video encontrado: "${video.snippet.title}"`);[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m            // Verificar si el video está disponible[m[41m
+[m
+[32m+[m[32m            if (video.status.embeddable === false) {[m[41m
+[m
+[32m+[m[32m                return res.status(403).json({[m[41m
+[m
+[32m+[m[32m                    ok: false,[m[41m
+[m
+[32m+[m[32m                    error: 'Este video no se puede agregar a playlists',[m[41m
+[m
+[32m+[m[32m                    requiresAuth: false[m[41m
+[m
+[32m+[m[32m                });[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m        } catch (videoError) {[m[41m
+[m
+[32m+[m[32m            console.error('Error verificando video:', videoError);[m[41m
+[m
+[32m+[m[32m            // Continuar aunque falle la verificación[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Verificar si el video ya está en la playlist[m[41m
+[m
          const existingItemsResponse = await youtube.playlistItems.list({[m
              part: 'snippet',[m
              playlistId: defaultPlaylistId,[m
 [31m-            videoId: videoId[m
-[32m+[m[32m            videoId: videoId,[m[41m[m
-[32m+[m[32m            maxResults: 1[m[41m[m
+[32m+[m[32m            videoId: videoId,[m[41m
+[m
+[32m+[m[32m            maxResults: 1[m[41m
+[m
          });[m
 [31m-[m
 [31m-        if (existingItemsResponse.data.items.length > 0) {[m
 [31m-             console.log(`Video ${videoId} ya está en la playlist.`);[m
 [31m-             return res.status(409).json({ ok: false, error: 'Video already in playlist.', requiresAuth: false });[m
-[32m+[m[41m        [m
-[32m+[m[32m        if (existingItemsResponse.data.items && existingItemsResponse.data.items.length > 0) {[m[41m[m
-[32m+[m[32m            console.log(`⚠️ Video ${videoId} ya existe en playlist`);[m[41m[m
-[32m+[m[32m            return res.status(409).json({[m[41m [m
-[32m+[m[32m                ok: false,[m[41m [m
-[32m+[m[32m                error: 'Esta canción ya está en la playlist',[m[41m[m
-[32m+[m[32m                requiresAuth: false[m[41m [m
-[32m+[m[32m            });[m[41m[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        if (existingItemsResponse.data.items && existingItemsResponse.data.items.length > 0) {[m[41m
+[m
+[32m+[m[32m            console.log(`⚠️ Video ${videoId} ya existe en playlist`);[m[41m
+[m
+[32m+[m[32m            return res.status(409).json({[m[41m 
+[m
+[32m+[m[32m                ok: false,[m[41m 
+[m
+[32m+[m[32m                error: 'Esta canción ya está en la playlist',[m[41m
+[m
+[32m+[m[32m                requiresAuth: false[m[41m 
+[m
+[32m+[m[32m            });[m[41m
+[m
          }[m
 [31m-[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Insertar nuevo video en playlist[m[41m[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Insertar nuevo video en playlist[m[41m
+[m
          const response = await youtube.playlistItems.insert({[m
              part: 'snippet',[m
              resource: {[m
@@ -531,8 +903,10 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
                          kind: 'youtube#video',[m
                          videoId: videoId[m
 [31m-                    }[m
-[32m+[m[32m                    },[m[41m[m
-[32m+[m[32m                    position: 0 // Agregar al principio[m[41m[m
+[32m+[m[32m                    },[m[41m
+[m
+[32m+[m[32m                    position: 0 // Agregar al principio[m[41m
+[m
                  }[m
              }[m
          });[m
@@ -540,18 +914,30 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-         console.log(`Video ${videoId} agregado a la playlist ${defaultPlaylistId}.`);[m
 [31m-         res.status(200).json({ ok: true, message: 'Video added to playlist successfully.' });[m
 [31m-[m
-[32m+[m[41m        [m
-[32m+[m[32m        console.log(`✅ Video agregado exitosamente: ${title || videoId}`);[m[41m[m
-[32m+[m[32m        console.log(`📝 Playlist Item ID: ${response.data.id}`);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        res.status(200).json({[m[41m [m
-[32m+[m[32m            ok: true,[m[41m [m
-[32m+[m[32m            message: 'Canción agregada exitosamente a la playlist',[m[41m[m
-[32m+[m[32m            videoId: videoId,[m[41m[m
-[32m+[m[32m            playlistItemId: response.data.id,[m[41m[m
-[32m+[m[32m            timestamp: new Date().toISOString()[m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[41m        [m
+[32m+[m[41m        
+[m
+[32m+[m[32m        console.log(`✅ Video agregado exitosamente: ${title || videoId}`);[m[41m
+[m
+[32m+[m[32m        console.log(`📝 Playlist Item ID: ${response.data.id}`);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        res.status(200).json({[m[41m 
+[m
+[32m+[m[32m            ok: true,[m[41m 
+[m
+[32m+[m[32m            message: 'Canción agregada exitosamente a la playlist',[m[41m
+[m
+[32m+[m[32m            videoId: videoId,[m[41m
+[m
+[32m+[m[32m            playlistItemId: response.data.id,[m[41m
+[m
+[32m+[m[32m            timestamp: new Date().toISOString()[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[41m        
+[m
      } catch (error) {[m
 [31m-        console.error('Error agregando video a la playlist:', error);[m
 [31m-        // Podría ser un problema de autenticación si no se han obtenido tokens válidos[m
@@ -559,291 +945,537 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-            res.status(401).json({ ok: false, error: 'Unauthorized. Please authenticate first.', requiresAuth: true });[m
 [31m-        } else {[m
 [31m-            res.status(500).json({ ok: false, error: 'Error adding video to playlist.', requiresAuth: false });[m
-[32m+[m[32m        console.error('❌ Error agregando video a playlist:', error);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Manejo detallado de errores[m[41m[m
-[32m+[m[32m        let errorMessage = 'Error al agregar canción';[m[41m[m
-[32m+[m[32m        let requiresAuth = false;[m[41m[m
-[32m+[m[32m        let statusCode = 500;[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        if (error.code === 401 || error.response?.status === 401) {[m[41m[m
-[32m+[m[32m            console.log('🔐 Se requiere autenticación');[m[41m[m
-[32m+[m[32m            errorMessage = 'Requiere autenticación con YouTube. Haz clic en el botón de autenticación.';[m[41m[m
-[32m+[m[32m            requiresAuth = true;[m[41m[m
-[32m+[m[32m            statusCode = 401;[m[41m[m
-[32m+[m[32m        } else if (error.code === 403) {[m[41m[m
-[32m+[m[32m            errorMessage = 'No tienes permisos para modificar esta playlist. Verifica la autenticación.';[m[41m[m
-[32m+[m[32m            requiresAuth = true;[m[41m[m
-[32m+[m[32m            statusCode = 403;[m[41m[m
-[32m+[m[32m        } else if (error.code === 404) {[m[41m[m
-[32m+[m[32m            errorMessage = 'Playlist no encontrada. Verifica la configuración.';[m[41m[m
-[32m+[m[32m            statusCode = 404;[m[41m[m
-[32m+[m[32m        } else if (error.code === 400) {[m[41m[m
-[32m+[m[32m            errorMessage = 'Solicitud inválida. El video podría no existir.';[m[41m[m
-[32m+[m[32m            statusCode = 400;[m[41m[m
+[32m+[m[32m        console.error('❌ Error agregando video a playlist:', error);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Manejo detallado de errores[m[41m
+[m
+[32m+[m[32m        let errorMessage = 'Error al agregar canción';[m[41m
+[m
+[32m+[m[32m        let requiresAuth = false;[m[41m
+[m
+[32m+[m[32m        let statusCode = 500;[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        if (error.code === 401 || error.response?.status === 401) {[m[41m
+[m
+[32m+[m[32m            console.log('🔐 Se requiere autenticación');[m[41m
+[m
+[32m+[m[32m            errorMessage = 'Requiere autenticación con YouTube. Haz clic en el botón de autenticación.';[m[41m
+[m
+[32m+[m[32m            requiresAuth = true;[m[41m
+[m
+[32m+[m[32m            statusCode = 401;[m[41m
+[m
+[32m+[m[32m        } else if (error.code === 403) {[m[41m
+[m
+[32m+[m[32m            errorMessage = 'No tienes permisos para modificar esta playlist. Verifica la autenticación.';[m[41m
+[m
+[32m+[m[32m            requiresAuth = true;[m[41m
+[m
+[32m+[m[32m            statusCode = 403;[m[41m
+[m
+[32m+[m[32m        } else if (error.code === 404) {[m[41m
+[m
+[32m+[m[32m            errorMessage = 'Playlist no encontrada. Verifica la configuración.';[m[41m
+[m
+[32m+[m[32m            statusCode = 404;[m[41m
+[m
+[32m+[m[32m        } else if (error.code === 400) {[m[41m
+[m
+[32m+[m[32m            errorMessage = 'Solicitud inválida. El video podría no existir.';[m[41m
+[m
+[32m+[m[32m            statusCode = 400;[m[41m
+[m
          }[m
-[32m+[m[41m        [m
-[32m+[m[32m        res.status(statusCode).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: errorMessage,[m[41m[m
-[32m+[m[32m            details: process.env.NODE_ENV === 'development' ? error.message : undefined,[m[41m[m
-[32m+[m[32m            requiresAuth: requiresAuth,[m[41m[m
-[32m+[m[32m            code: error.code[m[41m[m
-[32m+[m[32m        });[m[41m[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        res.status(statusCode).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: errorMessage,[m[41m
+[m
+[32m+[m[32m            details: process.env.NODE_ENV === 'development' ? error.message : undefined,[m[41m
+[m
+[32m+[m[32m            requiresAuth: requiresAuth,[m[41m
+[m
+[32m+[m[32m            code: error.code[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
      }[m
  });[m
  [m
 [31m-// Ruta para obtener el perfil del usuario y el ranking (simulada con datos básicos)[m
 [31m-// En una implementación real, esto leería de una base de datos[m
-[32m+[m[32m// Ruta de perfil de usuario y ranking (mejorada)[m[41m[m
+[32m+[m[32m// Ruta de perfil de usuario y ranking (mejorada)[m[41m
+[m
  app.get('/user/profile', (req, res) => {[m
      const { userId } = req.query;[m
 [31m-    // Simular datos del ranking (en una implementación real, esto vendría de una DB)[m
-[32m+[m[41m    [m
-[32m+[m[32m    console.log(`👤 Consulta de perfil: ${userId || 'anon'}`);[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Datos de ejemplo - en producción vendrían de una base de datos[m[41m[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    console.log(`👤 Consulta de perfil: ${userId || 'anon'}`);[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Datos de ejemplo - en producción vendrían de una base de datos[m[41m
+[m
      const mockRanking = [[m
 [31m-        { rank: 1, nickname: 'RockMaster69', points: 500, level: 5 },[m
 [31m-        { rank: 2, nickname: 'MetallicaFan', points: 420, level: 4 },[m
 [31m-        { rank: 3, nickname: 'QueenLover', points: 380, level: 3 },[m
 [31m-        { rank: 4, nickname: 'Sebas', points: 250, level: 2 },[m
 [31m-        { rank: 5, nickname: 'Anon', points: 100, level: 1 }[m
-[32m+[m[32m        { rank: 1, nickname: 'RockMaster69', points: 500, level: 5, songsAdded: 45, lastActive: '2024-01-15T10:30:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 2, nickname: 'MetallicaFan', points: 420, level: 4, songsAdded: 38, lastActive: '2024-01-15T09:15:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 3, nickname: 'QueenLover', points: 380, level: 3, songsAdded: 32, lastActive: '2024-01-14T16:45:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 4, nickname: 'GuitarHero', points: 320, level: 3, songsAdded: 28, lastActive: '2024-01-14T14:20:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 5, nickname: 'Metalhead', points: 280, level: 2, songsAdded: 25, lastActive: '2024-01-13T11:10:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 6, nickname: 'StairwayToHeaven', points: 250, level: 2, songsAdded: 22, lastActive: '2024-01-12T18:30:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 7, nickname: 'RockAndRoll', points: 220, level: 2, songsAdded: 20, lastActive: '2024-01-12T15:45:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 8, nickname: 'LedZeppelinFan', points: 190, level: 1, songsAdded: 18, lastActive: '2024-01-11T12:20:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 9, nickname: 'ACDC_Forever', points: 170, level: 1, songsAdded: 15, lastActive: '2024-01-10T19:30:00Z' },[m[41m[m
-[32m+[m[32m        { rank: 10, nickname: 'PunkNotDead', points: 150, level: 1, songsAdded: 12, lastActive: '2024-01-09T14:15:00Z' }[m[41m[m
+[32m+[m[32m        { rank: 1, nickname: 'RockMaster69', points: 500, level: 5, songsAdded: 45, lastActive: '2024-01-15T10:30:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 2, nickname: 'MetallicaFan', points: 420, level: 4, songsAdded: 38, lastActive: '2024-01-15T09:15:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 3, nickname: 'QueenLover', points: 380, level: 3, songsAdded: 32, lastActive: '2024-01-14T16:45:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 4, nickname: 'GuitarHero', points: 320, level: 3, songsAdded: 28, lastActive: '2024-01-14T14:20:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 5, nickname: 'Metalhead', points: 280, level: 2, songsAdded: 25, lastActive: '2024-01-13T11:10:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 6, nickname: 'StairwayToHeaven', points: 250, level: 2, songsAdded: 22, lastActive: '2024-01-12T18:30:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 7, nickname: 'RockAndRoll', points: 220, level: 2, songsAdded: 20, lastActive: '2024-01-12T15:45:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 8, nickname: 'LedZeppelinFan', points: 190, level: 1, songsAdded: 18, lastActive: '2024-01-11T12:20:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 9, nickname: 'ACDC_Forever', points: 170, level: 1, songsAdded: 15, lastActive: '2024-01-10T19:30:00Z' },[m[41m
+[m
+[32m+[m[32m        { rank: 10, nickname: 'PunkNotDead', points: 150, level: 1, songsAdded: 12, lastActive: '2024-01-09T14:15:00Z' }[m[41m
+[m
      ];[m
 [31m-[m
 [31m-    // Simular datos del usuario actual (si está en el ranking)[m
 [31m-    let user = mockRanking.find(u => u.nickname === 'Sebas'); // Ejemplo, basado en nickname[m
 [31m-    if (!user) {[m
 [31m-        user = { rank: 0, nickname: userId || 'Anon', points: 100, level: 1 }; // Usuario no encontrado en ranking[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Buscar usuario actual[m[41m[m
-[32m+[m[32m    let user = {[m[41m [m
-[32m+[m[32m        rank: 0,[m[41m [m
-[32m+[m[32m        nickname: userId || 'Invitado',[m[41m [m
-[32m+[m[32m        points: 100,[m[41m [m
-[32m+[m[32m        level: 1,[m[41m [m
-[32m+[m[32m        songsAdded: 0,[m[41m[m
-[32m+[m[32m        lastActive: new Date().toISOString(),[m[41m[m
-[32m+[m[32m        joined: new Date().toISOString()[m[41m[m
-[32m+[m[32m    };[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    if (userId && userId !== 'anonymous' && userId !== 'Invitado') {[m[41m[m
-[32m+[m[32m        const foundUser = mockRanking.find(u => u.nickname.toLowerCase() === userId.toLowerCase());[m[41m[m
-[32m+[m[32m        if (foundUser) {[m[41m[m
-[32m+[m[32m            user = { ...foundUser };[m[41m[m
-[32m+[m[32m        } else {[m[41m[m
-[32m+[m[32m            // Usuario nuevo, agregar al final del ranking[m[41m[m
-[32m+[m[32m            user.rank = mockRanking.length + 1;[m[41m[m
-[32m+[m[32m        }[m[41m[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Buscar usuario actual[m[41m
+[m
+[32m+[m[32m    let user = {[m[41m 
+[m
+[32m+[m[32m        rank: 0,[m[41m 
+[m
+[32m+[m[32m        nickname: userId || 'Invitado',[m[41m 
+[m
+[32m+[m[32m        points: 100,[m[41m 
+[m
+[32m+[m[32m        level: 1,[m[41m 
+[m
+[32m+[m[32m        songsAdded: 0,[m[41m
+[m
+[32m+[m[32m        lastActive: new Date().toISOString(),[m[41m
+[m
+[32m+[m[32m        joined: new Date().toISOString()[m[41m
+[m
+[32m+[m[32m    };[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    if (userId && userId !== 'anonymous' && userId !== 'Invitado') {[m[41m
+[m
+[32m+[m[32m        const foundUser = mockRanking.find(u => u.nickname.toLowerCase() === userId.toLowerCase());[m[41m
+[m
+[32m+[m[32m        if (foundUser) {[m[41m
+[m
+[32m+[m[32m            user = { ...foundUser };[m[41m
+[m
+[32m+[m[32m        } else {[m[41m
+[m
+[32m+[m[32m            // Usuario nuevo, agregar al final del ranking[m[41m
+[m
+[32m+[m[32m            user.rank = mockRanking.length + 1;[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
      }[m
 [31m-[m
-[32m+[m[41m    [m
+[32m+[m[41m    
+[m
      res.json({[m
          ok: true,[m
          user: user,[m
 [31m-        topUsers: mockRanking[m
-[32m+[m[32m        topUsers: mockRanking,[m[41m[m
-[32m+[m[32m        serverTime: new Date().toISOString(),[m[41m[m
-[32m+[m[32m        totalUsers: mockRanking.length,[m[41m[m
-[32m+[m[32m        rankingUpdated: '2024-01-15T12:00:00Z'[m[41m[m
-[32m+[m[32m    });[m[41m[m
-[32m+[m[32m});[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Ruta de salud del servidor[m[41m[m
-[32m+[m[32mapp.get('/health', (req, res) => {[m[41m[m
-[32m+[m[32m    const health = {[m[41m[m
-[32m+[m[32m        ok: true,[m[41m[m
-[32m+[m[32m        service: 'MOYOFY Premium API',[m[41m[m
-[32m+[m[32m        version: '2.0.0',[m[41m[m
-[32m+[m[32m        timestamp: new Date().toISOString(),[m[41m[m
-[32m+[m[32m        environment: process.env.NODE_ENV || 'development',[m[41m[m
-[32m+[m[32m        uptime: process.uptime(),[m[41m[m
-[32m+[m[32m        memory: process.memoryUsage(),[m[41m[m
-[32m+[m[32m        youtubeApi: process.env.YOUTUBE_API_KEY ? 'Configured' : 'Not Configured',[m[41m[m
-[32m+[m[32m        oauth: process.env.OAUTH_CLIENT_ID ? 'Configured' : 'Not Configured',[m[41m[m
-[32m+[m[32m        playlist: process.env.DEFAULT_PLAYLIST_ID ? 'Configured' : 'Not Configured'[m[41m[m
-[32m+[m[32m    };[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    console.log('🩺 Health check realizado');[m[41m[m
-[32m+[m[32m    res.json(health);[m[41m[m
-[32m+[m[32m});[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Ruta para información del sistema[m[41m[m
-[32m+[m[32mapp.get('/system/info', (req, res) => {[m[41m[m
-[32m+[m[32m    res.json({[m[41m[m
-[32m+[m[32m        ok: true,[m[41m[m
-[32m+[m[32m        system: {[m[41m[m
-[32m+[m[32m            name: 'MOYOFY Premium',[m[41m[m
-[32m+[m[32m            version: '2.0.0',[m[41m[m
-[32m+[m[32m            description: 'Sistema de entretenimiento social para bares',[m[41m[m
-[32m+[m[32m            author: 'Abundia.io',[m[41m[m
-[32m+[m[32m            filters: {[m[41m[m
-[32m+[m[32m                version: 'v4',[m[41m[m
-[32m+[m[32m                allowedArtists: '200+ artistas',[m[41m[m
-[32m+[m[32m                allowedGenres: '40+ géneros',[m[41m[m
-[32m+[m[32m                smartFiltering: true[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m        },[m[41m[m
-[32m+[m[32m        endpoints: {[m[41m[m
-[32m+[m[32m            search: 'POST /search',[m[41m[m
-[32m+[m[32m            addToPlaylist: 'POST /add-to-playlist',[m[41m[m
-[32m+[m[32m            auth: 'GET /auth',[m[41m[m
-[32m+[m[32m            profile: 'GET /user/profile',[m[41m[m
-[32m+[m[32m            health: 'GET /health'[m[41m[m
-[32m+[m[32m        }[m[41m[m
+[32m+[m[32m        topUsers: mockRanking,[m[41m
+[m
+[32m+[m[32m        serverTime: new Date().toISOString(),[m[41m
+[m
+[32m+[m[32m        totalUsers: mockRanking.length,[m[41m
+[m
+[32m+[m[32m        rankingUpdated: '2024-01-15T12:00:00Z'[m[41m
+[m
+[32m+[m[32m    });[m[41m
+[m
+[32m+[m[32m});[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Ruta de salud del servidor[m[41m
+[m
+[32m+[m[32mapp.get('/health', (req, res) => {[m[41m
+[m
+[32m+[m[32m    const health = {[m[41m
+[m
+[32m+[m[32m        ok: true,[m[41m
+[m
+[32m+[m[32m        service: 'MOYOFY Premium API',[m[41m
+[m
+[32m+[m[32m        version: '2.0.0',[m[41m
+[m
+[32m+[m[32m        timestamp: new Date().toISOString(),[m[41m
+[m
+[32m+[m[32m        environment: process.env.NODE_ENV || 'development',[m[41m
+[m
+[32m+[m[32m        uptime: process.uptime(),[m[41m
+[m
+[32m+[m[32m        memory: process.memoryUsage(),[m[41m
+[m
+[32m+[m[32m        youtubeApi: process.env.YOUTUBE_API_KEY ? 'Configured' : 'Not Configured',[m[41m
+[m
+[32m+[m[32m        oauth: process.env.OAUTH_CLIENT_ID ? 'Configured' : 'Not Configured',[m[41m
+[m
+[32m+[m[32m        playlist: process.env.DEFAULT_PLAYLIST_ID ? 'Configured' : 'Not Configured'[m[41m
+[m
+[32m+[m[32m    };[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    console.log('🩺 Health check realizado');[m[41m
+[m
+[32m+[m[32m    res.json(health);[m[41m
+[m
+[32m+[m[32m});[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Ruta para información del sistema[m[41m
+[m
+[32m+[m[32mapp.get('/system/info', (req, res) => {[m[41m
+[m
+[32m+[m[32m    res.json({[m[41m
+[m
+[32m+[m[32m        ok: true,[m[41m
+[m
+[32m+[m[32m        system: {[m[41m
+[m
+[32m+[m[32m            name: 'MOYOFY Premium',[m[41m
+[m
+[32m+[m[32m            version: '2.0.0',[m[41m
+[m
+[32m+[m[32m            description: 'Sistema de entretenimiento social para bares',[m[41m
+[m
+[32m+[m[32m            author: 'Abundia.io',[m[41m
+[m
+[32m+[m[32m            filters: {[m[41m
+[m
+[32m+[m[32m                version: 'v4',[m[41m
+[m
+[32m+[m[32m                allowedArtists: '200+ artistas',[m[41m
+[m
+[32m+[m[32m                allowedGenres: '40+ géneros',[m[41m
+[m
+[32m+[m[32m                smartFiltering: true[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m        },[m[41m
+[m
+[32m+[m[32m        endpoints: {[m[41m
+[m
+[32m+[m[32m            search: 'POST /search',[m[41m
+[m
+[32m+[m[32m            addToPlaylist: 'POST /add-to-playlist',[m[41m
+[m
+[32m+[m[32m            auth: 'GET /auth',[m[41m
+[m
+[32m+[m[32m            profile: 'GET /user/profile',[m[41m
+[m
+[32m+[m[32m            health: 'GET /health'[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
      });[m
  });[m
  [m
 [31m-// Ruta principal (servirá index.html)[m
-[32m+[m[32m// Ruta principal[m[41m[m
+[32m+[m[32m// Ruta principal[m[41m
+[m
  app.get('/', (req, res) => {[m
 [31m-    res.sendFile(path.join(__dirname, '../public/index.html'));[m
-[32m+[m[32m    try {[m[41m[m
-[32m+[m[32m        const indexPath = path.join(__dirname, '../public/index.html');[m[41m[m
-[32m+[m[32m        if (fs.existsSync(indexPath)) {[m[41m[m
-[32m+[m[32m            res.sendFile(indexPath);[m[41m[m
-[32m+[m[32m        } else {[m[41m[m
-[32m+[m[32m            res.status(404).send(`[m[41m[m
-[32m+[m[32m                <html>[m[41m[m
-[32m+[m[32m                    <body>[m[41m[m
-[32m+[m[32m                        <h1>MOYOFY Premium</h1>[m[41m[m
-[32m+[m[32m                        <p>Archivo index.html no encontrado en /public</p>[m[41m[m
-[32m+[m[32m                        <p>Por favor, asegúrate de que el archivo existe.</p>[m[41m[m
-[32m+[m[32m                    </body>[m[41m[m
-[32m+[m[32m                </html>[m[41m[m
-[32m+[m[32m            `);[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[32m    } catch (error) {[m[41m[m
-[32m+[m[32m        console.error('Error sirviendo index.html:', error);[m[41m[m
-[32m+[m[32m        res.status(500).send('Error interno del servidor');[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[32m});[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Ruta para archivos estáticos fallback[m[41m[m
-[32m+[m[32mapp.get('*', (req, res) => {[m[41m[m
-[32m+[m[32m    if (req.path.startsWith('/api')) {[m[41m[m
-[32m+[m[32m        res.status(404).json({[m[41m [m
-[32m+[m[32m            ok: false,[m[41m [m
-[32m+[m[32m            error: 'Ruta API no encontrada',[m[41m[m
-[32m+[m[32m            path: req.path,[m[41m[m
-[32m+[m[32m            available: ['/search', '/add-to-playlist', '/auth', '/user/profile', '/health', '/system/info'][m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[32m    } else {[m[41m[m
-[32m+[m[32m        // Intentar servir el archivo estático[m[41m[m
-[32m+[m[32m        const filePath = path.join(__dirname, '../public', req.path);[m[41m[m
-[32m+[m[32m        if (fs.existsSync(filePath)) {[m[41m[m
-[32m+[m[32m            res.sendFile(filePath);[m[41m[m
-[32m+[m[32m        } else {[m[41m[m
-[32m+[m[32m            // Redirigir al index.html para SPA[m[41m[m
-[32m+[m[32m            res.redirect('/');[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[32m});[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Manejo de errores global[m[41m[m
-[32m+[m[32mapp.use((err, req, res, next) => {[m[41m[m
-[32m+[m[32m    console.error('🔥 Error global no manejado:', {[m[41m[m
-[32m+[m[32m        message: err.message,[m[41m[m
-[32m+[m[32m        stack: err.stack,[m[41m[m
-[32m+[m[32m        method: req.method,[m[41m[m
-[32m+[m[32m        path: req.path,[m[41m[m
-[32m+[m[32m        body: req.body,[m[41m[m
-[32m+[m[32m        query: req.query[m[41m[m
-[32m+[m[32m    });[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    res.status(500).json({[m[41m [m
-[32m+[m[32m        ok: false,[m[41m [m
-[32m+[m[32m        error: 'Error interno del servidor',[m[41m[m
-[32m+[m[32m        message: process.env.NODE_ENV === 'development' ? err.message : undefined,[m[41m[m
-[32m+[m[32m        requestId: Date.now().toString(36) + Math.random().toString(36).substr(2)[m[41m[m
-[32m+[m[32m    });[m[41m[m
+[32m+[m[32m    try {[m[41m
+[m
+[32m+[m[32m        const indexPath = path.join(__dirname, '../public/index.html');[m[41m
+[m
+[32m+[m[32m        if (fs.existsSync(indexPath)) {[m[41m
+[m
+[32m+[m[32m            res.sendFile(indexPath);[m[41m
+[m
+[32m+[m[32m        } else {[m[41m
+[m
+[32m+[m[32m            res.status(404).send(`[m[41m
+[m
+[32m+[m[32m                <html>[m[41m
+[m
+[32m+[m[32m                    <body>[m[41m
+[m
+[32m+[m[32m                        <h1>MOYOFY Premium</h1>[m[41m
+[m
+[32m+[m[32m                        <p>Archivo index.html no encontrado en /public</p>[m[41m
+[m
+[32m+[m[32m                        <p>Por favor, asegúrate de que el archivo existe.</p>[m[41m
+[m
+[32m+[m[32m                    </body>[m[41m
+[m
+[32m+[m[32m                </html>[m[41m
+[m
+[32m+[m[32m            `);[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[32m    } catch (error) {[m[41m
+[m
+[32m+[m[32m        console.error('Error sirviendo index.html:', error);[m[41m
+[m
+[32m+[m[32m        res.status(500).send('Error interno del servidor');[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[32m});[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Ruta para archivos estáticos fallback[m[41m
+[m
+[32m+[m[32mapp.get('*', (req, res) => {[m[41m
+[m
+[32m+[m[32m    if (req.path.startsWith('/api')) {[m[41m
+[m
+[32m+[m[32m        res.status(404).json({[m[41m 
+[m
+[32m+[m[32m            ok: false,[m[41m 
+[m
+[32m+[m[32m            error: 'Ruta API no encontrada',[m[41m
+[m
+[32m+[m[32m            path: req.path,[m[41m
+[m
+[32m+[m[32m            available: ['/search', '/add-to-playlist', '/auth', '/user/profile', '/health', '/system/info'][m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[32m    } else {[m[41m
+[m
+[32m+[m[32m        // Intentar servir el archivo estático[m[41m
+[m
+[32m+[m[32m        const filePath = path.join(__dirname, '../public', req.path);[m[41m
+[m
+[32m+[m[32m        if (fs.existsSync(filePath)) {[m[41m
+[m
+[32m+[m[32m            res.sendFile(filePath);[m[41m
+[m
+[32m+[m[32m        } else {[m[41m
+[m
+[32m+[m[32m            // Redirigir al index.html para SPA[m[41m
+[m
+[32m+[m[32m            res.redirect('/');[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[32m});[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Manejo de errores global[m[41m
+[m
+[32m+[m[32mapp.use((err, req, res, next) => {[m[41m
+[m
+[32m+[m[32m    console.error('🔥 Error global no manejado:', {[m[41m
+[m
+[32m+[m[32m        message: err.message,[m[41m
+[m
+[32m+[m[32m        stack: err.stack,[m[41m
+[m
+[32m+[m[32m        method: req.method,[m[41m
+[m
+[32m+[m[32m        path: req.path,[m[41m
+[m
+[32m+[m[32m        body: req.body,[m[41m
+[m
+[32m+[m[32m        query: req.query[m[41m
+[m
+[32m+[m[32m    });[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    res.status(500).json({[m[41m 
+[m
+[32m+[m[32m        ok: false,[m[41m 
+[m
+[32m+[m[32m        error: 'Error interno del servidor',[m[41m
+[m
+[32m+[m[32m        message: process.env.NODE_ENV === 'development' ? err.message : undefined,[m[41m
+[m
+[32m+[m[32m        requestId: Date.now().toString(36) + Math.random().toString(36).substr(2)[m[41m
+[m
+[32m+[m[32m    });[m[41m
+[m
  });[m
  [m
  // --- INICIAR SERVIDOR ---[m
 [31m-const PORT = process.env.PORT || 8080; // Usa el puerto de Render o 8080 local[m
 [31m-app.listen(PORT, '0.0.0.0', () => {[m
 [31m-    console.log(`Server running on port ${PORT}`);[m
-[32m+[m[32mconst PORT = process.env.PORT || 8080;[m[41m[m
-[32m+[m[32mconst HOST = process.env.HOST || '0.0.0.0';[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Función para verificar configuración[m[41m[m
-[32m+[m[32mfunction checkConfiguration() {[m[41m[m
-[32m+[m[32m    console.log('🔍 Verificando configuración...');[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    const requiredVars = [[m[41m[m
-[32m+[m[32m        'YOUTUBE_API_KEY',[m[41m[m
-[32m+[m[32m        'OAUTH_CLIENT_ID',[m[41m [m
-[32m+[m[32m        'OAUTH_CLIENT_SECRET',[m[41m[m
-[32m+[m[32m        'REDIRECT_URI',[m[41m[m
-[32m+[m[32m        'DEFAULT_PLAYLIST_ID'[m[41m[m
-[32m+[m[32m    ];[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    const missingVars = [];[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    requiredVars.forEach(varName => {[m[41m[m
-[32m+[m[32m        if (!process.env[varName]) {[m[41m[m
-[32m+[m[32m            missingVars.push(varName);[m[41m[m
-[32m+[m[32m            console.error(`❌ ${varName}: NO CONFIGURADO`);[m[41m[m
-[32m+[m[32m        } else {[m[41m[m
-[32m+[m[32m            console.log(`✅ ${varName}: Configurado`);[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[32m    });[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    if (missingVars.length > 0) {[m[41m[m
-[32m+[m[32m        console.warn(`\n⚠️  ADVERTENCIA: Faltan ${missingVars.length} variables de entorno:`);[m[41m[m
-[32m+[m[32m        missingVars.forEach(varName => console.log(`   - ${varName}`));[m[41m[m
-[32m+[m[32m        console.log('\n💡 Para desarrollo local, crea un archivo .env con estas variables.');[m[41m[m
-[32m+[m[32m        console.log('💡 En Render, configúralas en las variables de entorno del servicio.\n');[m[41m[m
-[32m+[m[32m    } else {[m[41m[m
-[32m+[m[32m        console.log('🎉 ¡Todas las variables requeridas están configuradas!\n');[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[32m}[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mapp.listen(PORT, HOST, () => {[m[41m[m
-[32m+[m[32m    console.log(`[m[41m[m
-[32m+[m[32m    🎸 MOYOFY PREMIUM v2.0[m[41m[m
-[32m+[m[32m    ==========================================[m[41m[m
-[32m+[m[32m    ✅ Servidor iniciado exitosamente[m[41m[m
-[32m+[m[32m    📍 URL: http://${HOST}:${PORT}[m[41m[m
-[32m+[m[32m    ⏰ Hora de inicio: ${new Date().toISOString()}[m[41m[m
-[32m+[m[32m    🌍 Entorno: ${process.env.NODE_ENV || 'development'}[m[41m[m
-[32m+[m[32m    🚀 Node.js: ${process.version}[m[41m[m
-[32m+[m[32m    📦 Memoria: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB[m[41m[m
-[32m+[m[32m    ==========================================[m[41m[m
-[32m+[m[32m    `);[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Verificar configuración[m[41m[m
-[32m+[m[32m    checkConfiguration();[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Mostrar rutas disponibles[m[41m[m
-[32m+[m[32m    console.log('📚 Rutas disponibles:');[m[41m[m
-[32m+[m[32m    console.log('   GET  /                 - Interfaz web principal');[m[41m[m
-[32m+[m[32m    console.log('   POST /search           - Buscar canciones');[m[41m[m
-[32m+[m[32m    console.log('   POST /add-to-playlist  - Agregar canción a playlist');[m[41m[m
-[32m+[m[32m    console.log('   GET  /auth             - Autenticación con Google');[m[41m[m
-[32m+[m[32m    console.log('   GET  /oauth2callback   - Callback de autenticación');[m[41m[m
-[32m+[m[32m    console.log('   GET  /user/profile     - Perfil de usuario y ranking');[m[41m[m
-[32m+[m[32m    console.log('   GET  /health           - Estado del servidor');[m[41m[m
-[32m+[m[32m    console.log('   GET  /system/info      - Información del sistema');[m[41m[m
-[32m+[m[32m    console.log('==========================================\n');[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Verificar filtro[m[41m[m
-[32m+[m[32m    try {[m[41m[m
-[32m+[m[32m        const { ALLOWED_ARTISTS } = require('./utils/music-filter');[m[41m[m
-[32m+[m[32m        console.log(`🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.length} artistas permitidos\n`);[m[41m[m
-[32m+[m[32m    } catch (error) {[m[41m[m
-[32m+[m[32m        console.error('❌ Error cargando filtro de música:', error.message);[m[41m[m
-[32m+[m[32m    }[m[41m[m
+[32m+[m[32mconst PORT = process.env.PORT || 8080;[m[41m
+[m
+[32m+[m[32mconst HOST = process.env.HOST || '0.0.0.0';[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Función para verificar configuración[m[41m
+[m
+[32m+[m[32mfunction checkConfiguration() {[m[41m
+[m
+[32m+[m[32m    console.log('🔍 Verificando configuración...');[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    const requiredVars = [[m[41m
+[m
+[32m+[m[32m        'YOUTUBE_API_KEY',[m[41m
+[m
+[32m+[m[32m        'OAUTH_CLIENT_ID',[m[41m 
+[m
+[32m+[m[32m        'OAUTH_CLIENT_SECRET',[m[41m
+[m
+[32m+[m[32m        'REDIRECT_URI',[m[41m
+[m
+[32m+[m[32m        'DEFAULT_PLAYLIST_ID'[m[41m
+[m
+[32m+[m[32m    ];[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    const missingVars = [];[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    requiredVars.forEach(varName => {[m[41m
+[m
+[32m+[m[32m        if (!process.env[varName]) {[m[41m
+[m
+[32m+[m[32m            missingVars.push(varName);[m[41m
+[m
+[32m+[m[32m            console.error(`❌ ${varName}: NO CONFIGURADO`);[m[41m
+[m
+[32m+[m[32m        } else {[m[41m
+[m
+[32m+[m[32m            console.log(`✅ ${varName}: Configurado`);[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[32m    });[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    if (missingVars.length > 0) {[m[41m
+[m
+[32m+[m[32m        console.warn(`\n⚠️  ADVERTENCIA: Faltan ${missingVars.length} variables de entorno:`);[m[41m
+[m
+[32m+[m[32m        missingVars.forEach(varName => console.log(`   - ${varName}`));[m[41m
+[m
+[32m+[m[32m        console.log('\n💡 Para desarrollo local, crea un archivo .env con estas variables.');[m[41m
+[m
+[32m+[m[32m        console.log('💡 En Render, configúralas en las variables de entorno del servicio.\n');[m[41m
+[m
+[32m+[m[32m    } else {[m[41m
+[m
+[32m+[m[32m        console.log('🎉 ¡Todas las variables requeridas están configuradas!\n');[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[32m}[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32mapp.listen(PORT, HOST, () => {[m[41m
+[m
+[32m+[m[32m    console.log(`[m[41m
+[m
+[32m+[m[32m    🎸 MOYOFY PREMIUM v2.0[m[41m
+[m
+[32m+[m[32m    ==========================================[m[41m
+[m
+[32m+[m[32m    ✅ Servidor iniciado exitosamente[m[41m
+[m
+[32m+[m[32m    📍 URL: http://${HOST}:${PORT}[m[41m
+[m
+[32m+[m[32m    ⏰ Hora de inicio: ${new Date().toISOString()}[m[41m
+[m
+[32m+[m[32m    🌍 Entorno: ${process.env.NODE_ENV || 'development'}[m[41m
+[m
+[32m+[m[32m    🚀 Node.js: ${process.version}[m[41m
+[m
+[32m+[m[32m    📦 Memoria: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB[m[41m
+[m
+[32m+[m[32m    ==========================================[m[41m
+[m
+[32m+[m[32m    `);[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Verificar configuración[m[41m
+[m
+[32m+[m[32m    checkConfiguration();[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Mostrar rutas disponibles[m[41m
+[m
+[32m+[m[32m    console.log('📚 Rutas disponibles:');[m[41m
+[m
+[32m+[m[32m    console.log('   GET  /                 - Interfaz web principal');[m[41m
+[m
+[32m+[m[32m    console.log('   POST /search           - Buscar canciones');[m[41m
+[m
+[32m+[m[32m    console.log('   POST /add-to-playlist  - Agregar canción a playlist');[m[41m
+[m
+[32m+[m[32m    console.log('   GET  /auth             - Autenticación con Google');[m[41m
+[m
+[32m+[m[32m    console.log('   GET  /oauth2callback   - Callback de autenticación');[m[41m
+[m
+[32m+[m[32m    console.log('   GET  /user/profile     - Perfil de usuario y ranking');[m[41m
+[m
+[32m+[m[32m    console.log('   GET  /health           - Estado del servidor');[m[41m
+[m
+[32m+[m[32m    console.log('   GET  /system/info      - Información del sistema');[m[41m
+[m
+[32m+[m[32m    console.log('==========================================\n');[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Verificar filtro[m[41m
+[m
+[32m+[m[32m    try {[m[41m
+[m
+[32m+[m[32m        const { ALLOWED_ARTISTS } = require('./utils/music-filter');[m[41m
+[m
+[32m+[m[32m        console.log(`🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.length} artistas permitidos\n`);[m[41m
+[m
+[32m+[m[32m    } catch (error) {[m[41m
+[m
+[32m+[m[32m        console.error('❌ Error cargando filtro de música:', error.message);[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
  });[m
 \ No newline at end of file[m
 [1mdiff --git a/backend/utils/music-filter.js b/backend/utils/music-filter.js[m
@@ -856,12 +1488,15 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
  // ================================[m
 [31m-// MOYOFY FILTER v3 - SISTEMA INTELIGENTE MEJORADO[m
 [31m-// Rafa's Bar - Versión Premium con prioridad de artistas[m
-[32m+[m[32m// MOYOFY FILTER v4 - SISTEMA INTELIGENTE DE FILTRADO[m[41m[m
-[32m+[m[32m// Optimizado para Rafa's Bar - Filtro de contexto mejorado[m[41m[m
+[32m+[m[32m// MOYOFY FILTER v4 - SISTEMA INTELIGENTE DE FILTRADO[m[41m
+[m
+[32m+[m[32m// Optimizado para Rafa's Bar - Filtro de contexto mejorado[m[41m
+[m
  // ================================[m
  [m
 [31m-// ✅ ARTISTAS Y BANDAS PERMITIDOS (Lista Blanca - PRIORIDAD MÁXIMA)[m
-[32m+[m[32m// ✅ LISTA DE ARTISTAS PERMITIDOS (EXPANDIDA Y OPTIMIZADA)[m[41m[m
+[32m+[m[32m// ✅ LISTA DE ARTISTAS PERMITIDOS (EXPANDIDA Y OPTIMIZADA)[m[41m
+[m
  const ALLOWED_ARTISTS = new Set([[m
      // Rock Clásico y Hard Rock[m
      "queen", "acdc", "ac/dc", "led zeppelin", "the beatles", "rolling stones",[m
@@ -874,73 +1509,138 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-    // Por brevedad, no se incluyen todos aquí, pero debes incluirlos todos[m
 [31m-    // Asegúrate de que estén en minúsculas[m
 [31m-].map(artist => artist.toLowerCase())); // Normaliza a minúsculas para comparación[m
-[32m+[m[32m    "cat stevens", "carole king", "elton john", "stevie nicks", "bee gees",[m[41m[m
-[32m+[m[32m    "abba", "kiss", "foreigner", "reo speedwagon", "styx", "boston", "heart",[m[41m[m
-[32m+[m[32m    "pat benatar", "joan jett", "bob seger", "zz top", "steely dan",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Metal y Heavy Metal[m[41m[m
-[32m+[m[32m    "metallica", "iron maiden", "slayer", "megadeth", "pantera", "judas priest",[m[41m[m
-[32m+[m[32m    "motorhead", "ozzy osbourne", "tool", "system of a down", "rammstein", "korn",[m[41m[m
-[32m+[m[32m    "slipknot", "mötley crüe", "guns n' roses", "van halen", "dio", "black label society",[m[41m[m
-[32m+[m[32m    "soundgarden", "alice in chains", "stone temple pilots", "pearl jam", "nirvana",[m[41m[m
-[32m+[m[32m    "foo fighters", "queens of the stone age", "mastodon", "gojira", "lamb of god",[m[41m[m
-[32m+[m[32m    "opeth", "dream theater", "rush", "saxon", "danzig", "anthrax", "testament",[m[41m[m
-[32m+[m[32m    "death", "cannibal corpse", "sepultura", "meshuggah", "in flames", "children of bodom",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Rock Alternativo e Indie[m[41m[m
-[32m+[m[32m    "radiohead", "the smashing pumpkins", "red hot chili peppers", "the strokes",[m[41m[m
-[32m+[m[32m    "arcade fire", "interpol", "the white stripes", "muse", "coldplay", "u2", "rem",[m[41m[m
-[32m+[m[32m    "weezer", "green day", "the offspring", "blink-182", "rancid", "no doubt", "bush",[m[41m[m
-[32m+[m[32m    "stone roses", "the cure", "depeche mode", "joy division", "new order", "the smiths",[m[41m[m
-[32m+[m[32m    "echo & the bunnymen", "television", "pixies", "sonic youth", "dinosaur jr",[m[41m[m
-[32m+[m[32m    "pavement", "guided by voices", "neutral milk hotel", "modest mouse", "built to spill",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Rock en Español[m[41m[m
-[32m+[m[32m    "soda stereo", "gustavo cerati", "caifanes", "jaguares", "café tacvba",[m[41m[m
-[32m+[m[32m    "enjambre", "zoé", "mana", "los bunkers", "los tres", "los prisioneros",[m[41m[m
-[32m+[m[32m    "heroes del silencio", "extremoduro", "platero y tu", "barricada", "marea",[m[41m[m
-[32m+[m[32m    "la ley", "cerati", "andrés calamaro", "fito páez", "charly garcía", "serú girán",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Rock Industrial y Experimental[m[41m[m
-[32m+[m[32m    "nine inch nails", "ministry", "killing joke", "front 242", "front line assembly",[m[41m[m
-[32m+[m[32m    "skinny puppy", "kmfdm", "pig", "revolting cocks", "wumpscut", "velvet acid christ",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Classic Punk[m[41m[m
-[32m+[m[32m    "sex pistols", "the clash", "ramones", "dead kennedys", "black flag", "misfits",[m[41m[m
-[32m+[m[32m    "bad brains", "minor threat", "descendents", "circle jerks", "dead milkmen",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Rock Progresivo[m[41m[m
-[32m+[m[32m    "porcupine tree", "the mars volta", "coheed and cambria", "spock's beard",[m[41m[m
-[32m+[m[32m    "transatlantic", "neal morse", "flower kings", "roine stolt",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Stoner Rock y Doom Metal[m[41m[m
-[32m+[m[32m    "kyuss", "queens of the stone age", "sleep", "electric wizard", "om", "earth",[m[41m[m
-[32m+[m[32m    "high on fire", "clutch", "the sword", "orange goblin", "brant bjork",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Blues Rock[m[41m[m
-[32m+[m[32m    "eric clapton", "cream", "john mayer", "stevie ray vaughan", "bb king",[m[41m[m
-[32m+[m[32m    "buddy guy", "gary clark jr", "the black keys", "the raconteurs",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Classic Rock Español[m[41m[m
-[32m+[m[32m    "triana", "camilo sesto", "julio iglesias", "mecano", "radio futura",[m[41m[m
-[32m+[m[32m    "tequila", "nacha pop", "los secretos", "loquillo", "rosendo"[m[41m[m
-[32m+[m[32m].map(artist => artist.toLowerCase()));[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// ✅ GÉNEROS PERMITIDOS (PARA CONTEXTO)[m[41m[m
-[32m+[m[32mconst ALLOWED_GENRES = new Set([[m[41m[m
-[32m+[m[32m    "rock", "metal", "hard rock", "heavy metal", "alternative", "indie",[m[41m[m
-[32m+[m[32m    "punk", "grunge", "progressive", "prog", "stoner", "doom", "sludge",[m[41m[m
-[32m+[m[32m    "industrial", "gothic", "post-punk", "new wave", "post-rock", "math rock",[m[41m[m
-[32m+[m[32m    "shoegaze", "noise rock", "psychedelic", "blues rock", "southern rock",[m[41m[m
-[32m+[m[32m    "classic rock", "arena rock", "glam rock", "art rock", "experimental",[m[41m[m
-[32m+[m[32m    "hardcore", "emo", "post-hardcore", "metalcore", "deathcore", "black metal",[m[41m[m
-[32m+[m[32m    "thrash metal", "power metal", "folk metal", "symphonic metal", "nu metal",[m[41m[m
-[32m+[m[32m    "funk rock", "garage rock", "surf rock", "rock and roll", "rockabilly"[m[41m[m
-[32m+[m[32m]);[m[41m[m
+[32m+[m[32m    "cat stevens", "carole king", "elton john", "stevie nicks", "bee gees",[m[41m
+[m
+[32m+[m[32m    "abba", "kiss", "foreigner", "reo speedwagon", "styx", "boston", "heart",[m[41m
+[m
+[32m+[m[32m    "pat benatar", "joan jett", "bob seger", "zz top", "steely dan",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Metal y Heavy Metal[m[41m
+[m
+[32m+[m[32m    "metallica", "iron maiden", "slayer", "megadeth", "pantera", "judas priest",[m[41m
+[m
+[32m+[m[32m    "motorhead", "ozzy osbourne", "tool", "system of a down", "rammstein", "korn",[m[41m
+[m
+[32m+[m[32m    "slipknot", "mötley crüe", "guns n' roses", "van halen", "dio", "black label society",[m[41m
+[m
+[32m+[m[32m    "soundgarden", "alice in chains", "stone temple pilots", "pearl jam", "nirvana",[m[41m
+[m
+[32m+[m[32m    "foo fighters", "queens of the stone age", "mastodon", "gojira", "lamb of god",[m[41m
+[m
+[32m+[m[32m    "opeth", "dream theater", "rush", "saxon", "danzig", "anthrax", "testament",[m[41m
+[m
+[32m+[m[32m    "death", "cannibal corpse", "sepultura", "meshuggah", "in flames", "children of bodom",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Rock Alternativo e Indie[m[41m
+[m
+[32m+[m[32m    "radiohead", "the smashing pumpkins", "red hot chili peppers", "the strokes",[m[41m
+[m
+[32m+[m[32m    "arcade fire", "interpol", "the white stripes", "muse", "coldplay", "u2", "rem",[m[41m
+[m
+[32m+[m[32m    "weezer", "green day", "the offspring", "blink-182", "rancid", "no doubt", "bush",[m[41m
+[m
+[32m+[m[32m    "stone roses", "the cure", "depeche mode", "joy division", "new order", "the smiths",[m[41m
+[m
+[32m+[m[32m    "echo & the bunnymen", "television", "pixies", "sonic youth", "dinosaur jr",[m[41m
+[m
+[32m+[m[32m    "pavement", "guided by voices", "neutral milk hotel", "modest mouse", "built to spill",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Rock en Español[m[41m
+[m
+[32m+[m[32m    "soda stereo", "gustavo cerati", "caifanes", "jaguares", "café tacvba",[m[41m
+[m
+[32m+[m[32m    "enjambre", "zoé", "mana", "los bunkers", "los tres", "los prisioneros",[m[41m
+[m
+[32m+[m[32m    "heroes del silencio", "extremoduro", "platero y tu", "barricada", "marea",[m[41m
+[m
+[32m+[m[32m    "la ley", "cerati", "andrés calamaro", "fito páez", "charly garcía", "serú girán",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Rock Industrial y Experimental[m[41m
+[m
+[32m+[m[32m    "nine inch nails", "ministry", "killing joke", "front 242", "front line assembly",[m[41m
+[m
+[32m+[m[32m    "skinny puppy", "kmfdm", "pig", "revolting cocks", "wumpscut", "velvet acid christ",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Classic Punk[m[41m
+[m
+[32m+[m[32m    "sex pistols", "the clash", "ramones", "dead kennedys", "black flag", "misfits",[m[41m
+[m
+[32m+[m[32m    "bad brains", "minor threat", "descendents", "circle jerks", "dead milkmen",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Rock Progresivo[m[41m
+[m
+[32m+[m[32m    "porcupine tree", "the mars volta", "coheed and cambria", "spock's beard",[m[41m
+[m
+[32m+[m[32m    "transatlantic", "neal morse", "flower kings", "roine stolt",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Stoner Rock y Doom Metal[m[41m
+[m
+[32m+[m[32m    "kyuss", "queens of the stone age", "sleep", "electric wizard", "om", "earth",[m[41m
+[m
+[32m+[m[32m    "high on fire", "clutch", "the sword", "orange goblin", "brant bjork",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Blues Rock[m[41m
+[m
+[32m+[m[32m    "eric clapton", "cream", "john mayer", "stevie ray vaughan", "bb king",[m[41m
+[m
+[32m+[m[32m    "buddy guy", "gary clark jr", "the black keys", "the raconteurs",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Classic Rock Español[m[41m
+[m
+[32m+[m[32m    "triana", "camilo sesto", "julio iglesias", "mecano", "radio futura",[m[41m
+[m
+[32m+[m[32m    "tequila", "nacha pop", "los secretos", "loquillo", "rosendo"[m[41m
+[m
+[32m+[m[32m].map(artist => artist.toLowerCase()));[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// ✅ GÉNEROS PERMITIDOS (PARA CONTEXTO)[m[41m
+[m
+[32m+[m[32mconst ALLOWED_GENRES = new Set([[m[41m
+[m
+[32m+[m[32m    "rock", "metal", "hard rock", "heavy metal", "alternative", "indie",[m[41m
+[m
+[32m+[m[32m    "punk", "grunge", "progressive", "prog", "stoner", "doom", "sludge",[m[41m
+[m
+[32m+[m[32m    "industrial", "gothic", "post-punk", "new wave", "post-rock", "math rock",[m[41m
+[m
+[32m+[m[32m    "shoegaze", "noise rock", "psychedelic", "blues rock", "southern rock",[m[41m
+[m
+[32m+[m[32m    "classic rock", "arena rock", "glam rock", "art rock", "experimental",[m[41m
+[m
+[32m+[m[32m    "hardcore", "emo", "post-hardcore", "metalcore", "deathcore", "black metal",[m[41m
+[m
+[32m+[m[32m    "thrash metal", "power metal", "folk metal", "symphonic metal", "nu metal",[m[41m
+[m
+[32m+[m[32m    "funk rock", "garage rock", "surf rock", "rock and roll", "rockabilly"[m[41m
+[m
+[32m+[m[32m]);[m[41m
+[m
  [m
 [31m-// ❌ PALABRAS CLAVE NO DESEADAS (Lista Negra)[m
-[32m+[m[32m// ❌ LISTA DE PALABRAS PROHIBIDAS OPTIMIZADA[m[41m[m
-[32m+[m[32m// Solo términos que claramente indican géneros no deseados[m[41m[m
+[32m+[m[32m// ❌ LISTA DE PALABRAS PROHIBIDAS OPTIMIZADA[m[41m
+[m
+[32m+[m[32m// Solo términos que claramente indican géneros no deseados[m[41m
+[m
  const FORBIDDEN_KEYWORDS = [[m
 [31m-    "romantic", "romántica", "love song", "balada", "balad", "slow", "suave",[m
 [31m-    "dance", "pop", "latin", "reggaeton", "trap", "hip hop", "rap", "electronic",[m
@@ -1299,48 +1999,84 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-    // Por brevedad, no se incluyen todas aquí, pero debes incluirlas todas[m
 [31m-    // Asegúrate de que estén en minúsculas[m
 [31m-].map(keyword => keyword.toLowerCase()); // Normaliza a minúsculas[m
-[32m+[m[32m    // Géneros explícitamente no permitidos[m[41m[m
-[32m+[m[32m    "reggaeton", "trap latino", "urbano latino", "bachata", "salsa", "merengue",[m[41m[m
-[32m+[m[32m    "cumbia", "vallenato", "ranchera", "corrido", "banda", "norteño", "mariachi",[m[41m[m
-[32m+[m[32m    "música popular", "pop latino", "balada romántica", "balada pop",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Términos que indican contenido no musical[m[41m[m
-[32m+[m[32m    "podcast", "entrevista", "talk show", "documental", "making of",[m[41m[m
-[32m+[m[32m    "behind the scenes", "lyric video", "video oficial", "tutorial", "cover tutorial",[m[41m[m
-[32m+[m[32m    "how to play", "lesson", "tabs", "partitura", "karaoke version", "instrumental only",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Contenido religioso o político[m[41m[m
-[32m+[m[32m    "worship", "gospel", "cristiano", "religioso", "oración", "alabanza",[m[41m[m
-[32m+[m[32m    "político", "propaganda", "activismo", "protesta",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Géneros electrónicos puros (no industrial)[m[41m[m
-[32m+[m[32m    "edm", "dance pop", "house", "techno", "trance", "dubstep", "drum and bass",[m[41m[m
-[32m+[m[32m    "electro", "synthpop", "eurodance", "hardstyle", "hardcore", "happy hardcore",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Pop comercial y teen pop[m[41m[m
-[32m+[m[32m    "boy band", "girl group", "teen pop", "bubblegum pop", "dance-pop", "pop teen",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Contenido infantil[m[41m[m
-[32m+[m[32m    "infantil", "niños", "kids", "children", "nursery", "lullaby", "canciones infantiles",[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Música para eventos específicos (no bar)[m[41m[m
-[32m+[m[32m    "wedding", "boda", "ceremonia", "graduation", "graduación", "funeral"[m[41m[m
-[32m+[m[32m].map(keyword => keyword.toLowerCase());[m[41m[m
+[32m+[m[32m    // Géneros explícitamente no permitidos[m[41m
+[m
+[32m+[m[32m    "reggaeton", "trap latino", "urbano latino", "bachata", "salsa", "merengue",[m[41m
+[m
+[32m+[m[32m    "cumbia", "vallenato", "ranchera", "corrido", "banda", "norteño", "mariachi",[m[41m
+[m
+[32m+[m[32m    "música popular", "pop latino", "balada romántica", "balada pop",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Términos que indican contenido no musical[m[41m
+[m
+[32m+[m[32m    "podcast", "entrevista", "talk show", "documental", "making of",[m[41m
+[m
+[32m+[m[32m    "behind the scenes", "lyric video", "video oficial", "tutorial", "cover tutorial",[m[41m
+[m
+[32m+[m[32m    "how to play", "lesson", "tabs", "partitura", "karaoke version", "instrumental only",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Contenido religioso o político[m[41m
+[m
+[32m+[m[32m    "worship", "gospel", "cristiano", "religioso", "oración", "alabanza",[m[41m
+[m
+[32m+[m[32m    "político", "propaganda", "activismo", "protesta",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Géneros electrónicos puros (no industrial)[m[41m
+[m
+[32m+[m[32m    "edm", "dance pop", "house", "techno", "trance", "dubstep", "drum and bass",[m[41m
+[m
+[32m+[m[32m    "electro", "synthpop", "eurodance", "hardstyle", "hardcore", "happy hardcore",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Pop comercial y teen pop[m[41m
+[m
+[32m+[m[32m    "boy band", "girl group", "teen pop", "bubblegum pop", "dance-pop", "pop teen",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Contenido infantil[m[41m
+[m
+[32m+[m[32m    "infantil", "niños", "kids", "children", "nursery", "lullaby", "canciones infantiles",[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Música para eventos específicos (no bar)[m[41m
+[m
+[32m+[m[32m    "wedding", "boda", "ceremonia", "graduation", "graduación", "funeral"[m[41m
+[m
+[32m+[m[32m].map(keyword => keyword.toLowerCase());[m[41m
+[m
  [m
-[32m+[m[32m// ❌ TÉRMINOS DE VERSIÓN NO DESEADOS (solo cuando no hay artista permitido)[m[41m[m
-[32m+[m[32mconst UNWANTED_VERSION_KEYWORDS = [[m[41m[m
-[32m+[m[32m    "acoustic cover", "cover acoustic", "karaoke", "tribute band", "cover band",[m[41m[m
-[32m+[m[32m    "tribute version", "piano cover", "guitar cover", "remix", "mashup", "medley",[m[41m[m
-[32m+[m[32m    "live at", "session", "unplugged", "acoustic session", "reaction", "react"[m[41m[m
-[32m+[m[32m];[m[41m[m
+[32m+[m[32m// ❌ TÉRMINOS DE VERSIÓN NO DESEADOS (solo cuando no hay artista permitido)[m[41m
+[m
+[32m+[m[32mconst UNWANTED_VERSION_KEYWORDS = [[m[41m
+[m
+[32m+[m[32m    "acoustic cover", "cover acoustic", "karaoke", "tribute band", "cover band",[m[41m
+[m
+[32m+[m[32m    "tribute version", "piano cover", "guitar cover", "remix", "mashup", "medley",[m[41m
+[m
+[32m+[m[32m    "live at", "session", "unplugged", "acoustic session", "reaction", "react"[m[41m
+[m
+[32m+[m[32m];[m[41m
+[m
  [m
  /**[m
 [31m- * Filtra un array de items de búsqueda de YouTube basado en artistas permitidos y palabras prohibidas.[m
 [31m- * @param {Array} items - Array de items de respuesta de YouTube Search API.[m
 [31m- * @returns {Array} - Array de items filtrados.[m
-[32m+[m[32m * Sistema de puntuación para determinar si un video es apropiado[m[41m[m
-[32m+[m[32m * @param {Object} item - Item de YouTube[m[41m[m
-[32m+[m[32m * @returns {Object} - {score: number, reasons: string[]}[m[41m[m
+[32m+[m[32m * Sistema de puntuación para determinar si un video es apropiado[m[41m
+[m
+[32m+[m[32m * @param {Object} item - Item de YouTube[m[41m
+[m
+[32m+[m[32m * @returns {Object} - {score: number, reasons: string[]}[m[41m
+[m
   */[m
 [31m-function filterMusic(items) {[m
 [31m-    return items.filter(item => {[m
@@ -1355,245 +2091,458 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-        if (FORBIDDEN_KEYWORDS.some(keyword => combinedText.includes(keyword))) {[m
 [31m-            console.log(`Filtrado por palabra prohibida: ${item.snippet.title}`);[m
 [31m-            return false;[m
-[32m+[m[32mfunction calculateMusicScore(item) {[m[41m[m
-[32m+[m[32m    const title = item.snippet.title.toLowerCase();[m[41m[m
-[32m+[m[32m    const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';[m[41m[m
-[32m+[m[32m    const channelTitle = item.snippet.channelTitle.toLowerCase();[m[41m[m
-[32m+[m[32m    const combinedText = `${title} ${description} ${channelTitle}`;[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    let score = 0;[m[41m[m
-[32m+[m[32m    const reasons = [];[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 1. Verificar artistas permitidos (PUNTUACIÓN ALTA)[m[41m[m
-[32m+[m[32m    let containsAllowedArtist = false;[m[41m[m
-[32m+[m[32m    let matchedArtist = '';[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    for (const artist of ALLOWED_ARTISTS) {[m[41m[m
-[32m+[m[32m        // Buscar artista en el título o canal[m[41m[m
-[32m+[m[32m        const artistRegex = new RegExp(`\\b${artist}\\b`, 'i');[m[41m[m
-[32m+[m[32m        if (artistRegex.test(title) || artistRegex.test(channelTitle)) {[m[41m[m
-[32m+[m[32m            containsAllowedArtist = true;[m[41m[m
-[32m+[m[32m            matchedArtist = artist;[m[41m[m
-[32m+[m[32m            score += 100; // Puntuación máxima por artista permitido[m[41m[m
-[32m+[m[32m            reasons.push(`✅ Artista permitido: ${artist}`);[m[41m[m
-[32m+[m[32m            break;[m[41m[m
+[32m+[m[32mfunction calculateMusicScore(item) {[m[41m
+[m
+[32m+[m[32m    const title = item.snippet.title.toLowerCase();[m[41m
+[m
+[32m+[m[32m    const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';[m[41m
+[m
+[32m+[m[32m    const channelTitle = item.snippet.channelTitle.toLowerCase();[m[41m
+[m
+[32m+[m[32m    const combinedText = `${title} ${description} ${channelTitle}`;[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    let score = 0;[m[41m
+[m
+[32m+[m[32m    const reasons = [];[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 1. Verificar artistas permitidos (PUNTUACIÓN ALTA)[m[41m
+[m
+[32m+[m[32m    let containsAllowedArtist = false;[m[41m
+[m
+[32m+[m[32m    let matchedArtist = '';[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    for (const artist of ALLOWED_ARTISTS) {[m[41m
+[m
+[32m+[m[32m        // Buscar artista en el título o canal[m[41m
+[m
+[32m+[m[32m        const artistRegex = new RegExp(`\\b${artist}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m        if (artistRegex.test(title) || artistRegex.test(channelTitle)) {[m[41m
+[m
+[32m+[m[32m            containsAllowedArtist = true;[m[41m
+[m
+[32m+[m[32m            matchedArtist = artist;[m[41m
+[m
+[32m+[m[32m            score += 100; // Puntuación máxima por artista permitido[m[41m
+[m
+[32m+[m[32m            reasons.push(`✅ Artista permitido: ${artist}`);[m[41m
+[m
+[32m+[m[32m            break;[m[41m
+[m
          }[m
 [31m-[m
 [31m-        // Verificar si contiene un artista permitido[m
 [31m-        // Busca coincidencias exactas de palabras enteras en el texto combinado[m
 [31m-        let containsAllowedArtist = false;[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 2. Si no hay artista directo, buscar en descripción[m[41m[m
-[32m+[m[32m    if (!containsAllowedArtist) {[m[41m[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 2. Si no hay artista directo, buscar en descripción[m[41m
+[m
+[32m+[m[32m    if (!containsAllowedArtist) {[m[41m
+[m
          for (const artist of ALLOWED_ARTISTS) {[m
 [31m-            // Usar expresiones regulares con límites de palabra \b para coincidencia exacta[m
 [31m-            const regex = new RegExp(`\\b${artist}\\b`, 'i'); // 'i' para insensible a mayúsculas[m
 [31m-            if (regex.test(combinedText)) {[m
-[32m+[m[32m            const artistRegex = new RegExp(`\\b${artist}\\b`, 'i');[m[41m[m
-[32m+[m[32m            if (artistRegex.test(combinedText)) {[m[41m[m
+[32m+[m[32m            const artistRegex = new RegExp(`\\b${artist}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m            if (artistRegex.test(combinedText)) {[m[41m
+[m
                  containsAllowedArtist = true;[m
 [31m-                break; // Si encuentra uno, no necesita seguir buscando[m
-[32m+[m[32m                matchedArtist = artist;[m[41m[m
-[32m+[m[32m                score += 50; // Puntuación menor si está solo en descripción[m[41m[m
-[32m+[m[32m                reasons.push(`✅ Artista en descripción: ${artist}`);[m[41m[m
-[32m+[m[32m                break;[m[41m[m
+[32m+[m[32m                matchedArtist = artist;[m[41m
+[m
+[32m+[m[32m                score += 50; // Puntuación menor si está solo en descripción[m[41m
+[m
+[32m+[m[32m                reasons.push(`✅ Artista en descripción: ${artist}`);[m[41m
+[m
+[32m+[m[32m                break;[m[41m
+[m
              }[m
          }[m
 [31m-[m
 [31m-        if (!containsAllowedArtist) {[m
 [31m-            console.log(`Filtrado por artista no permitido: ${item.snippet.title}`);[m
 [31m-            return false;[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 3. Verificar géneros permitidos en canal/título[m[41m[m
-[32m+[m[32m    for (const genre of ALLOWED_GENRES) {[m[41m[m
-[32m+[m[32m        const genreRegex = new RegExp(`\\b${genre}\\b`, 'i');[m[41m[m
-[32m+[m[32m        if (genreRegex.test(channelTitle) || genreRegex.test(title)) {[m[41m[m
-[32m+[m[32m            score += 30;[m[41m[m
-[32m+[m[32m            reasons.push(`🎸 Género permitido: ${genre}`);[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 4. Penalizar palabras prohibidas (solo si no hay artista permitido claro)[m[41m[m
-[32m+[m[32m    if (!containsAllowedArtist || score < 80) {[m[41m[m
-[32m+[m[32m        FORBIDDEN_KEYWORDS.forEach(keyword => {[m[41m[m
-[32m+[m[32m            const keywordRegex = new RegExp(`\\b${keyword}\\b`, 'i');[m[41m[m
-[32m+[m[32m            if (keywordRegex.test(combinedText)) {[m[41m[m
-[32m+[m[32m                score -= 40; // Penalización alta[m[41m[m
-[32m+[m[32m                reasons.push(`❌ Género no permitido: ${keyword}`);[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 5. Penalizar versiones no deseadas (solo si no hay artista permitido)[m[41m[m
-[32m+[m[32m    if (!containsAllowedArtist) {[m[41m[m
-[32m+[m[32m        UNWANTED_VERSION_KEYWORDS.forEach(keyword => {[m[41m[m
-[32m+[m[32m            const keywordRegex = new RegExp(`\\b${keyword}\\b`, 'i');[m[41m[m
-[32m+[m[32m            if (keywordRegex.test(title)) {[m[41m[m
-[32m+[m[32m                score -= 20;[m[41m[m
-[32m+[m[32m                reasons.push(`⚠️ Versión no deseada: ${keyword}`);[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 6. Bonus por términos de rock/metal en título[m[41m[m
-[32m+[m[32m    const rockTerms = ["rock", "metal", "punk", "grunge", "hardcore", "heavy", "guitar", "riff"];[m[41m[m
-[32m+[m[32m    rockTerms.forEach(term => {[m[41m[m
-[32m+[m[32m        const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m[m
-[32m+[m[32m        if (termRegex.test(title)) {[m[41m[m
-[32m+[m[32m            score += 15;[m[41m[m
-[32m+[m[32m            reasons.push(`🎵 Término de rock: ${term}`);[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[32m    });[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 7. Penalizar términos de pop comercial[m[41m[m
-[32m+[m[32m    if (!containsAllowedArtist) {[m[41m[m
-[32m+[m[32m        const popTerms = ["pop song", "top 40", "hit single", "radio hit", "chart", "billboard"];[m[41m[m
-[32m+[m[32m        popTerms.forEach(term => {[m[41m[m
-[32m+[m[32m            const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m[m
-[32m+[m[32m            if (termRegex.test(title) || termRegex.test(description)) {[m[41m[m
-[32m+[m[32m                score -= 25;[m[41m[m
-[32m+[m[32m                reasons.push(`📻 Contenido pop comercial: ${term}`);[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 8. Bonus por canales oficiales[m[41m[m
-[32m+[m[32m    const officialTerms = ["official", "vevo", "topic"];[m[41m[m
-[32m+[m[32m    officialTerms.forEach(term => {[m[41m[m
-[32m+[m[32m        const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m[m
-[32m+[m[32m        if (termRegex.test(channelTitle)) {[m[41m[m
-[32m+[m[32m            score += 10;[m[41m[m
-[32m+[m[32m            reasons.push(`🏢 Canal oficial`);[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[32m    });[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // 9. Penalizar videos demasiado cortos o largos (por título)[m[41m[m
-[32m+[m[32m    const durationIndicators = ["short", "clip", "preview", "teaser", "excerpt", "full album", "complete"];[m[41m[m
-[32m+[m[32m    durationIndicators.forEach(term => {[m[41m[m
-[32m+[m[32m        const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m[m
-[32m+[m[32m        if (termRegex.test(title)) {[m[41m[m
-[32m+[m[32m            score -= 10;[m[41m[m
-[32m+[m[32m            reasons.push(`⏱️ Indicador de duración: ${term}`);[m[41m[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 3. Verificar géneros permitidos en canal/título[m[41m
+[m
+[32m+[m[32m    for (const genre of ALLOWED_GENRES) {[m[41m
+[m
+[32m+[m[32m        const genreRegex = new RegExp(`\\b${genre}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m        if (genreRegex.test(channelTitle) || genreRegex.test(title)) {[m[41m
+[m
+[32m+[m[32m            score += 30;[m[41m
+[m
+[32m+[m[32m            reasons.push(`🎸 Género permitido: ${genre}`);[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 4. Penalizar palabras prohibidas (solo si no hay artista permitido claro)[m[41m
+[m
+[32m+[m[32m    if (!containsAllowedArtist || score < 80) {[m[41m
+[m
+[32m+[m[32m        FORBIDDEN_KEYWORDS.forEach(keyword => {[m[41m
+[m
+[32m+[m[32m            const keywordRegex = new RegExp(`\\b${keyword}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m            if (keywordRegex.test(combinedText)) {[m[41m
+[m
+[32m+[m[32m                score -= 40; // Penalización alta[m[41m
+[m
+[32m+[m[32m                reasons.push(`❌ Género no permitido: ${keyword}`);[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 5. Penalizar versiones no deseadas (solo si no hay artista permitido)[m[41m
+[m
+[32m+[m[32m    if (!containsAllowedArtist) {[m[41m
+[m
+[32m+[m[32m        UNWANTED_VERSION_KEYWORDS.forEach(keyword => {[m[41m
+[m
+[32m+[m[32m            const keywordRegex = new RegExp(`\\b${keyword}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m            if (keywordRegex.test(title)) {[m[41m
+[m
+[32m+[m[32m                score -= 20;[m[41m
+[m
+[32m+[m[32m                reasons.push(`⚠️ Versión no deseada: ${keyword}`);[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 6. Bonus por términos de rock/metal en título[m[41m
+[m
+[32m+[m[32m    const rockTerms = ["rock", "metal", "punk", "grunge", "hardcore", "heavy", "guitar", "riff"];[m[41m
+[m
+[32m+[m[32m    rockTerms.forEach(term => {[m[41m
+[m
+[32m+[m[32m        const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m        if (termRegex.test(title)) {[m[41m
+[m
+[32m+[m[32m            score += 15;[m[41m
+[m
+[32m+[m[32m            reasons.push(`🎵 Término de rock: ${term}`);[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[32m    });[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 7. Penalizar términos de pop comercial[m[41m
+[m
+[32m+[m[32m    if (!containsAllowedArtist) {[m[41m
+[m
+[32m+[m[32m        const popTerms = ["pop song", "top 40", "hit single", "radio hit", "chart", "billboard"];[m[41m
+[m
+[32m+[m[32m        popTerms.forEach(term => {[m[41m
+[m
+[32m+[m[32m            const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m            if (termRegex.test(title) || termRegex.test(description)) {[m[41m
+[m
+[32m+[m[32m                score -= 25;[m[41m
+[m
+[32m+[m[32m                reasons.push(`📻 Contenido pop comercial: ${term}`);[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 8. Bonus por canales oficiales[m[41m
+[m
+[32m+[m[32m    const officialTerms = ["official", "vevo", "topic"];[m[41m
+[m
+[32m+[m[32m    officialTerms.forEach(term => {[m[41m
+[m
+[32m+[m[32m        const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m        if (termRegex.test(channelTitle)) {[m[41m
+[m
+[32m+[m[32m            score += 10;[m[41m
+[m
+[32m+[m[32m            reasons.push(`🏢 Canal oficial`);[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[32m    });[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // 9. Penalizar videos demasiado cortos o largos (por título)[m[41m
+[m
+[32m+[m[32m    const durationIndicators = ["short", "clip", "preview", "teaser", "excerpt", "full album", "complete"];[m[41m
+[m
+[32m+[m[32m    durationIndicators.forEach(term => {[m[41m
+[m
+[32m+[m[32m        const termRegex = new RegExp(`\\b${term}\\b`, 'i');[m[41m
+[m
+[32m+[m[32m        if (termRegex.test(title)) {[m[41m
+[m
+[32m+[m[32m            score -= 10;[m[41m
+[m
+[32m+[m[32m            reasons.push(`⏱️ Indicador de duración: ${term}`);[m[41m
+[m
          }[m
-[32m+[m[32m    });[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    return { score, reasons, containsAllowedArtist, matchedArtist };[m[41m[m
-[32m+[m[32m}[m[41m[m
+[32m+[m[32m    });[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    return { score, reasons, containsAllowedArtist, matchedArtist };[m[41m
+[m
+[32m+[m[32m}[m[41m
+[m
  [m
 [31m-        // Si pasa ambas verificaciones, incluirlo[m
 [31m-        return true;[m
-[32m+[m[32m/**[m[41m[m
-[32m+[m[32m * Filtra videos basado en un sistema de puntuación inteligente[m[41m[m
-[32m+[m[32m * @param {Array} items - Array de items de YouTube[m[41m[m
-[32m+[m[32m * @returns {Array} - Items filtrados con metadata[m[41m[m
-[32m+[m[32m */[m[41m[m
-[32m+[m[32mfunction filterMusic(items) {[m[41m[m
-[32m+[m[32m    if (!items || items.length === 0) {[m[41m[m
-[32m+[m[32m        console.log('📭 No hay items para filtrar');[m[41m[m
-[32m+[m[32m        return [];[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    const filtered = [];[m[41m[m
-[32m+[m[32m    const stats = {[m[41m[m
-[32m+[m[32m        total: items.length,[m[41m[m
-[32m+[m[32m        approved: 0,[m[41m[m
-[32m+[m[32m        rejected: 0,[m[41m[m
-[32m+[m[32m        rejectedReasons: {},[m[41m[m
-[32m+[m[32m        scores: [][m[41m[m
-[32m+[m[32m    };[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    items.forEach(item => {[m[41m[m
-[32m+[m[32m        const { score, reasons, containsAllowedArtist, matchedArtist } = calculateMusicScore(item);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Guardar score para estadísticas[m[41m[m
-[32m+[m[32m        stats.scores.push(score);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // UMBRAL DE APROBACIÓN:[m[41m[m
-[32m+[m[32m        // - 70+ puntos: Aprobado automáticamente[m[41m[m
-[32m+[m[32m        // - 50-69: Aprobado si contiene artista permitido[m[41m[m
-[32m+[m[32m        // - Menos de 50: Rechazado[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        let approved = false;[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        if (score >= 70) {[m[41m[m
-[32m+[m[32m            approved = true;[m[41m[m
-[32m+[m[32m        } else if (score >= 50 && containsAllowedArtist) {[m[41m[m
-[32m+[m[32m            approved = true;[m[41m[m
-[32m+[m[32m        } else if (score >= 60 && !containsAllowedArtist) {[m[41m[m
-[32m+[m[32m            // Caso especial: alto score sin artista específico[m[41m[m
-[32m+[m[32m            approved = true;[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        if (approved) {[m[41m[m
-[32m+[m[32m            filtered.push(item);[m[41m[m
-[32m+[m[32m            stats.approved++;[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m            // Agregar metadata de puntuación para debugging[m[41m[m
-[32m+[m[32m            item.filterMetadata = {[m[41m[m
-[32m+[m[32m                score,[m[41m[m
-[32m+[m[32m                artistMatched: matchedArtist || null,[m[41m[m
-[32m+[m[32m                approved: true[m[41m[m
-[32m+[m[32m            };[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m            if (process.env.NODE_ENV === 'development') {[m[41m[m
-[32m+[m[32m                console.log(`✅ Aprobado [${score} pts]: ${item.snippet.title}`);[m[41m[m
-[32m+[m[32m                if (matchedArtist) console.log(`   Artista: ${matchedArtist}`);[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m        } else {[m[41m[m
-[32m+[m[32m            stats.rejected++;[m[41m[m
-[32m+[m[32m            const mainReason = reasons.length > 0 ? reasons.find(r => r.includes('❌') || r.includes('⚠️')) || reasons[0] : 'Score bajo';[m[41m[m
-[32m+[m[32m            const reasonKey = mainReason.replace(/✅|❌|⚠️|🎸|🎵|📻|⏱️|🏢/g, '').trim();[m[41m[m
-[32m+[m[32m            stats.rejectedReasons[reasonKey] = (stats.rejectedReasons[reasonKey] || 0) + 1;[m[41m[m
-[32m+[m[41m            [m
-[32m+[m[32m            // Solo loguear si es útil para debugging[m[41m[m
-[32m+[m[32m            if (process.env.NODE_ENV === 'development') {[m[41m[m
-[32m+[m[32m                console.log(`❌ Rechazado [${score} pts]: ${item.snippet.title}`);[m[41m[m
-[32m+[m[32m                reasons.forEach(reason => console.log(`   ${reason}`));[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m        }[m[41m[m
+[32m+[m[32m/**[m[41m
+[m
+[32m+[m[32m * Filtra videos basado en un sistema de puntuación inteligente[m[41m
+[m
+[32m+[m[32m * @param {Array} items - Array de items de YouTube[m[41m
+[m
+[32m+[m[32m * @returns {Array} - Items filtrados con metadata[m[41m
+[m
+[32m+[m[32m */[m[41m
+[m
+[32m+[m[32mfunction filterMusic(items) {[m[41m
+[m
+[32m+[m[32m    if (!items || items.length === 0) {[m[41m
+[m
+[32m+[m[32m        console.log('📭 No hay items para filtrar');[m[41m
+[m
+[32m+[m[32m        return [];[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    const filtered = [];[m[41m
+[m
+[32m+[m[32m    const stats = {[m[41m
+[m
+[32m+[m[32m        total: items.length,[m[41m
+[m
+[32m+[m[32m        approved: 0,[m[41m
+[m
+[32m+[m[32m        rejected: 0,[m[41m
+[m
+[32m+[m[32m        rejectedReasons: {},[m[41m
+[m
+[32m+[m[32m        scores: [][m[41m
+[m
+[32m+[m[32m    };[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    items.forEach(item => {[m[41m
+[m
+[32m+[m[32m        const { score, reasons, containsAllowedArtist, matchedArtist } = calculateMusicScore(item);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Guardar score para estadísticas[m[41m
+[m
+[32m+[m[32m        stats.scores.push(score);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // UMBRAL DE APROBACIÓN:[m[41m
+[m
+[32m+[m[32m        // - 70+ puntos: Aprobado automáticamente[m[41m
+[m
+[32m+[m[32m        // - 50-69: Aprobado si contiene artista permitido[m[41m
+[m
+[32m+[m[32m        // - Menos de 50: Rechazado[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        let approved = false;[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        if (score >= 70) {[m[41m
+[m
+[32m+[m[32m            approved = true;[m[41m
+[m
+[32m+[m[32m        } else if (score >= 50 && containsAllowedArtist) {[m[41m
+[m
+[32m+[m[32m            approved = true;[m[41m
+[m
+[32m+[m[32m        } else if (score >= 60 && !containsAllowedArtist) {[m[41m
+[m
+[32m+[m[32m            // Caso especial: alto score sin artista específico[m[41m
+[m
+[32m+[m[32m            approved = true;[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        if (approved) {[m[41m
+[m
+[32m+[m[32m            filtered.push(item);[m[41m
+[m
+[32m+[m[32m            stats.approved++;[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m            // Agregar metadata de puntuación para debugging[m[41m
+[m
+[32m+[m[32m            item.filterMetadata = {[m[41m
+[m
+[32m+[m[32m                score,[m[41m
+[m
+[32m+[m[32m                artistMatched: matchedArtist || null,[m[41m
+[m
+[32m+[m[32m                approved: true[m[41m
+[m
+[32m+[m[32m            };[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m            if (process.env.NODE_ENV === 'development') {[m[41m
+[m
+[32m+[m[32m                console.log(`✅ Aprobado [${score} pts]: ${item.snippet.title}`);[m[41m
+[m
+[32m+[m[32m                if (matchedArtist) console.log(`   Artista: ${matchedArtist}`);[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m        } else {[m[41m
+[m
+[32m+[m[32m            stats.rejected++;[m[41m
+[m
+[32m+[m[32m            const mainReason = reasons.length > 0 ? reasons.find(r => r.includes('❌') || r.includes('⚠️')) || reasons[0] : 'Score bajo';[m[41m
+[m
+[32m+[m[32m            const reasonKey = mainReason.replace(/✅|❌|⚠️|🎸|🎵|📻|⏱️|🏢/g, '').trim();[m[41m
+[m
+[32m+[m[32m            stats.rejectedReasons[reasonKey] = (stats.rejectedReasons[reasonKey] || 0) + 1;[m[41m
+[m
+[32m+[m[41m            
+[m
+[32m+[m[32m            // Solo loguear si es útil para debugging[m[41m
+[m
+[32m+[m[32m            if (process.env.NODE_ENV === 'development') {[m[41m
+[m
+[32m+[m[32m                console.log(`❌ Rechazado [${score} pts]: ${item.snippet.title}`);[m[41m
+[m
+[32m+[m[32m                reasons.forEach(reason => console.log(`   ${reason}`));[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
      });[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Log de estadísticas[m[41m[m
-[32m+[m[32m    const avgScore = stats.scores.length > 0 ? Math.round(stats.scores.reduce((a, b) => a + b) / stats.scores.length) : 0;[m[41m[m
-[32m+[m[32m    const approvalRate = Math.round((stats.approved / stats.total) * 100);[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    console.log(`📊 Filtro de música:`);[m[41m[m
-[32m+[m[32m    console.log(`   Total: ${stats.total} videos`);[m[41m[m
-[32m+[m[32m    console.log(`   Aprobados: ${stats.approved} (${approvalRate}%)`);[m[41m[m
-[32m+[m[32m    console.log(`   Rechazados: ${stats.rejected}`);[m[41m[m
-[32m+[m[32m    console.log(`   Score promedio: ${avgScore}`);[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    if (Object.keys(stats.rejectedReasons).length > 0) {[m[41m[m
-[32m+[m[32m        console.log(`   Razones de rechazo:`);[m[41m[m
-[32m+[m[32m        Object.entries(stats.rejectedReasons).forEach(([reason, count]) => {[m[41m[m
-[32m+[m[32m            console.log(`     - ${reason}: ${count}`);[m[41m[m
-[32m+[m[32m        });[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    return filtered;[m[41m[m
-[32m+[m[32m}[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Función auxiliar para verificar si un término específico está permitido[m[41m[m
-[32m+[m[32mfunction isArtistAllowed(artistName) {[m[41m[m
-[32m+[m[32m    return ALLOWED_ARTISTS.has(artistName.toLowerCase());[m[41m[m
-[32m+[m[32m}[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m// Función auxiliar para verificar si un género está permitido[m[41m[m
-[32m+[m[32mfunction isGenreAllowed(genreName) {[m[41m[m
-[32m+[m[32m    return ALLOWED_GENRES.has(genreName.toLowerCase());[m[41m[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Log de estadísticas[m[41m
+[m
+[32m+[m[32m    const avgScore = stats.scores.length > 0 ? Math.round(stats.scores.reduce((a, b) => a + b) / stats.scores.length) : 0;[m[41m
+[m
+[32m+[m[32m    const approvalRate = Math.round((stats.approved / stats.total) * 100);[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    console.log(`📊 Filtro de música:`);[m[41m
+[m
+[32m+[m[32m    console.log(`   Total: ${stats.total} videos`);[m[41m
+[m
+[32m+[m[32m    console.log(`   Aprobados: ${stats.approved} (${approvalRate}%)`);[m[41m
+[m
+[32m+[m[32m    console.log(`   Rechazados: ${stats.rejected}`);[m[41m
+[m
+[32m+[m[32m    console.log(`   Score promedio: ${avgScore}`);[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    if (Object.keys(stats.rejectedReasons).length > 0) {[m[41m
+[m
+[32m+[m[32m        console.log(`   Razones de rechazo:`);[m[41m
+[m
+[32m+[m[32m        Object.entries(stats.rejectedReasons).forEach(([reason, count]) => {[m[41m
+[m
+[32m+[m[32m            console.log(`     - ${reason}: ${count}`);[m[41m
+[m
+[32m+[m[32m        });[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    return filtered;[m[41m
+[m
+[32m+[m[32m}[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Función auxiliar para verificar si un término específico está permitido[m[41m
+[m
+[32m+[m[32mfunction isArtistAllowed(artistName) {[m[41m
+[m
+[32m+[m[32m    return ALLOWED_ARTISTS.has(artistName.toLowerCase());[m[41m
+[m
+[32m+[m[32m}[m[41m
+[m
+[32m+[m[41m
+[m
+[32m+[m[32m// Función auxiliar para verificar si un género está permitido[m[41m
+[m
+[32m+[m[32mfunction isGenreAllowed(genreName) {[m[41m
+[m
+[32m+[m[32m    return ALLOWED_GENRES.has(genreName.toLowerCase());[m[41m
+[m
  }[m
  [m
 [31m-module.exports = { filterMusic }; // Exporta la función para usarla en otros archivos[m
 \ No newline at end of file[m
-[32m+[m[32mmodule.exports = {[m[41m [m
-[32m+[m[32m    filterMusic,[m[41m [m
-[32m+[m[32m    calculateMusicScore,[m[41m[m
-[32m+[m[32m    isArtistAllowed,[m[41m[m
-[32m+[m[32m    isGenreAllowed,[m[41m[m
-[32m+[m[32m    ALLOWED_ARTISTS: Array.from(ALLOWED_ARTISTS),[m[41m[m
-[32m+[m[32m    ALLOWED_GENRES: Array.from(ALLOWED_GENRES)[m[41m[m
+[32m+[m[32mmodule.exports = {[m[41m 
+[m
+[32m+[m[32m    filterMusic,[m[41m 
+[m
+[32m+[m[32m    calculateMusicScore,[m[41m
+[m
+[32m+[m[32m    isArtistAllowed,[m[41m
+[m
+[32m+[m[32m    isGenreAllowed,[m[41m
+[m
+[32m+[m[32m    ALLOWED_ARTISTS: Array.from(ALLOWED_ARTISTS),[m[41m
+[m
+[32m+[m[32m    ALLOWED_GENRES: Array.from(ALLOWED_GENRES)[m[41m
+[m
 [32m+[m[32m};[m
 \ No newline at end of file[m
 [1mdiff --git a/package.json b/package.json[m
@@ -1605,30 +2554,48 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
    "scripts": {[m
      "start": "node backend/server.js",[m
 [31m-    "dev": "nodemon backend/server.js"[m
-[32m+[m[32m    "dev": "nodemon backend/server.js",[m[41m[m
-[32m+[m[32m    "test": "echo \"No hay tests configurados\" && exit 0",[m[41m[m
-[32m+[m[32m    "lint": "echo \"No hay linter configurado\" && exit 0",[m[41m[m
-[32m+[m[32m    "setup": "echo \"Configurando MOYOFY...\" && npm install",[m[41m[m
-[32m+[m[32m    "deploy": "echo \"Desplegando MOYOFY...\" && git push origin main"[m[41m[m
+[32m+[m[32m    "dev": "nodemon backend/server.js",[m[41m
+[m
+[32m+[m[32m    "test": "echo \"No hay tests configurados\" && exit 0",[m[41m
+[m
+[32m+[m[32m    "lint": "echo \"No hay linter configurado\" && exit 0",[m[41m
+[m
+[32m+[m[32m    "setup": "echo \"Configurando MOYOFY...\" && npm install",[m[41m
+[m
+[32m+[m[32m    "deploy": "echo \"Desplegando MOYOFY...\" && git push origin main"[m[41m
+[m
    },[m
 [31m-  "keywords": ["music", "social", "gamification", "bar", "rock"],[m
-[32m+[m[32m  "keywords": [[m[41m[m
-[32m+[m[32m    "music",[m[41m[m
-[32m+[m[32m    "social",[m[41m[m
-[32m+[m[32m    "gamification",[m[41m[m
-[32m+[m[32m    "bar",[m[41m[m
-[32m+[m[32m    "rock",[m[41m[m
-[32m+[m[32m    "metal",[m[41m[m
-[32m+[m[32m    "youtube",[m[41m[m
-[32m+[m[32m    "playlist",[m[41m[m
-[32m+[m[32m    "entertainment"[m[41m[m
-[32m+[m[32m  ],[m[41m[m
+[32m+[m[32m  "keywords": [[m[41m
+[m
+[32m+[m[32m    "music",[m[41m
+[m
+[32m+[m[32m    "social",[m[41m
+[m
+[32m+[m[32m    "gamification",[m[41m
+[m
+[32m+[m[32m    "bar",[m[41m
+[m
+[32m+[m[32m    "rock",[m[41m
+[m
+[32m+[m[32m    "metal",[m[41m
+[m
+[32m+[m[32m    "youtube",[m[41m
+[m
+[32m+[m[32m    "playlist",[m[41m
+[m
+[32m+[m[32m    "entertainment"[m[41m
+[m
+[32m+[m[32m  ],[m[41m
+[m
    "author": "Abundia.io",[m
    "license": "MIT",[m
    "engines": {[m
 [31m-    "node": "22.x"[m
-[32m+[m[32m    "node": ">=18.0.0",[m[41m[m
-[32m+[m[32m    "npm": ">=8.0.0"[m[41m[m
+[32m+[m[32m    "node": ">=18.0.0",[m[41m
+[m
+[32m+[m[32m    "npm": ">=8.0.0"[m[41m
+[m
    },[m
    "dependencies": {[m
      "cors": "^2.8.5",[m
@@ -1636,19 +2603,32 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
      "express": "^4.18.2",[m
      "googleapis": "^131.0.0"[m
 [31m-  }[m
-[32m+[m[32m  },[m[41m[m
-[32m+[m[32m  "devDependencies": {[m[41m[m
-[32m+[m[32m    "nodemon": "^3.0.1"[m[41m[m
-[32m+[m[32m  },[m[41m[m
-[32m+[m[32m  "repository": {[m[41m[m
-[32m+[m[32m    "type": "git",[m[41m[m
-[32m+[m[32m    "url": "https://github.com/tu-usuario/moyofy-premium.git"[m[41m[m
-[32m+[m[32m  },[m[41m[m
-[32m+[m[32m  "bugs": {[m[41m[m
-[32m+[m[32m    "url": "https://github.com/tu-usuario/moyofy-premium/issues"[m[41m[m
-[32m+[m[32m  },[m[41m[m
-[32m+[m[32m  "homepage": "https://github.com/tu-usuario/moyofy-premium#readme",[m[41m[m
-[32m+[m[32m  "private": true[m[41m[m
+[32m+[m[32m  },[m[41m
+[m
+[32m+[m[32m  "devDependencies": {[m[41m
+[m
+[32m+[m[32m    "nodemon": "^3.0.1"[m[41m
+[m
+[32m+[m[32m  },[m[41m
+[m
+[32m+[m[32m  "repository": {[m[41m
+[m
+[32m+[m[32m    "type": "git",[m[41m
+[m
+[32m+[m[32m    "url": "https://github.com/tu-usuario/moyofy-premium.git"[m[41m
+[m
+[32m+[m[32m  },[m[41m
+[m
+[32m+[m[32m  "bugs": {[m[41m
+[m
+[32m+[m[32m    "url": "https://github.com/tu-usuario/moyofy-premium/issues"[m[41m
+[m
+[32m+[m[32m  },[m[41m
+[m
+[32m+[m[32m  "homepage": "https://github.com/tu-usuario/moyofy-premium#readme",[m[41m
+[m
+[32m+[m[32m  "private": true[m[41m
+[m
  }[m
 \ No newline at end of file[m
 [1mdiff --git a/public/index.html b/public/index.html[m
@@ -1660,7 +2640,8 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>[m
    <title>MOYOFY · Rafa's Bar</title>[m
 [31m-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css  ">[m
-[32m+[m[32m  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">[m[41m[m
+[32m+[m[32m  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">[m[41m
+[m
    <style>[m
      :root {[m
        --primary: #ff004c;[m
@@ -1668,31 +2649,56 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
        pointer-events: none;[m
        z-index: 1000;[m
      }[m
-[32m+[m[41m    [m
-[32m+[m[32m    .change-username-btn {[m[41m[m
-[32m+[m[32m      background: transparent;[m[41m[m
-[32m+[m[32m      border: 1px solid var(--primary);[m[41m[m
-[32m+[m[32m      color: var(--primary);[m[41m[m
-[32m+[m[32m      padding: 8px 15px;[m[41m[m
-[32m+[m[32m      border-radius: 20px;[m[41m[m
-[32m+[m[32m      font-size: 0.9rem;[m[41m[m
-[32m+[m[32m      margin-top: 10px;[m[41m[m
-[32m+[m[32m      cursor: pointer;[m[41m[m
-[32m+[m[32m      transition: all 0.3s ease;[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    .change-username-btn:hover {[m[41m[m
-[32m+[m[32m      background: rgba(255, 0, 76, 0.1);[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    .filter-stats {[m[41m[m
-[32m+[m[32m      background: rgba(108, 117, 125, 0.15);[m[41m[m
-[32m+[m[32m      border: 1px solid rgba(108, 117, 125, 0.3);[m[41m[m
-[32m+[m[32m      border-radius: 10px;[m[41m[m
-[32m+[m[32m      padding: 10px 15px;[m[41m[m
-[32m+[m[32m      margin: 10px 0;[m[41m[m
-[32m+[m[32m      font-size: 0.9rem;[m[41m[m
-[32m+[m[32m    }[m[41m[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    .change-username-btn {[m[41m
+[m
+[32m+[m[32m      background: transparent;[m[41m
+[m
+[32m+[m[32m      border: 1px solid var(--primary);[m[41m
+[m
+[32m+[m[32m      color: var(--primary);[m[41m
+[m
+[32m+[m[32m      padding: 8px 15px;[m[41m
+[m
+[32m+[m[32m      border-radius: 20px;[m[41m
+[m
+[32m+[m[32m      font-size: 0.9rem;[m[41m
+[m
+[32m+[m[32m      margin-top: 10px;[m[41m
+[m
+[32m+[m[32m      cursor: pointer;[m[41m
+[m
+[32m+[m[32m      transition: all 0.3s ease;[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    .change-username-btn:hover {[m[41m
+[m
+[32m+[m[32m      background: rgba(255, 0, 76, 0.1);[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    .filter-stats {[m[41m
+[m
+[32m+[m[32m      background: rgba(108, 117, 125, 0.15);[m[41m
+[m
+[32m+[m[32m      border: 1px solid rgba(108, 117, 125, 0.3);[m[41m
+[m
+[32m+[m[32m      border-radius: 10px;[m[41m
+[m
+[32m+[m[32m      padding: 10px 15px;[m[41m
+[m
+[32m+[m[32m      margin: 10px 0;[m[41m
+[m
+[32m+[m[32m      font-size: 0.9rem;[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
    </style>[m
  </head>[m
  <body>[m
@@ -1700,7 +2706,8 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
      [m
      document.addEventListener('DOMContentLoaded', () => {[m
        console.log('🚀 MOYOFY PREMIUM v2 cargado');[m
-[32m+[m[32m      console.log('📡 API Base:', API_BASE);[m[41m[m
+[32m+[m[32m      console.log('📡 API Base:', API_BASE);[m[41m
+[m
        [m
        // Cargar perfil de usuario si existe en localStorage[m
        const savedUser = localStorage.getItem('moyofy_user');[m
@@ -1708,25 +2715,41 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-        currentUser = JSON.parse(savedUser);[m
 [31m-        showUserProfile();[m
 [31m-        loadUserRanking();[m
-[32m+[m[32m        try {[m[41m[m
-[32m+[m[32m          currentUser = JSON.parse(savedUser);[m[41m[m
-[32m+[m[32m          showUserProfile();[m[41m[m
-[32m+[m[32m          loadUserRanking();[m[41m[m
-[32m+[m[32m        } catch (e) {[m[41m[m
-[32m+[m[32m          console.error('Error cargando usuario:', e);[m[41m[m
-[32m+[m[32m          localStorage.removeItem('moyofy_user');[m[41m[m
-[32m+[m[32m          showNicknameSection();[m[41m[m
-[32m+[m[32m        }[m[41m[m
+[32m+[m[32m        try {[m[41m
+[m
+[32m+[m[32m          currentUser = JSON.parse(savedUser);[m[41m
+[m
+[32m+[m[32m          showUserProfile();[m[41m
+[m
+[32m+[m[32m          loadUserRanking();[m[41m
+[m
+[32m+[m[32m        } catch (e) {[m[41m
+[m
+[32m+[m[32m          console.error('Error cargando usuario:', e);[m[41m
+[m
+[32m+[m[32m          localStorage.removeItem('moyofy_user');[m[41m
+[m
+[32m+[m[32m          showNicknameSection();[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
        } else {[m
          showNicknameSection();[m
        }[m
-[32m+[m[41m      [m
-[32m+[m[32m      // Permitir búsqueda con Enter[m[41m[m
-[32m+[m[32m      document.getElementById('song-search').addEventListener('keypress', (e) => {[m[41m[m
-[32m+[m[32m        if (e.key === 'Enter') {[m[41m[m
-[32m+[m[32m          searchSongs();[m[41m[m
-[32m+[m[32m        }[m[41m[m
-[32m+[m[32m      });[m[41m[m
+[32m+[m[41m      
+[m
+[32m+[m[32m      // Permitir búsqueda con Enter[m[41m
+[m
+[32m+[m[32m      document.getElementById('song-search').addEventListener('keypress', (e) => {[m[41m
+[m
+[32m+[m[32m        if (e.key === 'Enter') {[m[41m
+[m
+[32m+[m[32m          searchSongs();[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
+[32m+[m[32m      });[m[41m
+[m
      });[m
      [m
      function showNicknameSection() {[m
@@ -1735,18 +2758,28 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
      [m
      function setNickname() {[m
 [31m-      const nickname = document.getElementById('nickname').value.trim();[m
-[32m+[m[32m      const nicknameInput = document.getElementById('nickname');[m[41m[m
-[32m+[m[32m      const nickname = nicknameInput.value.trim();[m[41m[m
-[32m+[m[41m      [m
+[32m+[m[32m      const nicknameInput = document.getElementById('nickname');[m[41m
+[m
+[32m+[m[32m      const nickname = nicknameInput.value.trim();[m[41m
+[m
+[32m+[m[41m      
+[m
        if (!nickname || nickname.length < 3) {[m
          showMessage('⚠️ Ingresa un apodo válido (mínimo 3 caracteres)', 'warning');[m
-[32m+[m[32m        nicknameInput.focus();[m[41m[m
-[32m+[m[32m        return;[m[41m[m
-[32m+[m[32m      }[m[41m[m
-[32m+[m[41m      [m
-[32m+[m[32m      if (nickname.length > 20) {[m[41m[m
-[32m+[m[32m        showMessage('⚠️ El apodo no puede tener más de 20 caracteres', 'warning');[m[41m[m
-[32m+[m[32m        nicknameInput.focus();[m[41m[m
+[32m+[m[32m        nicknameInput.focus();[m[41m
+[m
+[32m+[m[32m        return;[m[41m
+[m
+[32m+[m[32m      }[m[41m
+[m
+[32m+[m[41m      
+[m
+[32m+[m[32m      if (nickname.length > 20) {[m[41m
+[m
+[32m+[m[32m        showMessage('⚠️ El apodo no puede tener más de 20 caracteres', 'warning');[m[41m
+[m
+[32m+[m[32m        nicknameInput.focus();[m[41m
+[m
          return;[m
        }[m
        [m
@@ -1755,24 +2788,30 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
          points: 100,[m
          level: 1,[m
 [31m-        songsAdded: 0[m
-[32m+[m[32m        songsAdded: 0,[m[41m[m
-[32m+[m[32m        joined: new Date().toISOString()[m[41m[m
+[32m+[m[32m        songsAdded: 0,[m[41m
+[m
+[32m+[m[32m        joined: new Date().toISOString()[m[41m
+[m
        };[m
        [m
        localStorage.setItem('moyofy_user', JSON.stringify(currentUser));[m
        showUserProfile();[m
        loadUserRanking();[m
        showMessage(`🎉 ¡Bienvenido ${nickname} al Rafa's Bar!`, 'success');[m
-[32m+[m[41m      [m
-[32m+[m[32m      // Limpiar input[m[41m[m
-[32m+[m[32m      nicknameInput.value = '';[m[41m[m
+[32m+[m[41m      
+[m
+[32m+[m[32m      // Limpiar input[m[41m
+[m
+[32m+[m[32m      nicknameInput.value = '';[m[41m
+[m
      }[m
      [m
      async function searchSongs() {[m
        const query = document.getElementById('song-search').value.trim();[m
        if (!query) {[m
          showMessage('❌ Ingresa el nombre de una canción o artista', 'error');[m
-[32m+[m[32m        document.getElementById('song-search').focus();[m[41m[m
+[32m+[m[32m        document.getElementById('song-search').focus();[m[41m
+[m
          return;[m
        }[m
        [m
@@ -1780,48 +2819,60 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
          return;[m
        }[m
        [m
-[32m+[m[32m      // Mostrar estado de carga[m[41m[m
+[32m+[m[32m      // Mostrar estado de carga[m[41m
+[m
        document.getElementById('results-container').innerHTML = `[m
          <div class="loading">[m
            <div class="spinner"></div>[m
 [31m-          <p>Buscando canciones... <strong>${query}</strong></p>[m
-[32m+[m[32m          <p>Buscando canciones de rock y metal...</p>[m[41m[m
-[32m+[m[32m          <p style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">[m[41m[m
-[32m+[m[32m            <strong>${query}</strong>[m[41m[m
-[32m+[m[32m          </p>[m[41m[m
+[32m+[m[32m          <p>Buscando canciones de rock y metal...</p>[m[41m
+[m
+[32m+[m[32m          <p style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">[m[41m
+[m
+[32m+[m[32m            <strong>${query}</strong>[m[41m
+[m
+[32m+[m[32m          </p>[m[41m
+[m
          </div>[m
        `;[m
        [m
        try {[m
 [31m-        const response = await fetch(`${API_BASE}/search`, { // Llama a /search[m
-[32m+[m[32m        const response = await fetch(`${API_BASE}/search`, {[m[41m[m
+[32m+[m[32m        const response = await fetch(`${API_BASE}/search`, {[m[41m
+[m
            method: 'POST',[m
            headers: {[m
              'Content-Type': 'application/json',[m
            },[m
 [31m-          body: JSON.stringify({ q: query }) // Envia query en el body[m
-[32m+[m[32m          body: JSON.stringify({ q: query })[m[41m[m
+[32m+[m[32m          body: JSON.stringify({ q: query })[m[41m
+[m
          });[m
  [m
          if (!response.ok) {[m
 [31m-          throw new Error(`HTTP error! status: ${response.status}`);[m
-[32m+[m[32m          throw new Error(`Error HTTP: ${response.status}`);[m[41m[m
+[32m+[m[32m          throw new Error(`Error HTTP: ${response.status}`);[m[41m
+[m
          }[m
  [m
 [31m-        const data = await response.json(); // Espera respuesta JSON[m
-[32m+[m[32m        const data = await response.json();[m[41m[m
+[32m+[m[32m        const data = await response.json();[m[41m
+[m
          [m
 [31m-        if (!data.ok && data.error) {[m
 [31m-          throw new Error(data.error);[m
-[32m+[m[32m        if (!data.ok) {[m[41m[m
-[32m+[m[32m          throw new Error(data.error || 'Error en la búsqueda');[m[41m[m
+[32m+[m[32m        if (!data.ok) {[m[41m
+[m
+[32m+[m[32m          throw new Error(data.error || 'Error en la búsqueda');[m[41m
+[m
          }[m
          [m
          displaySearchResults(data.items, data.filterStats);[m
          [m
          if (data.items && data.items.length > 0) {[m
 [31m-          showMessage(`✅ ¡Encontramos ${data.items.length} canciones para ti!`, 'success');[m
-[32m+[m[32m          showMessage(`✅ ¡Encontramos ${data.items.length} canciones apropiadas para el bar!`, 'success');[m[41m[m
+[32m+[m[32m          showMessage(`✅ ¡Encontramos ${data.items.length} canciones apropiadas para el bar!`, 'success');[m[41m
+[m
          } else {[m
            showMessage('🔍 No encontramos canciones que cumplan con los criterios del bar', 'warning');[m
          }[m
@@ -1830,12 +2881,18 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
          document.getElementById('results-container').innerHTML = `[m
            <div class="message error">[m
 [31m-            <i class="fas fa-exclamation-circle"></i> ${error.message || 'Error desconocido al buscar canciones'}[m
-[32m+[m[32m            <i class="fas fa-exclamation-circle"></i>[m[41m [m
-[32m+[m[32m            <strong>Error al buscar canciones</strong><br>[m[41m[m
-[32m+[m[32m            <small>${error.message || 'Intenta de nuevo más tarde'}</small>[m[41m[m
-[32m+[m[32m            <p style="margin-top: 10px; font-size: 0.9rem;">[m[41m[m
-[32m+[m[32m              Tip: Busca por artista o canción específica (ej: "Queen Bohemian Rhapsody", "Metallica Enter Sandman")[m[41m[m
-[32m+[m[32m            </p>[m[41m[m
+[32m+[m[32m            <i class="fas fa-exclamation-circle"></i>[m[41m 
+[m
+[32m+[m[32m            <strong>Error al buscar canciones</strong><br>[m[41m
+[m
+[32m+[m[32m            <small>${error.message || 'Intenta de nuevo más tarde'}</small>[m[41m
+[m
+[32m+[m[32m            <p style="margin-top: 10px; font-size: 0.9rem;">[m[41m
+[m
+[32m+[m[32m              Tip: Busca por artista o canción específica (ej: "Queen Bohemian Rhapsody", "Metallica Enter Sandman")[m[41m
+[m
+[32m+[m[32m            </p>[m[41m
+[m
            </div>[m
          `;[m
        }[m
@@ -1845,16 +2902,25 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
              <p style="margin-top: 10px; font-size: 0.9rem; color: #ddd;">[m
 [31m-              ⚠️ Recuerda: Solo se permiten géneros rock y sus variantes (incluyendo industrial, alternativo, etc.).[m
 [31m-              <br>Prueba con términos como "<strong>Queen</strong>", "<strong>Rush</strong>", "<strong>Metallica</strong>", "<strong>Pantera</strong>", etc.[m
-[32m+[m[32m              ⚠️ Recuerda: Solo se permiten géneros rock y sus variantes.<br>[m[41m[m
-[32m+[m[32m              <strong>Sugerencias:</strong>[m[41m[m
+[32m+[m[32m              ⚠️ Recuerda: Solo se permiten géneros rock y sus variantes.<br>[m[41m
+[m
+[32m+[m[32m              <strong>Sugerencias:</strong>[m[41m
+[m
              </p>[m
-[32m+[m[32m            <ul style="text-align: left; margin-top: 10px; padding-left: 20px; font-size: 0.9rem;">[m[41m[m
-[32m+[m[32m              <li>"Queen Bohemian Rhapsody"</li>[m[41m[m
-[32m+[m[32m              <li>"Metallica Enter Sandman"</li>[m[41m[m
-[32m+[m[32m              <li>"Led Zeppelin Stairway to Heaven"</li>[m[41m[m
-[32m+[m[32m              <li>"AC/DC Back in Black"</li>[m[41m[m
-[32m+[m[32m              <li>"Pantera Cowboys from Hell"</li>[m[41m[m
-[32m+[m[32m            </ul>[m[41m[m
+[32m+[m[32m            <ul style="text-align: left; margin-top: 10px; padding-left: 20px; font-size: 0.9rem;">[m[41m
+[m
+[32m+[m[32m              <li>"Queen Bohemian Rhapsody"</li>[m[41m
+[m
+[32m+[m[32m              <li>"Metallica Enter Sandman"</li>[m[41m
+[m
+[32m+[m[32m              <li>"Led Zeppelin Stairway to Heaven"</li>[m[41m
+[m
+[32m+[m[32m              <li>"AC/DC Back in Black"</li>[m[41m
+[m
+[32m+[m[32m              <li>"Pantera Cowboys from Hell"</li>[m[41m
+[m
+[32m+[m[32m            </ul>[m[41m
+[m
            </div>[m
          `;[m
          return;[m
@@ -1862,48 +2928,69 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
        [m
        let html = '';[m
        [m
-[32m+[m[32m      // Mostrar estadísticas de filtrado[m[41m[m
+[32m+[m[32m      // Mostrar estadísticas de filtrado[m[41m
+[m
        if (stats) {[m
          html += `[m
 [31m-          <div class="message info" style="background: rgba(108, 117, 125, 0.15); border: 1px solid rgba(108, 117, 125, 0.3);">[m
 [31m-            <i class="fas fa-filter"></i> Resultados filtrados: ${stats.approved}/${stats.totalResults} [m
 [31m-            (${stats.approvalRate}%) aprobados para Rafa's Bar[m
-[32m+[m[32m          <div class="filter-stats">[m[41m[m
-[32m+[m[32m            <i class="fas fa-filter"></i>[m[41m [m
-[32m+[m[32m            <strong>Filtro activo:</strong> ${stats.approved}/${stats.totalResults} aprobados (${stats.approvalRate}%)<br>[m[41m[m
-[32m+[m[32m            <small>Búsqueda: "${stats.query || 'rock'}"</small>[m[41m[m
+[32m+[m[32m          <div class="filter-stats">[m[41m
+[m
+[32m+[m[32m            <i class="fas fa-filter"></i>[m[41m 
+[m
+[32m+[m[32m            <strong>Filtro activo:</strong> ${stats.approved}/${stats.totalResults} aprobados (${stats.approvalRate}%)<br>[m[41m
+[m
+[32m+[m[32m            <small>Búsqueda: "${stats.query || 'rock'}"</small>[m[41m
+[m
            </div>[m
          `;[m
        }[m
        [m
-[32m+[m[32m      // Generar lista de canciones[m[41m[m
+[32m+[m[32m      // Generar lista de canciones[m[41m
+[m
        items.forEach((item, index) => {[m
 [31m-        // Extraer el artista del título (simplificado, mejorable)[m
-[32m+[m[32m        const title = item.snippet.title;[m[41m[m
-[32m+[m[32m        const videoId = item.id.videoId;[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Extraer artista del título o canal[m[41m[m
+[32m+[m[32m        const title = item.snippet.title;[m[41m
+[m
+[32m+[m[32m        const videoId = item.id.videoId;[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Extraer artista del título o canal[m[41m
+[m
          let artist = 'Artista desconocido';[m
          if (item.snippet.channelTitle && !item.snippet.channelTitle.toLowerCase().includes('vevo')) {[m
 [31m-            artist = item.snippet.channelTitle;[m
 [31m-        } else if (item.snippet.title.includes('-')) {[m
 [31m-            artist = item.snippet.title.split('-')[0].trim();[m
-[32m+[m[32m          artist = item.snippet.channelTitle;[m[41m[m
-[32m+[m[32m        } else if (title.includes('-')) {[m[41m[m
-[32m+[m[32m          artist = title.split('-')[0].trim();[m[41m[m
-[32m+[m[32m        } else if (title.includes('by')) {[m[41m[m
-[32m+[m[32m          artist = title.split('by')[1]?.trim() || item.snippet.channelTitle;[m[41m[m
+[32m+[m[32m          artist = item.snippet.channelTitle;[m[41m
+[m
+[32m+[m[32m        } else if (title.includes('-')) {[m[41m
+[m
+[32m+[m[32m          artist = title.split('-')[0].trim();[m[41m
+[m
+[32m+[m[32m        } else if (title.includes('by')) {[m[41m
+[m
+[32m+[m[32m          artist = title.split('by')[1]?.trim() || item.snippet.channelTitle;[m[41m
+[m
          }[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Limitar longitud del título para display[m[41m[m
-[32m+[m[32m        const displayTitle = title.length > 60 ? title.substring(0, 60) + '...' : title;[m[41m[m
-[32m+[m[41m        [m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Limitar longitud del título para display[m[41m
+[m
+[32m+[m[32m        const displayTitle = title.length > 60 ? title.substring(0, 60) + '...' : title;[m[41m
+[m
+[32m+[m[41m        
+[m
          html += `[m
 [31m-          <div class="song-item" onclick="addSong('${item.id.videoId}', '${item.snippet.title.replace(/'/g, "\\'")}', this)">[m
-[32m+[m[32m          <div class="song-item" onclick="addSong('${videoId}', '${title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', this)">[m[41m[m
+[32m+[m[32m          <div class="song-item" onclick="addSong('${videoId}', '${title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', this)">[m[41m
+[m
              <div class="song-info">[m
 [31m-              <div class="song-title">${item.snippet.title}</div>[m
-[32m+[m[32m              <div class="song-title">${displayTitle}</div>[m[41m[m
+[32m+[m[32m              <div class="song-title">${displayTitle}</div>[m[41m
+[m
                <div class="song-artist">${artist}</div>[m
              </div>[m
              <button class="add-btn">[m
@@ -1912,44 +2999,56 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
          button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AGREGANDO...';[m
          [m
 [31m-        const response = await fetch(`${API_BASE}/add-to-playlist`, { // Llama a /add-to-playlist[m
-[32m+[m[32m        const response = await fetch(`${API_BASE}/add-to-playlist`, {[m[41m[m
+[32m+[m[32m        const response = await fetch(`${API_BASE}/add-to-playlist`, {[m[41m
+[m
            method: 'POST',[m
            headers: {[m
              'Content-Type': 'application/json',[m
            },[m
            body: JSON.stringify({[m
 [31m-            videoId: videoId // Solo envia videoId[m
-[32m+[m[32m            videoId: videoId,[m[41m[m
-[32m+[m[32m            title: title[m[41m[m
+[32m+[m[32m            videoId: videoId,[m[41m
+[m
+[32m+[m[32m            title: title[m[41m
+[m
            })[m
          });[m
          [m
 [31m-        const data = await response.json(); // Espera respuesta JSON[m
-[32m+[m[32m        const data = await response.json();[m[41m[m
+[32m+[m[32m        const data = await response.json();[m[41m
+[m
          [m
          if (data.ok) {[m
-[32m+[m[32m          // Animación de éxito[m[41m[m
+[32m+[m[32m          // Animación de éxito[m[41m
+[m
            element.classList.add('bounce');[m
            element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';[m
-[32m+[m[32m          element.style.borderLeftColor = 'var(--success)';[m[41m[m
+[32m+[m[32m          element.style.borderLeftColor = 'var(--success)';[m[41m
+[m
            [m
-[32m+[m[32m          // Actualizar puntos del usuario[m[41m[m
+[32m+[m[32m          // Actualizar puntos del usuario[m[41m
+[m
            currentUser.points = (currentUser.points || 100) + 10;[m
            currentUser.level = Math.floor(currentUser.points / 100) + 1;[m
            currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;[m
            [m
-[32m+[m[32m          // Actualizar UI[m[41m[m
+[32m+[m[32m          // Actualizar UI[m[41m
+[m
            document.getElementById('user-points').textContent = currentUser.points;[m
            document.getElementById('user-level').textContent = currentUser.level;[m
            document.getElementById('songs-added').textContent = currentUser.songsAdded;[m
            [m
-[32m+[m[32m          // Guardar en localStorage[m[41m[m
+[32m+[m[32m          // Guardar en localStorage[m[41m
+[m
            localStorage.setItem('moyofy_user', JSON.stringify(currentUser));[m
            [m
 [31m-          showMessage(`✅ ¡${title} agregada a la playlist! +10 MOYOS`, 'success');[m
-[32m+[m[32m          // Mostrar mensaje de éxito[m[41m[m
-[32m+[m[32m          const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;[m[41m[m
-[32m+[m[32m          showMessage(`✅ ¡"${shortTitle}" agregada a la playlist! +10 MOYOS`, 'success');[m[41m[m
+[32m+[m[32m          // Mostrar mensaje de éxito[m[41m
+[m
+[32m+[m[32m          const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;[m[41m
+[m
+[32m+[m[32m          showMessage(`✅ ¡"${shortTitle}" agregada a la playlist! +10 MOYOS`, 'success');[m[41m
+[m
            [m
 [31m-          document.getElementById('song-search').value = '';[m
 [31m-          document.getElementById('results-container').innerHTML = `[m
@@ -1957,20 +3056,34 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-              <i class="fas fa-check-circle"></i> ¡Canción agregada exitosamente![m
 [31m-            </div>[m
 [31m-          `;[m
-[32m+[m[32m          // Limpiar resultados después de agregar[m[41m[m
-[32m+[m[32m          setTimeout(() => {[m[41m[m
-[32m+[m[32m            document.getElementById('results-container').innerHTML = `[m[41m[m
-[32m+[m[32m              <div class="message success">[m[41m[m
-[32m+[m[32m                <i class="fas fa-check-circle"></i> ¡Canción agregada exitosamente!<br>[m[41m[m
-[32m+[m[32m                <small>Busca más canciones para agregar</small>[m[41m[m
-[32m+[m[32m              </div>[m[41m[m
-[32m+[m[32m            `;[m[41m[m
-[32m+[m[32m            document.getElementById('song-search').value = '';[m[41m[m
-[32m+[m[32m            document.getElementById('song-search').focus();[m[41m[m
-[32m+[m[32m          }, 1500);[m[41m[m
-[32m+[m[41m          [m
-[32m+[m[32m          // Actualizar ranking[m[41m[m
-[32m+[m[32m          loadUserRanking();[m[41m[m
+[32m+[m[32m          // Limpiar resultados después de agregar[m[41m
+[m
+[32m+[m[32m          setTimeout(() => {[m[41m
+[m
+[32m+[m[32m            document.getElementById('results-container').innerHTML = `[m[41m
+[m
+[32m+[m[32m              <div class="message success">[m[41m
+[m
+[32m+[m[32m                <i class="fas fa-check-circle"></i> ¡Canción agregada exitosamente!<br>[m[41m
+[m
+[32m+[m[32m                <small>Busca más canciones para agregar</small>[m[41m
+[m
+[32m+[m[32m              </div>[m[41m
+[m
+[32m+[m[32m            `;[m[41m
+[m
+[32m+[m[32m            document.getElementById('song-search').value = '';[m[41m
+[m
+[32m+[m[32m            document.getElementById('song-search').focus();[m[41m
+[m
+[32m+[m[32m          }, 1500);[m[41m
+[m
+[32m+[m[41m          
+[m
+[32m+[m[32m          // Actualizar ranking[m[41m
+[m
+[32m+[m[32m          loadUserRanking();[m[41m
+[m
            [m
          } else {[m
            if (data.requiresAuth) {[m
@@ -1978,25 +3091,39 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
      }[m
      [m
      async function loadUserRanking() {[m
-[32m+[m[32m      const container = document.getElementById('ranking-list');[m[41m[m
-[32m+[m[41m      [m
-[32m+[m[32m      // Mostrar estado de carga[m[41m[m
-[32m+[m[32m      container.innerHTML = `[m[41m[m
-[32m+[m[32m        <div class="loading">[m[41m[m
-[32m+[m[32m          <div class="spinner"></div>[m[41m[m
-[32m+[m[32m          <p>Cargando ranking...</p>[m[41m[m
-[32m+[m[32m        </div>[m[41m[m
-[32m+[m[32m      `;[m[41m[m
-[32m+[m[41m      [m
+[32m+[m[32m      const container = document.getElementById('ranking-list');[m[41m
+[m
+[32m+[m[41m      
+[m
+[32m+[m[32m      // Mostrar estado de carga[m[41m
+[m
+[32m+[m[32m      container.innerHTML = `[m[41m
+[m
+[32m+[m[32m        <div class="loading">[m[41m
+[m
+[32m+[m[32m          <div class="spinner"></div>[m[41m
+[m
+[32m+[m[32m          <p>Cargando ranking...</p>[m[41m
+[m
+[32m+[m[32m        </div>[m[41m
+[m
+[32m+[m[32m      `;[m[41m
+[m
+[32m+[m[41m      
+[m
        try {[m
 [31m-        // Llama a /user/profile[m
 [31m-        const response = await fetch(`${API_BASE}/user/profile?userId=${currentUser?.id || 'anonymous'}`);[m
-[32m+[m[32m        const userId = currentUser ? currentUser.id : 'anonymous';[m[41m[m
-[32m+[m[32m        const response = await fetch(`${API_BASE}/user/profile?userId=${userId}`);[m[41m[m
-[32m+[m[41m        [m
+[32m+[m[32m        const userId = currentUser ? currentUser.id : 'anonymous';[m[41m
+[m
+[32m+[m[32m        const response = await fetch(`${API_BASE}/user/profile?userId=${userId}`);[m[41m
+[m
+[32m+[m[41m        
+[m
          if (!response.ok) {[m
 [31m-            throw new Error(`HTTP error! status: ${response.status}`);[m
-[32m+[m[32m          throw new Error(`HTTP error! status: ${response.status}`);[m[41m[m
+[32m+[m[32m          throw new Error(`HTTP error! status: ${response.status}`);[m[41m
+[m
          }[m
 [31m-        const data = await response.json(); // Espera respuesta JSON[m
          [m
@@ -2004,14 +3131,21 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-          displayRanking(data.topUsers);[m
 [31m-        } else {[m
 [31m-            throw new Error(data.error || 'Error al cargar ranking');[m
-[32m+[m[32m        const data = await response.json();[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        if (!data.ok) {[m[41m[m
-[32m+[m[32m          throw new Error(data.error || 'Error al cargar ranking');[m[41m[m
+[32m+[m[32m        const data = await response.json();[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        if (!data.ok) {[m[41m
+[m
+[32m+[m[32m          throw new Error(data.error || 'Error al cargar ranking');[m[41m
+[m
          }[m
-[32m+[m[41m        [m
-[32m+[m[32m        displayRanking(data.topUsers, data.user);[m[41m[m
-[32m+[m[41m        [m
+[32m+[m[41m        
+[m
+[32m+[m[32m        displayRanking(data.topUsers, data.user);[m[41m
+[m
+[32m+[m[41m        
+[m
        } catch (error) {[m
          console.error('Error al cargar ranking:', error);[m
 [31m-        // Mostrar mensaje de error en el panel de ranking[m
@@ -2019,15 +3153,18 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
          container.innerHTML = `[m
            <div class="message error">[m
 [31m-            <i class="fas fa-exclamation-circle"></i> Error al cargar ranking: ${error.message}[m
-[32m+[m[32m            <i class="fas fa-exclamation-circle"></i> Error al cargar ranking<br>[m[41m[m
-[32m+[m[32m            <small>${error.message}</small>[m[41m[m
+[32m+[m[32m            <i class="fas fa-exclamation-circle"></i> Error al cargar ranking<br>[m[41m
+[m
+[32m+[m[32m            <small>${error.message}</small>[m[41m
+[m
            </div>[m
          `;[m
        }[m
      }[m
      [m
 [31m-    function displayRanking(users) {[m
-[32m+[m[32m    function displayRanking(users, currentUserData) {[m[41m[m
+[32m+[m[32m    function displayRanking(users, currentUserData) {[m[41m
+[m
        const container = document.getElementById('ranking-list');[m
        [m
        if (!users || users.length === 0) {[m
@@ -2036,76 +3173,115 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
        let html = '';[m
        [m
 [31m-      users.forEach((user, index) => {[m
-[32m+[m[32m      // Mostrar top 10[m[41m[m
-[32m+[m[32m      users.slice(0, 10).forEach((user, index) => {[m[41m[m
+[32m+[m[32m      // Mostrar top 10[m[41m
+[m
+[32m+[m[32m      users.slice(0, 10).forEach((user, index) => {[m[41m
+[m
          const isCurrentUser = currentUser && currentUser.nickname === user.nickname;[m
 [31m-        const highlight = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary);"' : '';[m
-[32m+[m[32m        const highlightStyle = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary); padding-left: 10px;"' : '';[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Emoji para top 3[m[41m[m
-[32m+[m[32m        let rankEmoji = '';[m[41m[m
-[32m+[m[32m        if (user.rank === 1) rankEmoji = '👑';[m[41m[m
-[32m+[m[32m        else if (user.rank === 2) rankEmoji = '🥈';[m[41m[m
-[32m+[m[32m        else if (user.rank === 3) rankEmoji = '🥉';[m[41m[m
+[32m+[m[32m        const highlightStyle = isCurrentUser ? 'style="background: rgba(255, 0, 76, 0.15); border-left: 4px solid var(--primary); padding-left: 10px;"' : '';[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Emoji para top 3[m[41m
+[m
+[32m+[m[32m        let rankEmoji = '';[m[41m
+[m
+[32m+[m[32m        if (user.rank === 1) rankEmoji = '👑';[m[41m
+[m
+[32m+[m[32m        else if (user.rank === 2) rankEmoji = '🥈';[m[41m
+[m
+[32m+[m[32m        else if (user.rank === 3) rankEmoji = '🥉';[m[41m
+[m
          [m
          html += `[m
 [31m-          <div class="rank-item" ${highlight}>[m
-[32m+[m[32m          <div class="rank-item" ${highlightStyle}>[m[41m[m
+[32m+[m[32m          <div class="rank-item" ${highlightStyle}>[m[41m
+[m
              <span>[m
 [31m-              <strong>${user.rank}.</strong> ${user.nickname}[m
-[32m+[m[32m              <strong>${user.rank}. ${rankEmoji}</strong> ${user.nickname}[m[41m[m
+[32m+[m[32m              <strong>${user.rank}. ${rankEmoji}</strong> ${user.nickname}[m[41m
+[m
                ${isCurrentUser ? '<span style="color: var(--primary); margin-left: 5px;">(TÚ)</span>' : ''}[m
              </span>[m
              <span>[m
                <i class="fas fa-coins" style="color: var(--success); margin-right: 5px;"></i>[m
 [31m-              ${user.points} MOYOS • Nivel ${user.level}[m
-[32m+[m[32m              ${user.points} MOYOS[m[41m[m
+[32m+[m[32m              ${user.points} MOYOS[m[41m
+[m
              </span>[m
            </div>[m
          `;[m
        });[m
        [m
-[32m+[m[32m      // Mostrar posición actual si no está en top 10[m[41m[m
-[32m+[m[32m      if (currentUserData && currentUserData.rank > 10) {[m[41m[m
-[32m+[m[32m        html += `[m[41m[m
-[32m+[m[32m          <div class="rank-item" style="background: rgba(255, 0, 76, 0.1); border-left: 4px solid var(--primary); margin-top: 10px; padding-left: 10px;">[m[41m[m
-[32m+[m[32m            <span>[m[41m[m
-[32m+[m[32m              <strong>${currentUserData.rank}.</strong> ${currentUserData.nickname}[m[41m[m
-[32m+[m[32m              <span style="color: var(--primary); margin-left: 5px;">(TÚ)</span>[m[41m[m
-[32m+[m[32m            </span>[m[41m[m
-[32m+[m[32m            <span>[m[41m[m
-[32m+[m[32m              <i class="fas fa-coins" style="color: var(--success); margin-right: 5px;"></i>[m[41m[m
-[32m+[m[32m              ${currentUserData.points} MOYOS[m[41m[m
-[32m+[m[32m            </span>[m[41m[m
-[32m+[m[32m          </div>[m[41m[m
-[32m+[m[32m        `;[m[41m[m
-[32m+[m[32m      }[m[41m[m
-[32m+[m[41m      [m
+[32m+[m[32m      // Mostrar posición actual si no está en top 10[m[41m
+[m
+[32m+[m[32m      if (currentUserData && currentUserData.rank > 10) {[m[41m
+[m
+[32m+[m[32m        html += `[m[41m
+[m
+[32m+[m[32m          <div class="rank-item" style="background: rgba(255, 0, 76, 0.1); border-left: 4px solid var(--primary); margin-top: 10px; padding-left: 10px;">[m[41m
+[m
+[32m+[m[32m            <span>[m[41m
+[m
+[32m+[m[32m              <strong>${currentUserData.rank}.</strong> ${currentUserData.nickname}[m[41m
+[m
+[32m+[m[32m              <span style="color: var(--primary); margin-left: 5px;">(TÚ)</span>[m[41m
+[m
+[32m+[m[32m            </span>[m[41m
+[m
+[32m+[m[32m            <span>[m[41m
+[m
+[32m+[m[32m              <i class="fas fa-coins" style="color: var(--success); margin-right: 5px;"></i>[m[41m
+[m
+[32m+[m[32m              ${currentUserData.points} MOYOS[m[41m
+[m
+[32m+[m[32m            </span>[m[41m
+[m
+[32m+[m[32m          </div>[m[41m
+[m
+[32m+[m[32m        `;[m[41m
+[m
+[32m+[m[32m      }[m[41m
+[m
+[32m+[m[41m      
+[m
        container.innerHTML = html;[m
      }[m
      [m
      function showMessage(text, type = 'info') {[m
        const container = document.getElementById('message-container');[m
-[32m+[m[41m      [m
-[32m+[m[32m      let icon = 'info-circle';[m[41m[m
-[32m+[m[32m      if (type === 'success') icon = 'check-circle';[m[41m[m
-[32m+[m[32m      else if (type === 'error') icon = 'exclamation-circle';[m[41m[m
-[32m+[m[32m      else if (type === 'warning') icon = 'exclamation-triangle';[m[41m[m
-[32m+[m[41m      [m
+[32m+[m[41m      
+[m
+[32m+[m[32m      let icon = 'info-circle';[m[41m
+[m
+[32m+[m[32m      if (type === 'success') icon = 'check-circle';[m[41m
+[m
+[32m+[m[32m      else if (type === 'error') icon = 'exclamation-circle';[m[41m
+[m
+[32m+[m[32m      else if (type === 'warning') icon = 'exclamation-triangle';[m[41m
+[m
+[32m+[m[41m      
+[m
        container.innerHTML = `[m
          <div class="message ${type} bounce">[m
 [31m-          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>[m
-[32m+[m[32m          <i class="fas fa-${icon}"></i>[m[41m[m
+[32m+[m[32m          <i class="fas fa-${icon}"></i>[m[41m
+[m
            ${text}[m
          </div>[m
        `;[m
        [m
-[32m+[m[32m      // Auto-remover después de 5 segundos[m[41m[m
+[32m+[m[32m      // Auto-remover después de 5 segundos[m[41m
+[m
        setTimeout(() => {[m
 [31m-        container.innerHTML = '';[m
-[32m+[m[32m        if (container.innerHTML.includes(text)) {[m[41m[m
-[32m+[m[32m          container.innerHTML = '';[m[41m[m
-[32m+[m[32m        }[m[41m[m
+[32m+[m[32m        if (container.innerHTML.includes(text)) {[m[41m
+[m
+[32m+[m[32m          container.innerHTML = '';[m[41m
+[m
+[32m+[m[32m        }[m[41m
+[m
        }, 5000);[m
      }[m
      [m
@@ -2117,47 +3293,88 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [31m-      currentUser = null;[m
 [31m-      showNicknameSection();[m
 [31m-      showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');[m
-[32m+[m[32m      if (confirm('¿Estás seguro de que quieres cambiar tu apodo? Perderás tu progreso actual.')) {[m[41m[m
-[32m+[m[32m        localStorage.removeItem('moyofy_user');[m[41m[m
-[32m+[m[32m        currentUser = null;[m[41m[m
-[32m+[m[32m        showNicknameSection();[m[41m[m
-[32m+[m[32m        showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');[m[41m[m
-[32m+[m[32m      }[m[41m[m
-[32m+[m[32m    }[m[41m[m
-[32m+[m[41m    [m
-[32m+[m[32m    // Funciones adicionales para mejor experiencia[m[41m[m
-[32m+[m[32m    function simulateConfetti() {[m[41m[m
-[32m+[m[32m      const confettiContainer = document.getElementById('confetti-container');[m[41m[m
-[32m+[m[32m      confettiContainer.innerHTML = '';[m[41m[m
-[32m+[m[41m      [m
-[32m+[m[32m      for (let i = 0; i < 100; i++) {[m[41m[m
-[32m+[m[32m        const confetti = document.createElement('div');[m[41m[m
-[32m+[m[32m        confetti.style.position = 'absolute';[m[41m[m
-[32m+[m[32m        confetti.style.width = '10px';[m[41m[m
-[32m+[m[32m        confetti.style.height = '10px';[m[41m[m
-[32m+[m[32m        confetti.style.backgroundColor = ['#ff004c', '#00ffaa', '#ffcc00', '#ffffff'][Math.floor(Math.random() * 4)];[m[41m[m
-[32m+[m[32m        confetti.style.borderRadius = '50%';[m[41m[m
-[32m+[m[32m        confetti.style.left = `${Math.random() * 100}%`;[m[41m[m
-[32m+[m[32m        confetti.style.top = '0';[m[41m[m
-[32m+[m[32m        confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Crear keyframes para animación de caída[m[41m[m
-[32m+[m[32m        const style = document.createElement('style');[m[41m[m
-[32m+[m[32m        style.textContent = `[m[41m[m
-[32m+[m[32m          @keyframes fall {[m[41m[m
-[32m+[m[32m            to {[m[41m[m
-[32m+[m[32m              transform: translateY(100vh) rotate(${Math.random() * 360}deg);[m[41m[m
-[32m+[m[32m              opacity: 0;[m[41m[m
-[32m+[m[32m            }[m[41m[m
-[32m+[m[32m          }[m[41m[m
-[32m+[m[32m        `;[m[41m[m
-[32m+[m[32m        document.head.appendChild(style);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        confettiContainer.appendChild(confetti);[m[41m[m
-[32m+[m[41m        [m
-[32m+[m[32m        // Remover después de animación[m[41m[m
-[32m+[m[32m        setTimeout(() => confetti.remove(), 5000);[m[41m[m
-[32m+[m[32m      }[m[41m[m
+[32m+[m[32m      if (confirm('¿Estás seguro de que quieres cambiar tu apodo? Perderás tu progreso actual.')) {[m[41m
+[m
+[32m+[m[32m        localStorage.removeItem('moyofy_user');[m[41m
+[m
+[32m+[m[32m        currentUser = null;[m[41m
+[m
+[32m+[m[32m        showNicknameSection();[m[41m
+[m
+[32m+[m[32m        showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');[m[41m
+[m
+[32m+[m[32m      }[m[41m
+[m
+[32m+[m[32m    }[m[41m
+[m
+[32m+[m[41m    
+[m
+[32m+[m[32m    // Funciones adicionales para mejor experiencia[m[41m
+[m
+[32m+[m[32m    function simulateConfetti() {[m[41m
+[m
+[32m+[m[32m      const confettiContainer = document.getElementById('confetti-container');[m[41m
+[m
+[32m+[m[32m      confettiContainer.innerHTML = '';[m[41m
+[m
+[32m+[m[41m      
+[m
+[32m+[m[32m      for (let i = 0; i < 100; i++) {[m[41m
+[m
+[32m+[m[32m        const confetti = document.createElement('div');[m[41m
+[m
+[32m+[m[32m        confetti.style.position = 'absolute';[m[41m
+[m
+[32m+[m[32m        confetti.style.width = '10px';[m[41m
+[m
+[32m+[m[32m        confetti.style.height = '10px';[m[41m
+[m
+[32m+[m[32m        confetti.style.backgroundColor = ['#ff004c', '#00ffaa', '#ffcc00', '#ffffff'][Math.floor(Math.random() * 4)];[m[41m
+[m
+[32m+[m[32m        confetti.style.borderRadius = '50%';[m[41m
+[m
+[32m+[m[32m        confetti.style.left = `${Math.random() * 100}%`;[m[41m
+[m
+[32m+[m[32m        confetti.style.top = '0';[m[41m
+[m
+[32m+[m[32m        confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Crear keyframes para animación de caída[m[41m
+[m
+[32m+[m[32m        const style = document.createElement('style');[m[41m
+[m
+[32m+[m[32m        style.textContent = `[m[41m
+[m
+[32m+[m[32m          @keyframes fall {[m[41m
+[m
+[32m+[m[32m            to {[m[41m
+[m
+[32m+[m[32m              transform: translateY(100vh) rotate(${Math.random() * 360}deg);[m[41m
+[m
+[32m+[m[32m              opacity: 0;[m[41m
+[m
+[32m+[m[32m            }[m[41m
+[m
+[32m+[m[32m          }[m[41m
+[m
+[32m+[m[32m        `;[m[41m
+[m
+[32m+[m[32m        document.head.appendChild(style);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        confettiContainer.appendChild(confetti);[m[41m
+[m
+[32m+[m[41m        
+[m
+[32m+[m[32m        // Remover después de animación[m[41m
+[m
+[32m+[m[32m        setTimeout(() => confetti.remove(), 5000);[m[41m
+[m
+[32m+[m[32m      }[m[41m
+[m
      }[m
    </script>[m
  </body>[m
@@ -2167,31 +3384,57 @@ Date:   Tue Dec 16 00:46:38 2025 -0600
 [1m--- /dev/null[m
 [1m+++ b/render.yaml[m
 [36m@@ -0,0 +1,27 @@[m
-[32m+[m[32mservices:[m[41m[m
-[32m+[m[32m  - type: web[m[41m[m
-[32m+[m[32m    name: moyofy-rafasbar[m[41m[m
-[32m+[m[32m    env: node[m[41m[m
-[32m+[m[32m    buildCommand: npm install[m[41m[m
-[32m+[m[32m    startCommand: npm start[m[41m[m
-[32m+[m[32m    envVars:[m[41m[m
-[32m+[m[32m      - key: NODE_ENV[m[41m[m
-[32m+[m[32m        value: production[m[41m[m
-[32m+[m[32m      - key: PORT[m[41m[m
-[32m+[m[32m        value: 8080[m[41m[m
-[32m+[m[32m      - key: YOUTUBE_API_KEY[m[41m[m
-[32m+[m[32m        sync: false[m[41m[m
-[32m+[m[32m      - key: OAUTH_CLIENT_ID[m[41m[m
-[32m+[m[32m        sync: false[m[41m[m
-[32m+[m[32m      - key: OAUTH_CLIENT_SECRET[m[41m[m
-[32m+[m[32m        sync: false[m[41m[m
-[32m+[m[32m      - key: REDIRECT_URI[m[41m[m
-[32m+[m[32m        value: https://moyofy-rafasbar.onrender.com/oauth2callback[m[41m[m
-[32m+[m[32m      - key: DEFAULT_PLAYLIST_ID[m[41m[m
-[32m+[m[32m        sync: false[m[41m[m
-[32m+[m[32m    healthCheckPath: /health[m[41m[m
-[32m+[m[32m    autoDeploy: true[m[41m[m
-[32m+[m[32m    disk:[m[41m[m
-[32m+[m[32m      name: moyofy-data[m[41m[m
-[32m+[m[32m      mountPath: /data[m[41m[m
+[32m+[m[32mservices:[m[41m
+[m
+[32m+[m[32m  - type: web[m[41m
+[m
+[32m+[m[32m    name: moyofy-rafasbar[m[41m
+[m
+[32m+[m[32m    env: node[m[41m
+[m
+[32m+[m[32m    buildCommand: npm install[m[41m
+[m
+[32m+[m[32m    startCommand: npm start[m[41m
+[m
+[32m+[m[32m    envVars:[m[41m
+[m
+[32m+[m[32m      - key: NODE_ENV[m[41m
+[m
+[32m+[m[32m        value: production[m[41m
+[m
+[32m+[m[32m      - key: PORT[m[41m
+[m
+[32m+[m[32m        value: 8080[m[41m
+[m
+[32m+[m[32m      - key: YOUTUBE_API_KEY[m[41m
+[m
+[32m+[m[32m        sync: false[m[41m
+[m
+[32m+[m[32m      - key: OAUTH_CLIENT_ID[m[41m
+[m
+[32m+[m[32m        sync: false[m[41m
+[m
+[32m+[m[32m      - key: OAUTH_CLIENT_SECRET[m[41m
+[m
+[32m+[m[32m        sync: false[m[41m
+[m
+[32m+[m[32m      - key: REDIRECT_URI[m[41m
+[m
+[32m+[m[32m        value: https://moyofy-rafasbar.onrender.com/oauth2callback[m[41m
+[m
+[32m+[m[32m      - key: DEFAULT_PLAYLIST_ID[m[41m
+[m
+[32m+[m[32m        sync: false[m[41m
+[m
+[32m+[m[32m    healthCheckPath: /health[m[41m
+[m
+[32m+[m[32m    autoDeploy: true[m[41m
+[m
+[32m+[m[32m    disk:[m[41m
+[m
+[32m+[m[32m      name: moyofy-data[m[41m
+[m
+[32m+[m[32m      mountPath: /data[m[41m
+[m
 [32m+[m[32m      sizeGB: 0.1[m
 \ No newline at end of file[m
