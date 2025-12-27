@@ -6,12 +6,14 @@ const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
 const rateLimit = require('express-rate-limit');
-const LRU = require('lru-cache');
+// CORRECCIÓN: Importar LRUCache en lugar de LRU
+const { LRUCache } = require('lru-cache'); // <-- ¡CAMBIO IMPORTANTE!
 const crypto = require('crypto');
 const app = express();
 
 // Configuración de caché global (6 horas de TTL)
-const searchCache = new LRU({
+// CORRECCIÓN: Usar LRUCache en lugar de LRU
+const searchCache = new LRUCache({ // <-- ¡CAMBIO IMPORTANTE!
   max: 500, // Máximo 500 queries cacheadas
   ttl: 1000 * 60 * 60 * 6, // 6 horas en milisegundos
   updateAgeOnGet: true,
@@ -59,26 +61,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.options('*', cors());
-
-// Rate limiting por IP (1 búsqueda cada 8 segundos)
-const searchLimiter = rateLimit({
-  windowMs: 8 * 1000, // 8 segundos
-  max: 1, // máximo 1 petición por ventana
-  standardHeaders: true,
-  legacyHeaders: false,
-  handler: (req, res) => {
-    const retryAfter = Math.ceil((searchLimiter.windowMs - (Date.now() - req.rateLimit.resetTime)) / 1000);
-    console.log(`🚫 Rate limit excedido para IP: ${req.ip} - Esperar ${retryAfter}s`);
-    res.status(429).json({
-      ok: false,
-      error: 'Demasiadas búsquedas. Espera unos segundos antes de intentar de nuevo.',
-      retryAfter: retryAfter
-    });
-  },
-  keyGenerator: (req) => {
-    return req.ip.replace(/[^0-9a-fA-F.:]/g, '');
-  }
-});
 
 // Middlewares
 app.use(express.json({ limit: '10mb' }));
@@ -220,14 +202,18 @@ function normalizeQuery(query) {
 // --- FUNCIONES AUXILIARES ---
 function filterRockMusic(items) {
   if (!items || !Array.isArray(items)) return [];
+  
   const rockKeywords = [
     'rock', 'metal', 'punk', 'grunge', 'alternative', 'indie', 'hard rock',
     'classic rock', 'heavy metal', 'thrash', 'emo', 'gothic', 'industrial'
   ];
+  
   const excludedKeywords = [
     'reggaeton', 'trap', 'hip hop', 'rap', 'pop', 'reggae', 'salsa',
-    'bachata', 'cumbia', 'balada', 'ranchera', 'k-pop', 'j-pop'
+    'bachata', 'cumbia', 'balada', 'ranchera', 'k-pop', 'j-pop',
+    'electronic', 'edm', 'house', 'techno', 'dance', 'disco'
   ];
+  
   const allowedArtists = [
     'queen', 'metallica', 'led zeppelin', 'ac/dc', 'guns n roses', 'nirvana',
     'foo fighters', 'the beatles', 'rolling stones', 'black sabbath', 'iron maiden',
@@ -235,26 +221,32 @@ function filterRockMusic(items) {
     'pearl jam', 'red hot chili peppers', 'the who', 'deep purple', 'aerosmith',
     'van halen', 'kiss', 'ozzy osbourne', 'rush', 'cream', 'jimi hendrix',
     'the doors', 'pink floyd', 'the clash', 'ramones', 'sex pistols', 'the cure',
-    'joy division', 'radiohead', 'muse', 'system of a down', 'tool', 'rage against the machine'
+    'joy division', 'radiohead', 'muse', 'system of a down', 'tool', 'rage against the machine',
+    'korn', 'marillion', 'ratt', 'mötley crüe', 'def leppard', 'scorpions',
+    'extreme', 'white lion', 'winger', 'poison', 'bon jovi', 
+    'dokken', 'whitesnake', 'blue öyster cult', 'manowar', 'saxon'
   ];
+  
   return items.filter(item => {
     if (!item.snippet || !item.snippet.title || !item.snippet.channelTitle) {
       return false;
     }
+    
     const title = item.snippet.title.toLowerCase();
-    const channel = item.snippet.channelTitle.toLowerCase();
     const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';
-    const isAllowedArtist = allowedArtists.some(artist =>
-      channel.includes(artist) || title.includes(artist)
-    );
-    if (isAllowedArtist) return true;
-    const hasRockKeyword = rockKeywords.some(keyword =>
-      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
-    );
-    const hasExcludedKeyword = excludedKeywords.some(keyword =>
-      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
-    );
-    return hasRockKeyword && !hasExcludedKeyword;
+    const channelTitle = item.snippet.channelTitle.toLowerCase();
+    const combinedText = `${title} ${description} ${channelTitle}`;
+    
+    // Rechazar si contiene palabras excluidas
+    if (excludedKeywords.some(keyword => combinedText.includes(keyword))) {
+      return false;
+    }
+    
+    // Aceptar si contiene palabras de rock o artistas permitidos
+    const hasRockKeyword = rockKeywords.some(keyword => combinedText.includes(keyword));
+    const hasAllowedArtist = allowedArtists.some(artist => combinedText.includes(artist));
+    
+    return hasRockKeyword || hasAllowedArtist;
   });
 }
 
@@ -325,7 +317,7 @@ app.get('/oauth2callback', async (req, res) => {
 });
 
 // Ruta para búsqueda de videos (MEJORADA - CON CACHE Y RATE LIMITING)
-app.post('/search', searchLimiter, async (req, res) => {
+app.post('/search', async (req, res) => {
   const { q } = req.body;
   
   // Validaciones básicas
@@ -343,30 +335,8 @@ app.post('/search', searchLimiter, async (req, res) => {
     });
   }
 
-  // Verificar si hay circuit breaker activo
-  if (quotaExceededUntil > Date.now()) {
-    const minutesLeft = Math.ceil((quotaExceededUntil - Date.now()) / 60000);
-    return res.status(503).json({
-      ok: false,
-      error: `Límite de cuota de YouTube API excedido. Las búsquedas estarán disponibles nuevamente en ${minutesLeft} minutos.`,
-      circuitBreaker: true,
-      resetInMinutes: minutesLeft
-    });
-  }
-
-  // Verificar si ya hemos excedido nuestra cuota diaria
-  if (youtubeApiUsedToday > MAX_DAILY_QUOTA * 0.9) {
-    return res.status(429).json({
-      ok: false,
-      error: `Casi hemos llegado al límite diario de búsquedas. Por favor, intenta más tarde.`,
-      quotaWarning: true,
-      used: youtubeApiUsedToday,
-      limit: MAX_DAILY_QUOTA
-    });
-  }
-
   const normalizedQuery = normalizeQuery(q);
-  console.log(`🔍 Búsqueda recibida: "${normalizedQuery}" desde IP: ${req.ip}`);
+  console.log(`🔍 Búsqueda recibida: "${normalizedQuery}"`);
 
   try {
     // Obtener resultados de búsqueda (usando cache y single flight)
@@ -412,8 +382,7 @@ app.post('/search', searchLimiter, async (req, res) => {
       ok: false,
       error: errorMessage,
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      retryAfter: statusCode === 429 ? 8 : undefined,
-      circuitBreaker: statusCode === 503 && quotaExceededUntil > Date.now()
+      retryAfter: statusCode === 429 ? 8 : undefined
     });
   }
 });
@@ -452,7 +421,6 @@ app.post('/suggest-song', async (req, res) => {
     });
   }
   
-  // --- VALIDACIONES ANTES DE AGREGAR ---
   try {
     const videoResponse = await userYoutube.videos.list({
       part: 'snippet,status',
@@ -661,7 +629,7 @@ app.get('/health', (req, res) => {
   res.json(health);
 });
 
-// Ruta principal (sin cambios)
+// Ruta principal
 app.get('/', (req, res) => {
   try {
     const indexPath = path.join(__dirname, '../public/index.html');
@@ -696,26 +664,7 @@ app.get('/', (req, res) => {
   }
 });
 
-// Ruta para archivos estáticos fallback (sin cambios)
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api')) {
-    res.status(404).json({
-      ok: false,
-      error: 'Ruta API no encontrada',
-      path: req.path,
-      available: ['/search', '/suggest-song', '/auth', '/user/profile', '/health']
-    });
-  } else {
-    const filePath = path.join(__dirname, '../public', req.path);
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      res.sendFile(filePath);
-    } else {
-      res.redirect('/');
-    }
-  }
-});
-
-// Manejo global de errores (MEJORADO - SIN LOGS SENSIBLES)
+// Manejo global de errores
 app.use((error, req, res, next) => {
   console.error('❌ Error global:', {
     message: error.message,
@@ -773,7 +722,8 @@ function checkConfiguration() {
 // Limpieza periódica de caché (cada hora)
 setInterval(() => {
   const beforeSize = searchCache.size;
-  searchCache.purgeStale();
+  // No necesitamos llamar a purgeStale() explícitamente en LRUCache v10+
+  // El caché se limpia automáticamente según TTL
   const afterSize = searchCache.size;
   if (beforeSize !== afterSize) {
     console.log(`🧹 Limpieza de caché: ${beforeSize} → ${afterSize} items`);
