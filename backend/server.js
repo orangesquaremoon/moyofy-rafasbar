@@ -111,15 +111,15 @@ app.use((err, req, res, next) => {
 
 app.get('/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación de USUARIO');
-  const scopes = [
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/userinfo.email'
-  ];
   const url = userOauth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: scopes,
     prompt: 'consent',
-    include_granted_scopes: true
+    scope: [
+      'https://www.googleapis.com/auth/youtube',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile'
+    ],
+    redirect_uri: process.env.REDIRECT_URI
   });
   res.redirect(url);
 });
@@ -127,15 +127,15 @@ app.get('/auth', (req, res) => {
 app.get('/owner/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación del PROPIETARIO');
 
-  const scopes = [
-    'https://www.googleapis.com/auth/youtube'
-  ];
-
   const url = ownerOauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
-    scope: scopes,
-    state: 'owner'
+    scope: [
+      'https://www.googleapis.com/auth/youtube',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile'
+    ],
+    redirect_uri: process.env.REDIRECT_URI
   });
 
   res.redirect(url);
