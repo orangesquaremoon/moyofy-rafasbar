@@ -314,8 +314,6 @@ const ALLOWED_ARTISTS = new Set([
   "Ty Segall",
   "King Gizzard & the Lizard Wizard",
   "Pond",
-  
-  // Artistas adicionales de la segunda lista
   "A Flock of Seagulls",
   "ABBA",
   "Ace of Base",
@@ -973,37 +971,42 @@ const FORBIDDEN_ARTISTS = new Set([
   "trap latin (general)", "k-pop mainstream (expanded)"
 ].map(artist => normalize(artist)).filter(Boolean));
 
-// ✅ FUNCIÓN AUXILIAR PARA BUSCAR TÉRMINOS NORMALIZADOS
+/**
+ * Verifica si un texto contiene algún término de un Set
+ * @param {string} text - Texto a analizar
+ * @param {Set} setOfNormalized - Set de términos normalizados
+ * @returns {boolean} - true si contiene algún término
+ */
 function containsAnyNormalized(text, setOfNormalized) {
   if (!text) return false;
-  
-  // Convertimos el Set a Array para usar .some() (más eficiente)
-  return Array.from(setOfNormalized).some(term => {
-    if (!term) return false;
-    return text.includes(term);
-  });
+  const normalizedText = normalize(text);
+  for (const term of setOfNormalized) {
+    if (term && normalizedText.includes(term)) {
+      return true;
+    }
+  }
+  return false;
 }
 
-// ✅ FUNCIÓN DE FILTRADO PRINCIPAL
+/**
+ * Filtra items de YouTube para permitir solo artistas de rock/metal
+ * @param {Array} items - Array de items de la API de YouTube
+ * @returns {Array} - Array de items filtrados
+ */
 function filterMusic(items) {
   if (!Array.isArray(items)) return [];
-  
   return items.filter(item => {
     if (!item || !item.snippet) return false;
-    
     const title = String(item.snippet.title || '');
     const description = String(item.snippet.description || '');
     const channelTitle = String(item.snippet.channelTitle || '');
     const combined = `${title} ${description} ${channelTitle}`;
-    const normalizedCombined = normalize(combined);
-    
-    // 1. Rechazar si contiene algún artista PROHIBIDO
-    if (containsAnyNormalized(normalizedCombined, FORBIDDEN_ARTISTS)) return false;
-    
-    // 2. Aceptar SOLO si contiene algún artista PERMITIDO
-    if (!containsAnyNormalized(normalizedCombined, ALLOWED_ARTISTS)) return false;
-    
-    return true;
+    // Primero: Rechazar artistas prohibidos (tiene prioridad)
+    if (containsAnyNormalized(combined, FORBIDDEN_ARTISTS)) {
+      return false;
+    }
+    // Segundo: Aceptar solo si contiene algún artista permitido
+    return containsAnyNormalized(combined, ALLOWED_ARTISTS);
   });
 }
 
@@ -1011,5 +1014,7 @@ function filterMusic(items) {
 module.exports = { 
   filterMusic, 
   ALLOWED_ARTISTS, 
-  FORBIDDEN_ARTISTS 
+  FORBIDDEN_ARTISTS,
+  containsAnyNormalized,
+  normalize
 };
