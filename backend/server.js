@@ -9,7 +9,6 @@ const path = require("path");
 
 const app = express();
 
-// Configuración de sesión
 app.use(session({
   secret: process.env.SESSION_SECRET || 'moyofy_secret_key_2025',
   resave: false,
@@ -20,7 +19,6 @@ app.use(session({
   }
 }));
 
-// Configuración CORS
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
@@ -50,7 +48,6 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// --- CLIENTE DE GOOGLE PARA EL PROPIETARIO ---
 let ownerOauth2Client = null;
 let ownerYoutube = null;
 
@@ -85,7 +82,6 @@ function initializeOwnerClient() {
 
 initializeOwnerClient();
 
-// --- CLIENTE DE GOOGLE PARA EL USUARIO ---
 const userOauth2Client = new google.auth.OAuth2(
   process.env.OAUTH_CLIENT_ID,
   process.env.OAUTH_CLIENT_SECRET,
@@ -94,7 +90,6 @@ const userOauth2Client = new google.auth.OAuth2(
 
 const userYoutube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
-// Middleware de logging
 app.use((req, res, next) => {
   const start = Date.now();
   const originalEnd = res.end;
@@ -106,7 +101,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware para manejar JSON mal formado
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     console.error('JSON mal formado:', err.message);
@@ -115,9 +109,6 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// --- RUTAS ---
-
-// Ruta para autenticación
 app.get('/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación de USUARIO');
   const scopes = [
@@ -133,9 +124,52 @@ app.get('/auth', (req, res) => {
   res.redirect(url);
 });
 
-// Callback de autenticación
+app.get('/owner/auth', (req, res) => {
+  console.log('🔐 Iniciando autenticación del PROPIETARIO');
+
+  const scopes = [
+    'https://www.googleapis.com/auth/youtube'
+  ];
+
+  const url = ownerOauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    prompt: 'consent',
+    scope: scopes,
+    state: 'owner'
+  });
+
+  res.redirect(url);
+});
+
 app.get('/oauth2callback', async (req, res) => {
-  const { code, error } = req.query;
+  const { code, state } = req.query;
+
+  if (state === 'owner') {
+    try {
+      const { tokens } = await ownerOauth2Client.getToken(code);
+
+      console.log('✅ TOKENS DEL PROPIETARIO OBTENIDOS');
+      console.log('⬇️ COPIA ESTE JSON EN RENDER COMO OWNER_TOKENS_JSON ⬇️');
+      console.log(JSON.stringify(tokens));
+
+      return res.send(`
+      <html>
+        <body style="font-family:Arial;padding:20px">
+          <h2>✅ Autenticación del PROPIETARIO completada</h2>
+          <p>Copia el JSON que aparece en los logs de Render y pégalo como:</p>
+          <pre>OWNER_TOKENS_JSON</pre>
+          <p>Luego guarda y deja que Render haga redeploy.</p>
+          <p>Puedes cerrar esta ventana.</p>
+        </body>
+      </html>
+    `);
+    } catch (err) {
+      console.error('❌ Error OAuth PROPIETARIO:', err);
+      return res.status(500).send('Error autenticando propietario');
+    }
+  }
+
+  const { error } = req.query;
   
   if (error) {
     console.error('❌ Error en OAuth del usuario:', error);
@@ -164,7 +198,6 @@ app.get('/oauth2callback', async (req, res) => {
   }
 });
 
-// Ruta para búsqueda de videos
 app.post('/search', async (req, res) => {
   const { q } = req.body;
   
@@ -230,7 +263,6 @@ app.post('/search', async (req, res) => {
   }
 });
 
-// Ruta para SUGERIR agregar a playlist
 app.post('/suggest-song', async (req, res) => {
   const { videoId, title, userId } = req.body;
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
@@ -265,7 +297,6 @@ app.post('/suggest-song', async (req, res) => {
     });
   }
 
-  // --- VALIDACIONES ANTES DE AGREGAR ---
   try {
     const videoResponse = await userYoutube.videos.list({
       part: 'snippet,status',
@@ -299,7 +330,7 @@ app.post('/suggest-song', async (req, res) => {
       });
 
       if (existingItemsResponse.data.items && existingItemsResponse.data.items.length > 0) {
-        console.log(`⚠️ Video ${videoId} ya existe en playlist del propietario.`);
+        console.log(`⚠️ Video ${videoId} ya existe en playlist del propietario.');
         return res.status(409).json({
           ok: false,
           error: 'Esta canción ya está en la playlist.',
@@ -331,7 +362,6 @@ app.post('/suggest-song', async (req, res) => {
     });
   }
 
-  // --- AGREGAR VIDEO A PLAYLIST DEL PROPIETARIO ---
   try {
     if (!ownerYoutube) {
       console.error('❌ Cliente de YouTube del propietario no disponible para agregar.');
@@ -389,12 +419,10 @@ app.post('/suggest-song', async (req, res) => {
   }
 });
 
-// Ruta para obtener perfil (simplificada para gamificación)
 app.get('/user/profile', (req, res) => {
   const { userId } = req.query;
   console.log(`👤 Consulta de perfil: ${userId || 'anonymous'}`);
 
-  // Simular datos básicos para compatibilidad
   const mockRanking = [
     { rank: 1, nickname: 'RockMaster69', points: 850, level: 8, songsAdded: 75 },
     { rank: 2, nickname: 'MetallicaFan', points: 720, level: 7, songsAdded: 62 },
@@ -427,7 +455,6 @@ app.get('/user/profile', (req, res) => {
   });
 });
 
-// Ruta de salud del servidor
 app.get('/health', (req, res) => {
   const health = {
     ok: true,
@@ -447,7 +474,6 @@ app.get('/health', (req, res) => {
   res.json(health);
 });
 
-// Ruta principal
 app.get('/', (req, res) => {
   try {
     const indexPath = path.join(__dirname, '../public/index.html');
@@ -482,7 +508,6 @@ app.get('/', (req, res) => {
   }
 });
 
-// Ruta para archivos estáticos fallback
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
     res.status(404).json({
@@ -501,7 +526,6 @@ app.get('*', (req, res) => {
   }
 });
 
-// Manejo global de errores
 app.use((error, req, res, next) => {
   console.error('❌ Error global:', error);
   res.status(500).json({
@@ -511,7 +535,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-// --- FUNCIONES AUXILIARES ---
 function filterRockMusic(items) {
   if (!items || !Array.isArray(items)) return [];
   
@@ -562,7 +585,6 @@ function filterRockMusic(items) {
   });
 }
 
-// --- INICIAR SERVIDOR ---
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || '0.0.0.0';
 
