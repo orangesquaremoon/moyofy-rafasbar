@@ -1,38 +1,17 @@
 {
   "name": "moyofy-premium",
   "version": "2.0.0",
-  "description": "MOYOFY PREMIUM v2 - Sistema de entretenimiento social para bares",
+  "description": "",
   "main": "backend/server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
-  },
-  "keywords": [
-    "music",
-    "social",
-    "gamification",
-    "bar",
-    "rock",
-    "metal",
-    "youtube",
-    "playlist",
-    "entertainment"
-  ],
-  "author": "Abundia.io",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "start": "node backend/server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^4.22.1",
-    "express-session": "^1.18.2",
-    "googleapis": "^131.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1",
-    "readline-sync": "^1.4.10"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "express-rate-limit": "^7.4.0",
+    "googleapis": "^144.0.0"
   }
 }
