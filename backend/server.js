@@ -332,9 +332,8 @@ app.post('/suggest-song', async (req, res) => {
       if (existingItemsResponse.data.items && existingItemsResponse.data.items.length > 0) {
         console.log(`⚠️ Video ${videoId} ya existe en playlist del propietario.`);
         return res.status(409).json({
-          ok: false,
-          error: 'Esta canción ya está en la playlist.',
-          requiresAuth: false
+          error: 'VIDEO_DUPLICATE',
+          message: 'El video ya existe en la playlist'
         });
       }
     } else {
