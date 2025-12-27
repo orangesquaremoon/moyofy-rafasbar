@@ -185,6 +185,10 @@ app.get('/oauth2callback', async (req, res) => {
   
   try {
     const { tokens } = await userOauth2Client.getToken(code);
+    
+    console.log('🔥🔥🔥 OWNER TOKENS JSON 🔥🔥🔥');
+    console.log(JSON.stringify(tokens, null, 2));
+    
     req.session.userTokens = tokens;
     req.session.userAuthenticated = true;
     userOauth2Client.setCredentials(tokens);
