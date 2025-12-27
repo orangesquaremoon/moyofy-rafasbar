@@ -1,30 +1,13 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+
 const express = require("express");
 const session = require('express-session');
 const cors = require("cors");
 const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
-const rateLimit = require('express-rate-limit');
-// CORRECCIÓN: Importar LRUCache en lugar de LRU
-const { LRUCache } = require('lru-cache'); // <-- ¡CAMBIO IMPORTANTE!
-const crypto = require('crypto');
+
 const app = express();
-
-// Configuración de caché global (6 horas de TTL)
-// CORRECCIÓN: Usar LRUCache en lugar de LRU
-const searchCache = new LRUCache({ // <-- ¡CAMBIO IMPORTANTE!
-  max: 500, // Máximo 500 queries cacheadas
-  ttl: 1000 * 60 * 60 * 6, // 6 horas en milisegundos
-  updateAgeOnGet: true,
-  dispose: (value, key) => {
-    console.log(`🧹 Cache: Eliminando búsqueda antigua para "${key}"`);
-  }
-});
-
-// Estado del circuit breaker
-let quotaExceededUntil = 0;
-const CIRCUIT_BREAKER_RESET_MINUTES = 30;
 
 // Configuración de sesión
 app.use(session({
@@ -44,6 +27,7 @@ const allowedOrigins = [
   'http://127.0.0.1:8080',
   process.env.RENDER_EXTERNAL_URL || 'https://moyofy-rafasbar.onrender.com'
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin && process.env.NODE_ENV === 'development') {
@@ -62,7 +46,6 @@ app.use(cors({
 }));
 app.options('*', cors());
 
-// Middlewares
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
@@ -70,15 +53,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 // --- CLIENTE DE GOOGLE PARA EL PROPIETARIO ---
 let ownerOauth2Client = null;
 let ownerYoutube = null;
-const OWNER_REDIRECT_URI = process.env.OWNER_REDIRECT_URI || (process.env.REDIRECT_URI ? process.env.REDIRECT_URI.replace('/oauth2callback', '/grab-token') : undefined);
-let youtubeApiUsedToday = 0;
-const MAX_DAILY_QUOTA = 10000; // Ajusta según tu cuota real
 
 function initializeOwnerClient() {
   if (!process.env.OWNER_TOKENS_JSON) {
     console.error('❌ OWNER_TOKENS_JSON no configurado. No se puede inicializar el cliente del propietario.');
     return;
   }
+
   try {
     const tokens = JSON.parse(process.env.OWNER_TOKENS_JSON);
     ownerOauth2Client = new google.auth.OAuth2(
@@ -87,18 +68,21 @@ function initializeOwnerClient() {
       process.env.REDIRECT_URI
     );
     ownerOauth2Client.setCredentials(tokens);
+
     ownerOauth2Client.on('tokens', (tokens) => {
       if (tokens.refresh_token) {
         console.log('🔄 Token de refresh recibido para propietario');
       }
       console.log('🔄 Token de acceso actualizado para propietario');
     });
+
     ownerYoutube = google.youtube({ version: 'v3', auth: ownerOauth2Client });
     console.log('✅ Cliente de YouTube del propietario inicializado.');
   } catch (error) {
     console.error('❌ Error inicializando cliente del propietario:', error.message);
   }
 }
+
 initializeOwnerClient();
 
 // --- CLIENTE DE GOOGLE PARA EL USUARIO ---
@@ -108,150 +92,9 @@ const userOauth2Client = new google.auth.OAuth2(
   process.env.REDIRECT_URI
 );
 
-// Usar YOUTUBE_API_KEY para búsquedas (más eficiente)
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-if (!YOUTUBE_API_KEY) {
-  console.error('❌ YOUTUBE_API_KEY no configurado. Las búsquedas no funcionarán.');
-}
-const userYoutube = google.youtube({ version: 'v3', auth: YOUTUBE_API_KEY });
+const userYoutube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
-// --- MÓDULO DE FILTRADO DE MÚSICA ---
-const { filterMusic, ALLOWED_ARTISTS, FORBIDDEN_ARTISTS } = require('./utils/music-filter');
-
-// --- SINGLE FLIGHT PATTERN PARA BÚSQUEDAS ---
-const activeSearches = new Map();
-
-async function youtubeSearch(query, maxResults = 10) {
-  // Verificar si hay circuit breaker activo
-  if (quotaExceededUntil > Date.now()) {
-    const minutesLeft = Math.ceil((quotaExceededUntil - Date.now()) / 60000);
-    throw new Error(`Límite de cuota excedido temporalmente. Inténtalo nuevamente en ${minutesLeft} minutos.`);
-  }
-
-  // Normalizar el query para mejor caching
-  const normalizedQuery = normalizeQuery(query);
-  const cacheKey = `search:${normalizedQuery}`;
-
-  // Verificar cache primero
-  if (searchCache.has(cacheKey)) {
-    console.log(`📦 Cache hit para búsqueda: "${query}"`);
-    return searchCache.get(cacheKey);
-  }
-
-  // Verificar si ya hay una búsqueda activa para este query
-  if (activeSearches.has(cacheKey)) {
-    console.log(`⚡ Esperando búsqueda en progreso para: "${query}"`);
-    return activeSearches.get(cacheKey);
-  }
-
-  // Crear un nuevo promise para esta búsqueda
-  const searchPromise = (async () => {
-    try {
-      console.log(`🔍 YouTube API: Buscando "${query}"`);
-      youtubeApiUsedToday++;
-      
-      const response = await userYoutube.search.list({
-        part: 'snippet',
-        q: query,
-        maxResults: maxResults,
-        type: 'video',
-        fields: 'items(id/videoId,snippet(title,description,channelTitle,thumbnails))'
-      });
-
-      const filteredItems = filterMusic(response.data.items || []);
-      const result = {
-        items: filteredItems,
-        totalResults: response.data.items?.length || 0,
-        approved: filteredItems.length,
-        query: normalizedQuery,
-        timestamp: new Date().toISOString()
-      };
-
-      // Guardar en cache
-      searchCache.set(cacheKey, result);
-      console.log(`💾 Cache guardado para búsqueda: "${query}" (${filteredItems.length}/${response.data.items?.length || 0} aprobados)`);
-      
-      return result;
-    } catch (error) {
-      // Manejar quotaExceeded específicamente
-      if (error.code === 403 && error.errors && error.errors[0].reason === 'quotaExceeded') {
-        quotaExceededUntil = Date.now() + (CIRCUIT_BREAKER_RESET_MINUTES * 60000);
-        console.error(`🔥 CUOTA EXCEDIDA - Circuito breaker activado por ${CIRCUIT_BREAKER_RESET_MINUTES} minutos`);
-        throw new Error(`Límite de cuota de YouTube API excedido. Las búsquedas estarán disponibles nuevamente en ${CIRCUIT_BREAKER_RESET_MINUTES} minutos.`);
-      }
-      throw error;
-    } finally {
-      // Limpiar la búsqueda activa
-      activeSearches.delete(cacheKey);
-    }
-  })();
-
-  // Guardar el promise en activeSearches
-  activeSearches.set(cacheKey, searchPromise);
-  
-  return searchPromise;
-}
-
-function normalizeQuery(query) {
-  return query
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/[^a-z0-9\s\-_'"]/g, '');
-}
-
-// --- FUNCIONES AUXILIARES ---
-function filterRockMusic(items) {
-  if (!items || !Array.isArray(items)) return [];
-  
-  const rockKeywords = [
-    'rock', 'metal', 'punk', 'grunge', 'alternative', 'indie', 'hard rock',
-    'classic rock', 'heavy metal', 'thrash', 'emo', 'gothic', 'industrial'
-  ];
-  
-  const excludedKeywords = [
-    'reggaeton', 'trap', 'hip hop', 'rap', 'pop', 'reggae', 'salsa',
-    'bachata', 'cumbia', 'balada', 'ranchera', 'k-pop', 'j-pop',
-    'electronic', 'edm', 'house', 'techno', 'dance', 'disco'
-  ];
-  
-  const allowedArtists = [
-    'queen', 'metallica', 'led zeppelin', 'ac/dc', 'guns n roses', 'nirvana',
-    'foo fighters', 'the beatles', 'rolling stones', 'black sabbath', 'iron maiden',
-    'judas priest', 'motorhead', 'slayer', 'pantera', 'megadeth', 'soundgarden',
-    'pearl jam', 'red hot chili peppers', 'the who', 'deep purple', 'aerosmith',
-    'van halen', 'kiss', 'ozzy osbourne', 'rush', 'cream', 'jimi hendrix',
-    'the doors', 'pink floyd', 'the clash', 'ramones', 'sex pistols', 'the cure',
-    'joy division', 'radiohead', 'muse', 'system of a down', 'tool', 'rage against the machine',
-    'korn', 'marillion', 'ratt', 'mötley crüe', 'def leppard', 'scorpions',
-    'extreme', 'white lion', 'winger', 'poison', 'bon jovi', 
-    'dokken', 'whitesnake', 'blue öyster cult', 'manowar', 'saxon'
-  ];
-  
-  return items.filter(item => {
-    if (!item.snippet || !item.snippet.title || !item.snippet.channelTitle) {
-      return false;
-    }
-    
-    const title = item.snippet.title.toLowerCase();
-    const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';
-    const channelTitle = item.snippet.channelTitle.toLowerCase();
-    const combinedText = `${title} ${description} ${channelTitle}`;
-    
-    // Rechazar si contiene palabras excluidas
-    if (excludedKeywords.some(keyword => combinedText.includes(keyword))) {
-      return false;
-    }
-    
-    // Aceptar si contiene palabras de rock o artistas permitidos
-    const hasRockKeyword = rockKeywords.some(keyword => combinedText.includes(keyword));
-    const hasAllowedArtist = allowedArtists.some(artist => combinedText.includes(artist));
-    
-    return hasRockKeyword || hasAllowedArtist;
-  });
-}
-
-// Middleware de logging mejorado
+// Middleware de logging
 app.use((req, res, next) => {
   const start = Date.now();
   const originalEnd = res.end;
@@ -273,7 +116,8 @@ app.use((err, req, res, next) => {
 });
 
 // --- RUTAS ---
-// Ruta para autenticación (sin cambios)
+
+// Ruta para autenticación
 app.get('/auth', (req, res) => {
   console.log('🔐 Iniciando autenticación de USUARIO');
   const scopes = [
@@ -289,9 +133,10 @@ app.get('/auth', (req, res) => {
   res.redirect(url);
 });
 
-// Callback de autenticación (sin cambios)
+// Callback de autenticación
 app.get('/oauth2callback', async (req, res) => {
   const { code, error } = req.query;
+  
   if (error) {
     console.error('❌ Error en OAuth del usuario:', error);
     return res.status(400).send(`
@@ -303,11 +148,13 @@ app.get('/oauth2callback', async (req, res) => {
       </html>
     `);
   }
+  
   try {
     const { tokens } = await userOauth2Client.getToken(code);
     req.session.userTokens = tokens;
     req.session.userAuthenticated = true;
     userOauth2Client.setCredentials(tokens);
+
     res.send(`
       <html><body><h1>Autenticación de Usuario Exitosa</h1><p>Ahora puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>
     `);
@@ -317,118 +164,79 @@ app.get('/oauth2callback', async (req, res) => {
   }
 });
 
-// Ruta para búsqueda de videos (MEJORADA - CON CACHE Y RATE LIMITING)
-
-app.get('/owner-auth', (req, res) => {
-  try {
-    const redirectUri = OWNER_REDIRECT_URI || process.env.REDIRECT_URI;
-    if (!redirectUri) return res.status(500).send('REDIRECT_URI no configurado');
-    const client = new google.auth.OAuth2(process.env.OAUTH_CLIENT_ID, process.env.OAUTH_CLIENT_SECRET, redirectUri);
-    const authUrl = client.generateAuthUrl({
-      access_type: 'offline',
-      scope: ['https://www.googleapis.com/auth/youtube'],
-      prompt: 'consent',
-      include_granted_scopes: true
-    });
-    return res.redirect(authUrl);
-  } catch (e) {
-    return res.status(500).send('Error iniciando OAuth del propietario');
-  }
-});
-
-app.get('/grab-token', async (req, res) => {
-  try {
-    const code = req.query.code;
-    if (!code) return res.status(400).send('Falta query param code');
-    const redirectUri = OWNER_REDIRECT_URI || process.env.REDIRECT_URI;
-    if (!redirectUri) return res.status(500).send('REDIRECT_URI no configurado');
-    const client = new google.auth.OAuth2(process.env.OAUTH_CLIENT_ID, process.env.OAUTH_CLIENT_SECRET, redirectUri);
-    const { tokens } = await client.getToken(code);
-    ownerOauth2Client.setCredentials(tokens);
-    ownerYoutube = google.youtube({ version: 'v3', auth: ownerOauth2Client });
-    res.set('Content-Type', 'application/json');
-    return res.status(200).send(JSON.stringify(tokens));
-  } catch (e) {
-    return res.status(500).send('Error intercambiando code por tokens');
-  }
-});
-
+// Ruta para búsqueda de videos
 app.post('/search', async (req, res) => {
   const { q } = req.body;
   
-  // Validaciones básicas
   if (!q || q.trim() === '') {
     return res.status(400).json({ 
       ok: false, 
       error: 'La consulta de búsqueda no puede estar vacía'
     });
   }
+
+  console.log(`🔍 Búsqueda recibida: "${q}"`);
   
-  if (q.trim().length < 4) {
-    return res.status(400).json({ 
-      ok: false, 
-      error: 'Ingresa al menos 4 caracteres para buscar'
-    });
-  }
-
-  const normalizedQuery = normalizeQuery(q);
-  console.log(`🔍 Búsqueda recibida: "${normalizedQuery}"`);
-
   try {
-    // Obtener resultados de búsqueda (usando cache y single flight)
-    const searchResult = await youtubeSearch(normalizedQuery, 10);
-    
+    const response = await userYoutube.search.list({
+      part: 'snippet',
+      q: q,
+      maxResults: 15,
+      type: 'video'
+    });
+
+    console.log(`📥 YouTube API respondió con ${response.data.items?.length || 0} resultados`);
+
+    const filteredItems = filterRockMusic(response.data.items || []);
+
     const stats = {
-      totalResults: searchResult.totalResults,
-      approved: searchResult.approved,
-      approvalRate: searchResult.totalResults > 0
-        ? Math.round((searchResult.approved / searchResult.totalResults) * 100)
+      totalResults: response.data.items?.length || 0,
+      approved: filteredItems.length,
+      approvalRate: response.data.items?.length > 0
+        ? Math.round((filteredItems.length / response.data.items.length) * 100)
         : 0,
-      query: normalizedQuery,
-      timestamp: new Date().toISOString(),
-      cacheHit: searchCache.has(`search:${normalizedQuery}`),
-      fromCache: searchCache.has(`search:${normalizedQuery}`)
+      query: q,
+      timestamp: new Date().toISOString()
     };
 
-    console.log(`✅ Resultados para "${normalizedQuery}": ${stats.approved}/${stats.totalResults} (${stats.approvalRate}%) aprobados`);
-    
+    console.log(`✅ Resultados filtrados: ${stats.approved}/${stats.totalResults} (${stats.approvalRate}%) aprobados`);
+
     res.json({
       ok: true,
-      items: searchResult.items,
+      items: filteredItems,
       filterStats: stats,
       originalQuery: q,
       timestamp: new Date().toISOString()
     });
+
   } catch (error) {
-    console.error('❌ Error en búsqueda de YouTube:', error.message);
-    
+    console.error('❌ Error en búsqueda de YouTube:', error);
     let errorMessage = 'Error al buscar videos en YouTube';
     let statusCode = 500;
-    
-    // Manejo específico de errores de cuota
-    if (error.message.includes('cuota excedida') || error.message.includes('quotaExceeded')) {
-      statusCode = 503;
-      errorMessage = 'Servicio temporalmente no disponible. Límite de búsquedas alcanzado.';
-    } else if (error.message.includes('máximo 1 petición')) {
-      statusCode = 429;
-      errorMessage = 'Demasiadas búsquedas. Espera unos segundos antes de intentar de nuevo.';
+
+    if (error.response) {
+      const youtubeError = error.response.data.error;
+      if (youtubeError.code === 403) {
+        errorMessage = 'Límite de cuota de YouTube API excedido';
+        statusCode = 429;
+      }
     }
-    
+
     res.status(statusCode).json({
       ok: false,
       error: errorMessage,
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      retryAfter: statusCode === 429 ? 8 : undefined
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
 
-// Ruta para SUGERIR agregar a playlist (sin cambios)
+// Ruta para SUGERIR agregar a playlist
 app.post('/suggest-song', async (req, res) => {
   const { videoId, title, userId } = req.body;
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
+
   console.log(`🎵 Solicitud de agregar video: ${title || 'Sin título'} (ID: ${videoId}) (Usuario: ${userId || 'Anónimo'})`);
-  
+
   if (!defaultPlaylistId) {
     console.error('❌ DEFAULT_PLAYLIST_ID no configurada en variables de entorno');
     return res.status(500).json({
@@ -437,7 +245,7 @@ app.post('/suggest-song', async (req, res) => {
       requiresAuth: false
     });
   }
-  
+
   if (!videoId) {
     console.error('❌ Video ID es requerido');
     return res.status(400).json({
@@ -446,7 +254,7 @@ app.post('/suggest-song', async (req, res) => {
       requiresAuth: false
     });
   }
-  
+
   const videoIdRegex = /^[a-zA-Z0-9_-]{11}$/;
   if (!videoIdRegex.test(videoId)) {
     console.error('❌ Video ID con formato inválido');
@@ -456,13 +264,14 @@ app.post('/suggest-song', async (req, res) => {
       requiresAuth: false
     });
   }
-  
+
+  // --- VALIDACIONES ANTES DE AGREGAR ---
   try {
     const videoResponse = await userYoutube.videos.list({
       part: 'snippet,status',
       id: videoId
     });
-    
+
     if (!videoResponse.data.items || videoResponse.data.items.length === 0) {
       return res.status(404).json({
         ok: false,
@@ -470,10 +279,10 @@ app.post('/suggest-song', async (req, res) => {
         requiresAuth: false
       });
     }
-    
+
     const video = videoResponse.data.items[0];
     console.log(`📹 Video encontrado: "${video.snippet.title}"`);
-    
+
     if (video.status.embeddable === false) {
       return res.status(403).json({
         ok: false,
@@ -481,14 +290,14 @@ app.post('/suggest-song', async (req, res) => {
         requiresAuth: false
       });
     }
-    
+
     if (ownerYoutube) {
       const existingItemsResponse = await ownerYoutube.playlistItems.list({
         part: 'snippet',
         playlistId: defaultPlaylistId,
         videoId: videoId
       });
-      
+
       if (existingItemsResponse.data.items && existingItemsResponse.data.items.length > 0) {
         console.log(`⚠️ Video ${videoId} ya existe en playlist del propietario.`);
         return res.status(409).json({
@@ -505,6 +314,7 @@ app.post('/suggest-song', async (req, res) => {
         requiresAuth: false
       });
     }
+
   } catch (error) {
     console.error('Error verificando video antes de agregar:', error);
     if (error.code === 401 || error.response?.status === 401) {
@@ -520,7 +330,7 @@ app.post('/suggest-song', async (req, res) => {
       requiresAuth: false
     });
   }
-  
+
   // --- AGREGAR VIDEO A PLAYLIST DEL PROPIETARIO ---
   try {
     if (!ownerYoutube) {
@@ -531,7 +341,7 @@ app.post('/suggest-song', async (req, res) => {
         requiresAuth: false
       });
     }
-    
+
     const response = await ownerYoutube.playlistItems.insert({
       part: 'snippet',
       resource: {
@@ -544,10 +354,10 @@ app.post('/suggest-song', async (req, res) => {
         }
       }
     });
-    
+
     console.log(`✅ Video agregado exitosamente por el propietario: ${title || videoId}`);
     console.log(`📝 Playlist Item ID: ${response.data.id}`);
-    
+
     res.status(200).json({
       ok: true,
       message: 'Canción sugerida y agregada exitosamente a la playlist.',
@@ -555,12 +365,13 @@ app.post('/suggest-song', async (req, res) => {
       playlistItemId: response.data.id,
       timestamp: new Date().toISOString()
     });
+
   } catch (error) {
     console.error('❌ Error agregando video a playlist del propietario:', error);
     let errorMessage = 'Error al agregar canción';
     let requiresAuth = false;
     let statusCode = 500;
-    
+
     if (error.code === 401 || error.response?.status === 401) {
       console.log('🔐 Error de autenticación del propietario');
       errorMessage = 'Error de autenticación del servidor.';
@@ -569,7 +380,7 @@ app.post('/suggest-song', async (req, res) => {
       errorMessage = 'Access denied. Check playlist permissions.';
       statusCode = 403;
     }
-    
+
     res.status(statusCode).json({
       ok: false,
       error: errorMessage,
@@ -578,18 +389,18 @@ app.post('/suggest-song', async (req, res) => {
   }
 });
 
-// Ruta para obtener perfil (sin cambios)
+// Ruta para obtener perfil (simplificada para gamificación)
 app.get('/user/profile', (req, res) => {
   const { userId } = req.query;
   console.log(`👤 Consulta de perfil: ${userId || 'anonymous'}`);
-  
+
   // Simular datos básicos para compatibilidad
   const mockRanking = [
     { rank: 1, nickname: 'RockMaster69', points: 850, level: 8, songsAdded: 75 },
     { rank: 2, nickname: 'MetallicaFan', points: 720, level: 7, songsAdded: 62 },
     { rank: 3, nickname: 'QueenLover', points: 680, level: 6, songsAdded: 58 }
   ];
-  
+
   let user = { 
     rank: 0, 
     nickname: userId && userId !== 'anonymous' ? userId : 'Invitado', 
@@ -597,7 +408,7 @@ app.get('/user/profile', (req, res) => {
     level: 1, 
     songsAdded: 0 
   };
-  
+
   if (userId && userId !== 'anonymous' && userId !== 'Invitado') {
     const foundUser = mockRanking.find(u => u.nickname.toLowerCase() === userId.toLowerCase());
     if (foundUser) {
@@ -606,7 +417,7 @@ app.get('/user/profile', (req, res) => {
       user.rank = mockRanking.length + 1;
     }
   }
-  
+
   res.json({
     ok: true,
     user: user,
@@ -616,52 +427,23 @@ app.get('/user/profile', (req, res) => {
   });
 });
 
-// Ruta de salud del servidor (MEJORADA - CON ESTADÍSTICAS DE CUOTA)
+// Ruta de salud del servidor
 app.get('/health', (req, res) => {
-  const now = new Date();
-  const cacheStats = {
-    size: searchCache.size,
-    max: searchCache.max,
-    percentUsed: Math.round((searchCache.size / searchCache.max) * 100)
-  };
-  
-  const circuitBreakerActive = quotaExceededUntil > Date.now();
-  const circuitBreakerReset = circuitBreakerActive ? 
-    Math.ceil((quotaExceededUntil - Date.now()) / 60000) : 0;
-  
   const health = {
     ok: true,
     service: 'MOYOFY Premium API',
-    version: '2.0.1',
-    timestamp: now.toISOString(),
+    version: '2.0.0',
+    timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     uptime: process.uptime(),
     memory: {
       rss: `${Math.round(process.memoryUsage().rss / 1024 / 1024)}MB`,
       heapUsed: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`
     },
-    youtubeApi: {
-      configured: !!process.env.YOUTUBE_API_KEY,
-      usedToday: youtubeApiUsedToday,
-      dailyLimit: MAX_DAILY_QUOTA,
-      percentUsed: Math.round((youtubeApiUsedToday / MAX_DAILY_QUOTA) * 100),
-      quotaExceeded: circuitBreakerActive
-    },
-    cache: cacheStats,
-    circuitBreaker: {
-      active: circuitBreakerActive,
-      resetInMinutes: circuitBreakerReset
-    },
-    ownerClient: ownerYoutube ? '✅ Initialized' : '❌ Not Initialized',
-    filterStats: {
-      allowedArtists: ALLOWED_ARTISTS.size,
-      forbiddenArtists: FORBIDDEN_ARTISTS.size
-    }
+    youtubeApi: process.env.YOUTUBE_API_KEY ? '✅ Configured' : '❌ Not Configured',
+    playlist: process.env.DEFAULT_PLAYLIST_ID ? '✅ Configured' : '❌ Not Configured'
   };
-  
-  console.log('🩺 Health check realizado - Cuota YouTube: ' + 
-    `${youtubeApiUsedToday}/${MAX_DAILY_QUOTA} (${Math.round((youtubeApiUsedToday / MAX_DAILY_QUOTA) * 100)}%)`);
-  
+  console.log('🩺 Health check realizado');
   res.json(health);
 });
 
@@ -700,22 +482,85 @@ app.get('/', (req, res) => {
   }
 });
 
+// Ruta para archivos estáticos fallback
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    res.status(404).json({
+      ok: false,
+      error: 'Ruta API no encontrada',
+      path: req.path,
+      available: ['/search', '/suggest-song', '/auth', '/user/profile', '/health']
+    });
+  } else {
+    const filePath = path.join(__dirname, '../public', req.path);
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      res.sendFile(filePath);
+    } else {
+      res.redirect('/');
+    }
+  }
+});
+
 // Manejo global de errores
 app.use((error, req, res, next) => {
-  console.error('❌ Error global:', {
-    message: error.message,
-    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-    path: req.path,
-    method: req.method,
-    ip: req.ip
-  });
-  
+  console.error('❌ Error global:', error);
   res.status(500).json({
     ok: false,
     error: 'Error interno del servidor',
-    requestId: Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
+    message: process.env.NODE_ENV === 'development' ? error.message : undefined
   });
 });
+
+// --- FUNCIONES AUXILIARES ---
+function filterRockMusic(items) {
+  if (!items || !Array.isArray(items)) return [];
+  
+  const rockKeywords = [
+    'rock', 'metal', 'punk', 'grunge', 'alternative', 'indie', 'hard rock',
+    'classic rock', 'heavy metal', 'thrash', 'emo', 'gothic', 'industrial'
+  ];
+  
+  const excludedKeywords = [
+    'reggaeton', 'trap', 'hip hop', 'rap', 'pop', 'reggae', 'salsa',
+    'bachata', 'cumbia', 'balada', 'ranchera', 'k-pop', 'j-pop'
+  ];
+  
+  const allowedArtists = [
+    'queen', 'metallica', 'led zeppelin', 'ac/dc', 'guns n roses', 'nirvana',
+    'foo fighters', 'the beatles', 'rolling stones', 'black sabbath', 'iron maiden',
+    'judas priest', 'motorhead', 'slayer', 'pantera', 'megadeth', 'soundgarden',
+    'pearl jam', 'red hot chili peppers', 'the who', 'deep purple', 'aerosmith',
+    'van halen', 'kiss', 'ozzy osbourne', 'rush', 'cream', 'jimi hendrix',
+    'the doors', 'pink floyd', 'the clash', 'ramones', 'sex pistols', 'the cure',
+    'joy division', 'radiohead', 'muse', 'system of a down', 'tool', 'rage against the machine'
+  ];
+  
+  return items.filter(item => {
+    if (!item.snippet || !item.snippet.title || !item.snippet.channelTitle) {
+      return false;
+    }
+    
+    const title = item.snippet.title.toLowerCase();
+    const channel = item.snippet.channelTitle.toLowerCase();
+    const description = item.snippet.description ? item.snippet.description.toLowerCase() : '';
+    
+    const isAllowedArtist = allowedArtists.some(artist => 
+      channel.includes(artist) || title.includes(artist)
+    );
+    
+    if (isAllowedArtist) return true;
+    
+    const hasRockKeyword = rockKeywords.some(keyword => 
+      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
+    );
+    
+    const hasExcludedKeyword = excludedKeywords.some(keyword => 
+      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
+    );
+    
+    return hasRockKeyword && !hasExcludedKeyword;
+  });
+}
 
 // --- INICIAR SERVIDOR ---
 const PORT = process.env.PORT || 8080;
@@ -740,50 +585,21 @@ function checkConfiguration() {
     } else {
       const value = varName.includes('SECRET') || varName.includes('KEY') 
         ? '••••••••' 
-        : (varName === 'OWNER_TOKENS_JSON' ? 'JSON configurado' : process.env[varName]);
+        : process.env[varName];
       console.log(`✅ ${varName}: ${value}`);
     }
   });
   
   if (missingVars.length > 0) {
-    console.error(`
-❌ ADVERTENCIA: Faltan ${missingVars.length} variables requeridas.`);
+    console.error(`\n❌ ADVERTENCIA: Faltan ${missingVars.length} variables requeridas.`);
   } else {
-    console.log(`
-🎉 ¡Todas las variables requeridas están configuradas!
-🎵 Filtro de música cargado: ${ALLOWED_ARTISTS.size} artistas permitidos, ${FORBIDDEN_ARTISTS.size} artistas prohibidos.`);
+    console.log('\n🎉 ¡Todas las variables requeridas están configuradas!');
   }
 }
-
-// Limpieza periódica de caché (cada hora)
-setInterval(() => {
-  const beforeSize = searchCache.size;
-  // No necesitamos llamar a purgeStale() explícitamente en LRUCache v10+
-  // El caché se limpia automáticamente según TTL
-  const afterSize = searchCache.size;
-  if (beforeSize !== afterSize) {
-    console.log(`🧹 Limpieza de caché: ${beforeSize} → ${afterSize} items`);
-  }
-}, 60 * 60 * 1000);
-
-// Reset de contador diario (a medianoche)
-function resetDailyCounter() {
-  const now = new Date();
-  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  const msUntilMidnight = tomorrow - now;
-  
-  setTimeout(() => {
-    console.log(`🔄 Reiniciando contador diario de YouTube API. Total usado hoy: ${youtubeApiUsedToday}`);
-    youtubeApiUsedToday = 0;
-    resetDailyCounter();
-  }, msUntilMidnight);
-}
-
-resetDailyCounter();
 
 app.listen(PORT, HOST, () => {
   console.log(`
-    🎸 MOYOFY PREMIUM v2.1 (¡CON CACHE Y RATE LIMITING!)
+    🎸 MOYOFY PREMIUM v2.0
     ==========================================
     ✅ Servidor iniciado exitosamente
     📍 URL: http://${HOST}:${PORT}
@@ -791,24 +607,17 @@ app.listen(PORT, HOST, () => {
     🌍 Entorno: ${process.env.NODE_ENV || 'development'}
     🚀 Node.js: ${process.version}
     📦 Memoria: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB
-    ⚡ Cache configurado con TTL de 6 horas
-    🛑 Rate limiting: 1 búsqueda cada 8 segundos por IP
-    🔌 Circuit breaker automático para quotaExceeded
     ==========================================
   `);
-  
+
   checkConfiguration();
-  
-  console.log(`
-📚 Rutas disponibles:
-  GET / - Interfaz web principal con gamificación
-  POST /search - Buscar canciones de rock (CON CACHE Y RATE LIMITING)
-  POST /suggest-song - Agregar canción a playlist (con autenticación del propietario)
-  GET /auth - Autenticación con Google
-  GET /oauth2callback - Callback de autenticación OAuth
-  GET /user/profile - Perfil de usuario (compatibilidad)
-  GET /health - Estado del servidor (con estadísticas de cuota)
-  ==========================================
-  💡 TIP: Usa /health para monitorear el uso de cuota de YouTube API
-  `);
+
+  console.log('\n📚 Rutas disponibles:');
+  console.log(' GET / - Interfaz web principal con gamificación');
+  console.log(' POST /search - Buscar canciones de rock');
+  console.log(' POST /suggest-song - Agregar canción a playlist');
+  console.log(' GET /auth - Autenticación con Google');
+  console.log(' GET /user/profile - Perfil de usuario (compatibilidad)');
+  console.log(' GET /health - Estado del servidor');
+  console.log('==========================================');
 });
