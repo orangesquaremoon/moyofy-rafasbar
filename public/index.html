@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>MOYOFY · Rafa's Bar</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -22,15 +22,9 @@
       --pink: #ff006e;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
     body {
-      background: var(--darker);
       color: white;
       min-height: 100vh;
       padding: 20px;
@@ -38,27 +32,12 @@
       overflow-x: hidden;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-      animation: fadeInDown 0.5s ease;
-    }
-
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+    header { text-align:center; margin-bottom: 25px; animation: fadeInDown .5s ease; }
+    @keyframes fadeInDown { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
 
     h1 {
-      font-size: 3.5rem;
+      font-size: 3.3rem;
       margin-bottom: 10px;
       background: linear-gradient(45deg, #ff004c, #ff7300, #9d4edd, #4361ee);
       background-size: 300% 300%;
@@ -68,1066 +47,560 @@
       position: relative;
       animation: gradientShift 5s ease infinite;
     }
+    @keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    h1::after { content:''; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); width:60px; height:4px; background:var(--primary); border-radius:2px; }
+    h2 { font-size: 1.05rem; color:#aaa; margin-bottom: 5px; }
+    .submeta { color:#8f8fb3; font-size:.92rem; margin-top: 5px; }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    h1::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 4px;
-      background: var(--primary);
-      border-radius: 2px;
-    }
-
-    h2 {
-      font-size: 1.2rem;
-      color: #aaa;
-      margin-bottom: 20px;
-    }
-
-    .user-panel {
+    .card {
       background: rgba(30, 30, 50, 0.9);
       backdrop-filter: blur(15px);
-      border: 2px solid rgba(255, 0, 76, 0.4);
+      border: 2px solid rgba(255, 0, 76, 0.25);
       border-radius: 20px;
-      padding: 25px;
-      margin-bottom: 25px;
-      text-align: center;
-      transition: all 0.4s ease;
-      box-shadow: 0 10px 30px rgba(255, 0, 76, 0.2),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      padding: 22px;
+      margin-bottom: 18px;
+      transition: all .25s ease;
+      box-shadow: 0 10px 30px rgba(255, 0, 76, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(255, 0, 76, 0.2), inset 0 1px 0 rgba(255,255,255,.08); }
+
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .grow { flex: 1; min-width: 220px; }
+    .small { font-size:.9rem; color:#b8b8d7; }
+
+    .search-box {
+      background: rgba(25, 25, 40, 0.95);
+      border: 2px solid rgba(255,0,76,.55);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255,255,255,0.08);
     }
 
-    .user-panel:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 40px rgba(255, 0, 76, 0.3),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    .search-input {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 15px;
+      background: rgba(40, 40, 60, 0.9);
+      color: white;
+      font-size: 1.05rem;
+      border: 2px solid transparent;
+      transition: all .2s ease;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,.45);
     }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(255,0,76,.25), inset 0 2px 5px rgba(0,0,0,.45);
+    }
+    .search-input::placeholder { color:#888; }
 
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(45deg, var(--primary), var(--pink));
+      color: white;
+      border: none;
+      border-radius: 15px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .2s ease;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      box-shadow: 0 6px 20px rgba(255,0,76,.35);
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+    .btn::after {
+      content:'';
+      position:absolute;
+      top:0; left:-100%;
+      width:100%; height:100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left .65s ease;
+    }
+    .btn:hover::after { left: 100%; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255,0,76,.55); }
+    .btn:active { transform: translateY(0) scale(.99); }
+    .btn.secondary { background: transparent; border: 2px solid rgba(0,255,170,.45); color: var(--success); box-shadow:none; }
+    .btn.secondary:hover { background: rgba(0,255,170,.07); box-shadow: 0 10px 25px rgba(0,255,170,.15); }
+    .btn.ghost { background: transparent; border: 2px solid rgba(255,0,76,.45); color: var(--primary); box-shadow:none; }
+
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: .92rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+    }
+    .pill.success { color: var(--success); border-color: rgba(0,255,170,.25); background: rgba(0,255,170,.06); }
+    .pill.warning { color: var(--warning); border-color: rgba(255,204,0,.25); background: rgba(255,204,0,.06); }
+    .pill.danger { color: var(--danger); border-color: rgba(255,107,107,.25); background: rgba(255,107,107,.06); }
+
+    .user-panel { text-align:center; }
     .points-display {
-      font-size: 2.8rem;
-      font-weight: bold;
+      font-size: 2.7rem;
+      font-weight: 900;
       color: var(--success);
-      margin: 10px 0;
-      text-shadow: 0 0 15px rgba(0, 255, 170, 0.7);
+      margin: 8px 0 6px;
+      text-shadow: 0 0 14px rgba(0,255,170,.55);
       background: linear-gradient(45deg, var(--success), #00cc88, #00ffaa);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: pulseGlow 2s ease-in-out infinite alternate;
     }
-
-    @keyframes pulseGlow {
-      0% { text-shadow: 0 0 10px rgba(0, 255, 170, 0.5); }
-      100% { text-shadow: 0 0 20px rgba(0, 255, 170, 0.8), 0 0 30px rgba(0, 255, 170, 0.4); }
-    }
-
+    @keyframes pulseGlow { 0%{text-shadow:0 0 10px rgba(0,255,170,.4)} 100%{text-shadow:0 0 20px rgba(0,255,170,.75), 0 0 30px rgba(0,255,170,.35)} }
     .level-badge {
-      display: inline-block;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       background: linear-gradient(45deg, var(--primary), var(--purple));
       color: white;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 1rem;
-      margin-top: 5px;
-      font-weight: bold;
-      box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: .98rem;
+      font-weight: 900;
+      box-shadow: 0 4px 15px rgba(157,78,221,.35);
       animation: badgeFloat 3s ease-in-out infinite;
     }
+    @keyframes badgeFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
 
-    @keyframes badgeFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-
-    .search-box {
-      background: rgba(25, 25, 40, 0.95);
-      border: 2px solid var(--primary);
-      border-radius: 20px;
-      padding: 25px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .search-box:hover {
-      box-shadow: 0 15px 50px rgba(255, 0, 76, 0.3),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    }
-
-    .search-label {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-      color: var(--light);
-      font-weight: 500;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 18px;
-      border: none;
-      border-radius: 15px;
-      background: rgba(40, 40, 60, 0.9);
-      color: white;
-      font-size: 1.1rem;
-      margin-bottom: 20px;
+    .message {
+      padding: 16px;
+      border-radius: 12px;
+      margin: 14px 0 0;
+      text-align: center;
+      font-weight: 900;
+      backdrop-filter: blur(10px);
       border: 2px solid transparent;
-      transition: all 0.3s ease;
-      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+      animation: messageAppear .4s ease;
     }
+    @keyframes messageAppear { 0%{opacity:0; transform:translateY(-10px) scale(.96)} 100%{opacity:1; transform:translateY(0) scale(1)} }
+    .message.success { background: rgba(0,255,170,.18); border-color: rgba(0,255,170,.35); color: var(--success); }
+    .message.error { background: rgba(255,107,107,.18); border-color: rgba(255,107,107,.35); color: var(--danger); }
+    .message.warning { background: rgba(255,204,0,.18); border-color: rgba(255,204,0,.35); color: var(--warning); }
 
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(255, 0, 76, 0.3),
-                  inset 0 2px 5px rgba(0, 0, 0, 0.5);
+    .results-container { margin-top: 14px; }
+    .loading { text-align:center; padding: 26px 10px; color: var(--gray); }
+    .spinner {
+      border: 4px solid rgba(255,255,255,0.10);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 46px; height: 46px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 14px;
     }
-
-    .search-input::placeholder {
-      color: #888;
-    }
-
-    .search-btn {
-      width: 100%;
-      padding: 18px;
-      background: linear-gradient(45deg, var(--primary), var(--pink));
-      color: white;
-      border: none;
-      border-radius: 15px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 6px 20px rgba(255, 0, 76, 0.4);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .search-btn::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.7s ease;
-    }
-
-    .search-btn:hover::after {
-      left: 100%;
-    }
-
-    .search-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(255, 0, 76, 0.6);
-    }
+    @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
 
     .song-item {
       background: rgba(35, 35, 55, 0.9);
       border-left: 5px solid var(--primary);
-      padding: 18px;
+      padding: 16px;
       margin: 12px 0;
       border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: all .22s ease;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.25);
       position: relative;
       overflow: hidden;
     }
-
-    .song-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 0, 76, 0.1), transparent);
-      transform: translateX(-100%);
-    }
-
-    .song-item:hover::before {
-      animation: shine 0.8s ease;
-    }
-
-    @keyframes shine {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-
     .song-item:hover {
-      background: rgba(45, 45, 65, 0.95);
-      transform: translateX(8px) scale(1.02);
-      border-left: 5px solid var(--success);
-      box-shadow: 0 8px 25px rgba(0, 255, 170, 0.3);
+      background: rgba(45,45,70,.95);
+      transform: translateX(6px) scale(1.01);
+      border-left-color: var(--success);
+      box-shadow: 0 8px 22px rgba(0,255,170,.22);
     }
-
-    .song-info {
-      flex: 1;
-    }
-
-    .song-title {
-      font-weight: bold;
-      font-size: 1.1rem;
-      margin-bottom: 5px;
-      color: var(--light);
-    }
-
-    .song-artist {
-      color: #aaa;
-      font-size: 0.9rem;
-    }
-
+    .song-info { flex:1; min-width: 0; }
+    .song-title { font-weight: 900; font-size: 1.05rem; margin-bottom: 4px; color: var(--light); }
+    .song-artist { color:#aaa; font-size: .9rem; }
     .song-duration {
-      font-size: 0.8rem;
+      font-size: .8rem;
       color: var(--gray);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 2px 8px;
+      background: rgba(255,255,255,0.05);
+      padding: 3px 8px;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: inline-block;
-      margin-top: 5px;
+      border: 1px solid rgba(255,255,255,0.10);
+      display:inline-block;
+      margin-top: 6px;
     }
-
-    .song-duration.warning {
-      color: var(--warning);
-      background: rgba(255, 204, 0, 0.1);
-      border-color: rgba(255, 204, 0, 0.2);
-    }
-
-    .song-duration.too-long {
-      color: var(--danger);
-      background: rgba(255, 107, 107, 0.1);
-      border-color: rgba(255, 107, 107, 0.2);
-      text-decoration: line-through;
-    }
+    .song-duration.warning { color: var(--warning); background: rgba(255,204,0,0.08); border-color: rgba(255,204,0,0.18); }
+    .song-duration.too-long { color: var(--danger); background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.18); text-decoration: line-through; }
 
     .add-btn {
       background: linear-gradient(45deg, var(--success), #00cc88);
-      color: black;
+      color: #08110c;
       border: none;
-      padding: 10px 20px;
-      border-radius: 25px;
-      font-weight: bold;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 900;
       cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 110px;
-      box-shadow: 0 4px 15px rgba(0, 255, 170, 0.4);
-      position: relative;
-      overflow: hidden;
+      transition: all .2s ease;
+      min-width: 130px;
+      box-shadow: 0 4px 14px rgba(0,255,170,.28);
+      user-select: none;
+      display:flex; align-items:center; justify-content:center; gap:8px;
     }
+    .add-btn:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(0,255,170,.44); }
+    .add-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; background: linear-gradient(45deg, #6d6d6d, #858585); color:#1c1c1c; }
 
-    .add-btn:hover {
-      background: linear-gradient(45deg, #00cc88, var(--success));
-      transform: scale(1.08);
-      box-shadow: 0 6px 20px rgba(0, 255, 170, 0.6);
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .tile {
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
     }
-
-    .add-btn:disabled {
-      background: linear-gradient(45deg, #666, #888);
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .add-btn:active {
-      transform: scale(0.98);
-    }
-
-    .message {
-      padding: 18px;
-      border-radius: 12px;
-      margin: 15px 0;
-      text-align: center;
-      font-weight: bold;
-      animation: messageAppear 0.5s ease;
-      backdrop-filter: blur(10px);
-      border: 2px solid transparent;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    @keyframes messageAppear {
-      0% { opacity: 0; transform: translateY(-10px) scale(0.9); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    .message.success {
-      background: rgba(0, 255, 170, 0.2);
-      border-color: rgba(0, 255, 170, 0.4);
-      color: var(--success);
-      animation: pulse 2s infinite;
-    }
-
-    .message.error {
-      background: rgba(255, 107, 107, 0.2);
-      border-color: rgba(255, 107, 107, 0.4);
-      color: var(--danger);
-    }
-
-    .message.warning {
-      background: rgba(255, 204, 0, 0.2);
-      border-color: rgba(255, 204, 0, 0.4);
-      color: var(--warning);
-    }
-
-    .duration-warning {
-      background: rgba(255, 204, 0, 0.1);
-      border: 2px solid rgba(255, 204, 0, 0.3);
-      border-radius: 12px;
-      padding: 15px;
-      margin: 15px 0;
-      color: var(--warning);
-      backdrop-filter: blur(5px);
-    }
-
-    .duration-warning i {
-      margin-right: 10px;
-      color: var(--warning);
-    }
-
-    .auth-required {
-      background: rgba(255, 69, 58, 0.2);
-      border: 2px solid rgba(255, 69, 58, 0.4);
-      color: var(--danger);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 15px 0;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 5px 20px rgba(255, 69, 58, 0.3);
-    }
-
-    .auth-required:hover {
-      background: rgba(255, 69, 58, 0.3);
-      transform: scale(1.03);
-      box-shadow: 0 8px 25px rgba(255, 69, 58, 0.4);
-    }
-
-    .auth-required i {
-      margin-right: 10px;
-      font-size: 1.2rem;
-    }
-
-    .gamification-panel {
-      background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(45, 45, 70, 0.9));
-      border: 2px solid rgba(0, 255, 170, 0.4);
-      border-radius: 20px;
-      padding: 25px;
-      margin-top: 25px;
-      backdrop-filter: blur(15px);
-      box-shadow: 0 10px 30px rgba(0, 255, 170, 0.2);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .gamification-panel::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: conic-gradient(
-        transparent, 
-        rgba(0, 255, 170, 0.1), 
-        transparent 30%
-      );
-      animation: rotate 8s linear infinite;
-    }
-
-    .gamification-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      color: var(--success);
-      font-weight: bold;
-      font-size: 1.3rem;
-      position: relative;
-      z-index: 2;
-    }
+    .tile .k { color:#a9a9c9; font-size:.82rem; font-weight:800; }
+    .tile .v { font-size: 1.35rem; font-weight: 950; color: var(--success); margin-top: 6px; }
+    .tile .v.smallv { font-size: 1.05rem; color: #eaeaff; font-weight: 900; }
 
     .progress-container {
       background: rgba(40, 40, 60, 0.8);
       border-radius: 15px;
-      padding: 15px;
-      margin: 15px 0;
-      position: relative;
-      z-index: 2;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
     }
-
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-
-    .progress-bar {
-      height: 16px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 10px;
-      overflow: hidden;
-      position: relative;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-    }
-
+    .progress-header { display:flex; justify-content:space-between; margin-bottom: 10px; font-size: .9rem; color:#aaa; }
+    .progress-bar { height: 14px; background: rgba(0,0,0,0.25); border-radius: 10px; overflow:hidden; border: 2px solid rgba(255,255,255,0.08); }
     .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, #ff004c, #ff7300, #00ffaa);
       border-radius: 8px;
-      transition: width 1s ease-in-out;
-      position: relative;
-      overflow: hidden;
-      min-width: 8px;
+      transition: width .8s ease-in-out;
+      min-width: 6px;
     }
+    .xp-display { display:flex; justify-content:space-between; margin-top: 8px; font-size: .85rem; color:#888; }
 
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.3) 50%,
-        transparent 100%
-      );
-      animation: shimmer 2s infinite;
-      transform: translateX(-100%);
-    }
-
-    @keyframes shimmer {
-      100% { transform: translateX(100%); }
-    }
-
-    .xp-display {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      font-size: 0.85rem;
-      color: #888;
-    }
-
-    .achievements-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-      margin: 20px 0;
-      position: relative;
-      z-index: 2;
-    }
-
-    .achievement-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .list { display:flex; flex-direction:column; gap: 10px; margin-top: 10px; }
+    .mini-row { display:flex; align-items:center; justify-content:space-between; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); }
+    .mini-row .l { font-weight: 900; }
+    .mini-row .r { color: #d8d8ff; font-weight: 900; }
+    .mini-row .btn-mini {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #fff;
+      padding: 8px 10px;
       border-radius: 12px;
-      padding: 15px;
-      text-align: center;
-      transition: all 0.3s ease;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
+      font-weight: 900;
+      transition: all .18s ease;
+      user-select: none;
     }
+    .mini-row .btn-mini:hover { background: rgba(255,0,76,0.12); border-color: rgba(255,0,76,0.25); transform: translateY(-1px); }
 
-    .achievement-card:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--success);
-      box-shadow: 0 5px 15px rgba(0, 255, 170, 0.3);
-    }
+    .divider { height:1px; width:100%; background: rgba(255,255,255,0.10); margin: 14px 0; }
 
-    .achievement-card.locked {
-      opacity: 0.5;
-      filter: grayscale(1);
-    }
-
-    .achievement-card.unlocked {
-      border-color: var(--success);
-      background: rgba(0, 255, 170, 0.05);
-    }
-
-    .achievement-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .achievement-name {
-      font-weight: bold;
-      font-size: 0.9rem;
-      margin-bottom: 5px;
-    }
-
-    .achievement-desc {
-      font-size: 0.8rem;
-      color: #aaa;
-      margin-bottom: 10px;
-    }
-
-    .achievement-progress {
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .achievement-progress-fill {
-      height: 100%;
-      background: var(--success);
-      border-radius: 2px;
-      transition: width 0.5s ease;
-    }
-
-    .challenges-container {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
-      padding: 20px;
-      margin: 20px 0;
-      position: relative;
-      z-index: 2;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .challenge-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .challenge-item:last-child {
-      border-bottom: none;
-    }
-
-    .challenge-info {
-      flex: 1;
-    }
-
-    .challenge-reward {
-      background: linear-gradient(45deg, var(--warning), #ff9900);
-      color: black;
-      padding: 5px 12px;
-      border-radius: 15px;
-      font-weight: bold;
-      font-size: 0.9rem;
-      min-width: 80px;
-      text-align: center;
-    }
-
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 15px;
-      margin: 20px 0;
-      position: relative;
-      z-index: 2;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.05);
+    .auth-required {
+      background: rgba(255, 69, 58, 0.18);
+      border: 2px solid rgba(255, 69, 58, 0.35);
+      color: var(--danger);
+      cursor: pointer;
+      transition: all .2s ease;
+      padding: 16px;
       border-radius: 12px;
-      padding: 15px;
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 14px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 20px rgba(255,69,58,.18);
+      text-align: left;
+      font-weight: 900;
     }
-
-    .stat-value {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: var(--success);
-      margin-bottom: 5px;
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: #aaa;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 30px;
-      color: var(--gray);
-    }
-
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-top: 4px solid var(--primary);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 15px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      color: #888;
-      font-size: 0.9rem;
-      padding: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2.5rem;
-      }
-
-      .container {
-        padding: 10px;
-      }
-
-      .search-box {
-        padding: 20px;
-      }
-
-      .user-panel {
-        padding: 20px;
-      }
-
-      .achievements-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-
-    .confetti-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-      overflow: hidden;
-    }
-
-    .filter-stats {
-      background: rgba(108, 117, 125, 0.2);
-      border: 1px solid rgba(108, 117, 125, 0.4);
-      border-radius: 10px;
-      padding: 12px 15px;
-      margin: 15px 0;
-      font-size: 0.9rem;
-      backdrop-filter: blur(5px);
-    }
-
-    .change-username-btn {
-      background: transparent;
-      border: 2px solid var(--primary);
-      color: var(--primary);
-      padding: 10px 20px;
-      border-radius: 25px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 15px;
-      transition: all 0.3s ease;
-    }
-
-    .change-username-btn:hover {
-      background: rgba(255, 0, 76, 0.1);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 0, 76, 0.3);
-    }
-
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .particle {
-      position: absolute;
-      background: rgba(255, 0, 76, 0.1);
-      border-radius: 50%;
-      animation: float 20s infinite linear;
-    }
-
-    @keyframes float {
-      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-    }
-
-    @keyframes rotate {
-      100% { transform: rotate(360deg); }
-    }
+    .auth-required:hover { background: rgba(255,69,58,0.26); transform: scale(1.01); }
 
     .intro-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      position: fixed; top:0; left:0; width:100%; height:100%;
       background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4f 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
       z-index: 10000;
-      transition: opacity 0.8s ease;
+      transition: opacity .7s ease;
+      padding: 20px;
     }
-
     .intro-title {
-      font-size: 4.5rem;
-      font-weight: bold;
+      font-size: 4.2rem;
+      font-weight: 950;
       background: linear-gradient(45deg, #ff004c, #ff7300, #00ffaa, #4361ee);
       background-size: 300% 300%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: gradientShift 3s ease infinite, titlePulse 2s ease-in-out infinite;
-      text-align: center;
-      margin-bottom: 20px;
+      text-align:center;
+      margin-bottom: 14px;
     }
-
-    @keyframes titlePulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    .intro-subtitle {
-      font-size: 1.5rem;
-      color: #aaa;
-      margin-bottom: 40px;
-      text-align: center;
-      max-width: 600px;
-    }
-
+    @keyframes titlePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+    .intro-subtitle { font-size: 1.15rem; color:#aaa; margin-bottom: 26px; text-align:center; max-width: 650px; line-height:1.35; }
     .start-button {
       background: linear-gradient(45deg, #ff004c, #ff7300);
       color: white;
       border: none;
-      padding: 20px 50px;
-      font-size: 1.3rem;
-      font-weight: bold;
-      border-radius: 50px;
+      padding: 18px 44px;
+      font-size: 1.15rem;
+      font-weight: 950;
+      border-radius: 999px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 30px rgba(255, 0, 76, 0.4);
+      transition: all .2s ease;
+      box-shadow: 0 10px 30px rgba(255, 0, 76, 0.35);
       position: relative;
       overflow: hidden;
+      user-select: none;
+      display:flex; align-items:center; justify-content:center; gap:10px;
     }
-
-    .start-button:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 15px 40px rgba(255, 0, 76, 0.6);
-    }
-
-    .start-button:active {
-      transform: translateY(0) scale(0.98);
-    }
-
-    .level-up-animation {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      font-size: 5rem;
-      font-weight: bold;
-      color: #00ffaa;
-      text-shadow: 0 0 30px rgba(0, 255, 170, 0.8);
-      z-index: 10001;
-      pointer-events: none;
-      animation: levelUpPop 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes levelUpPop {
-      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-      20% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
-      40% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-      60% { transform: translate(-50%, -50%) scale(1.2) rotate(5deg); opacity: 1; }
-      80% { transform: translate(-50%, -50%) scale(1.1) rotate(-5deg); opacity: 1; }
-      100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; }
-    }
+    .start-button:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 15px 40px rgba(255,0,76,.55); }
+    .start-button:active { transform: translateY(0) scale(.99); }
 
     .sound-toggle {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid var(--primary);
+      bottom: 18px; right: 18px;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,0,76,0.55);
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 100;
-      transition: all 0.3s ease;
+      width: 50px; height: 50px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+      z-index: 120;
+      transition: all .2s ease;
+      user-select: none;
     }
+    .sound-toggle:hover { background: rgba(255,0,76,0.16); transform: scale(1.08); }
+    .sound-toggle i { font-size: 1.35rem; color: var(--primary); }
 
-    .sound-toggle:hover {
-      background: rgba(255, 0, 76, 0.2);
-      transform: scale(1.1);
-    }
-
-    .sound-toggle i {
-      font-size: 1.5rem;
-      color: var(--primary);
-    }
-
-    .confetti {
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      background: var(--primary);
-      top: 0;
-      opacity: 0;
-    }
-
-    .confetti:nth-child(1) { background: #ff004c; }
-    .confetti:nth-child(2) { background: #00ffaa; }
-    .confetti:nth-child(3) { background: #ffcc00; }
-    .confetti:nth-child(4) { background: #9d4edd; }
-    .confetti:nth-child(5) { background: #4361ee; }
-    .confetti:nth-child(6) { background: #ff006e; }
-    .confetti:nth-child(7) { background: #00ccff; }
-    .confetti:nth-child(8) { background: #ff9900; }
-    .confetti:nth-child(9) { background: #aa00ff; }
-    .confetti:nth-child(10) { background: #00ff88; }
-
+    .confetti-container { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 9999; overflow:hidden; }
+    .confetti { position: absolute; width: 14px; height: 14px; background: var(--primary); top:0; opacity:0; }
     @keyframes confetti-explosion {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0) rotate(0deg) scale(0);
-      }
-      10% {
-        opacity: 1;
-        transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5 + 100vh)) rotate(calc(var(--r) * 3)) scale(0);
-      }
+      0% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(0); }
+      10% { opacity: 1; transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(1); }
+      100% { opacity: 0; transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5 + 100vh)) rotate(calc(var(--r) * 3)) scale(0); }
     }
 
     .points-animation {
       position: fixed;
       color: #00ffaa;
-      font-weight: bold;
-      font-size: 1.8rem;
-      text-shadow: 0 0 10px rgba(0, 255, 170, 0.8);
+      font-weight: 950;
+      font-size: 1.65rem;
+      text-shadow: 0 0 10px rgba(0,255,170,.75);
       z-index: 10001;
       pointer-events: none;
-      animation: pointsFloat 2.5s ease-out forwards;
+      animation: pointsFloat 2.3s ease-out forwards;
     }
-
     @keyframes pointsFloat {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0) scale(0.8);
-      }
-      20% {
-        opacity: 1;
-        transform: translate(0, -50px) scale(1.5);
-      }
-      40% {
-        opacity: 1;
-        transform: translate(0, -100px) scale(1.2);
-      }
-      60% {
-        opacity: 1;
-        transform: translate(0, -150px) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(0, -200px) scale(0.5);
-      }
+      0% { opacity: 1; transform: translate(0,0) scale(.9); }
+      25% { opacity: 1; transform: translate(0,-50px) scale(1.35); }
+      60% { opacity: 1; transform: translate(0,-140px) scale(1.05); }
+      100% { opacity: 0; transform: translate(0,-200px) scale(.6); }
     }
 
-    .emoji-explosion {
+    .level-up-animation {
       position: fixed;
-      font-size: 2.5rem;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 4.6rem;
+      font-weight: 950;
+      color: #00ffaa;
+      text-shadow: 0 0 30px rgba(0,255,170,.75);
       z-index: 10001;
       pointer-events: none;
-      animation: emojiFloat 3s ease-out forwards;
+      animation: levelUpPop 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-align:center;
+    }
+    @keyframes levelUpPop {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      20% { transform: translate(-50%, -50%) scale(1.35); opacity: 1; }
+      40% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      70% { transform: translate(-50%, -50%) scale(1.12) rotate(3deg); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.22); opacity: 0; }
     }
 
-    @keyframes emojiFloat {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0) scale(0.5) rotate(0deg);
-      }
-      20% {
-        opacity: 1;
-        transform: translate(var(--tx1), var(--ty1)) scale(1.5) rotate(180deg);
-      }
-      40% {
-        opacity: 1;
-        transform: translate(var(--tx2), var(--ty2)) scale(1.2) rotate(360deg);
-      }
-      60% {
-        opacity: 1;
-        transform: translate(var(--tx3), var(--ty3)) scale(1) rotate(540deg);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(var(--tx4), var(--ty4)) scale(0) rotate(720deg);
-      }
-    }
+    footer { text-align:center; margin-top: 28px; color:#8b8bb3; font-size:.9rem; padding: 18px; border-top: 1px solid rgba(255,255,255,0.10); }
 
-    .firework {
-      position: fixed;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      box-shadow: 0 0 10px currentColor;
-      z-index: 10001;
-      pointer-events: none;
-      animation: fireworkExplode 2s ease-out forwards;
-    }
-
-    @keyframes fireworkExplode {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0) scale(1);
-      }
-      30% {
-        opacity: 1;
-        transform: translate(0, -100px) scale(1);
-      }
-      31% {
-        opacity: 1;
-        transform: translate(0, -100px) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(var(--tx), var(--ty)) scale(0);
-      }
+    @media (max-width: 768px) {
+      body { padding: 14px; }
+      .container { padding: 10px; }
+      h1 { font-size: 2.6rem; }
+      .intro-title { font-size: 3.2rem; }
+      .grid3 { grid-template-columns: 1fr; }
+      .grid2 { grid-template-columns: 1fr; }
+      .add-btn { min-width: 120px; }
     }
   </style>
 </head>
+
 <body>
   <div class="intro-screen" id="intro-screen">
     <h1 class="intro-title">🎸 MOYOFY</h1>
-    <p class="intro-subtitle">Conecta con la música. Conecta con la gente.<br>Tu vibra tiene valor · Rafa's Bar</p>
-    <button class="start-button" onclick="startGame()">
+    <p class="intro-subtitle">
+      Conecta con la música. Conecta con la gente.<br>
+      Tu vibra tiene valor · Rafa's Bar
+    </p>
+    <button class="start-button" id="btn-start">
       <i class="fas fa-play"></i> ENTRAR AL BAR
     </button>
-    <div style="margin-top: 40px; color: #666; text-align: center;">
-      <p><i class="fas fa-map-marker-alt"></i> Ubicación: Rafa's Bar, Costa Rica</p>
-      <p><i class="fas fa-music"></i> Solo géneros rock/metal/alternativo</p>
-      <p><i class="fas fa-clock"></i> Límite: Máximo 7 minutos por canción</p>
-      <p><i class="fas fa-trophy"></i> Gana puntos y sube de nivel</p>
+    <div style="margin-top: 28px; color: #777; text-align: center; max-width: 720px;">
+      <div class="row" style="justify-content:center; margin-bottom: 10px;">
+        <span class="pill warning"><i class="fas fa-clock"></i> Límite: 7 min</span>
+        <span class="pill success"><i class="fas fa-shield"></i> MusicDefend</span>
+        <span class="pill"><i class="fas fa-bolt"></i> Ranking en vivo</span>
+      </div>
+      <p style="font-size:.95rem; line-height:1.4;">
+        No necesitás descargar apps. Entrás por QR. Sugerís canciones. Ganás MOYOS. Subís de nivel. Enviás regalos.
+      </p>
     </div>
   </div>
 
-  <div class="particles" id="particles-container"></div>
-
-  <div class="sound-toggle" onclick="toggleSound()" id="sound-toggle">
+  <div class="sound-toggle" id="sound-toggle" title="Sonido">
     <i class="fas fa-volume-up" id="sound-icon"></i>
   </div>
 
-  <div class="container" id="main-container" style="display: none;">
+  <div class="container" id="main-container" style="display:none;">
     <header>
       <h1>🎸 MOYOFY</h1>
       <h2>Tu vibra tiene valor · Rafa's Bar</h2>
+      <div class="submeta" id="connection-pill">
+        <span class="pill" id="pill-conn"><i class="fas fa-wifi"></i> Conectando...</span>
+      </div>
     </header>
 
-    <div class="user-panel">
-      <div id="nickname-section" style="display: none;">
-        <h3>👤 ¿Cómo te quieres llamar?</h3>
-        <input type="text" id="nickname" placeholder="Ej: RockMaster69" class="search-input">
-        <button onclick="setNickname()" class="search-btn">
-          <i class="fas fa-sign-in-alt"></i> ENTRAR AL BAR
-        </button>
-        <p style="color: #888; margin-top: 10px; font-size: 0.9rem;">
-          * Usa un nombre único para que aparezcas en el ranking
-        </p>
+    <div class="card user-panel">
+      <div id="onboarding" style="display:none;">
+        <h3 style="font-weight:950; margin-bottom: 10px;">👤 Entrá con tu apodo</h3>
+        <div class="grid2" style="margin-top: 12px;">
+          <div class="tile">
+            <div class="k">Apodo (para ranking)</div>
+            <input type="text" id="nickname" placeholder="Ej: RockMaster69" class="search-input" autocomplete="off" maxlength="24">
+            <div class="small" style="margin-top:8px;"><i class="fas fa-info-circle"></i> No uses tu nombre real si no querés.</div>
+          </div>
+          <div class="tile">
+            <div class="k">Correo (opcional)</div>
+            <input type="email" id="email" placeholder="Ej: correo@dominio.com" class="search-input" autocomplete="email" maxlength="80">
+            <div class="small" style="margin-top:8px;"><i class="fas fa-lock"></i> Sirve para recuperar tu perfil en el futuro.</div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top: 12px;">
+          <button class="btn grow" id="btn-enter">
+            <i class="fas fa-sign-in-alt"></i> ENTRAR
+          </button>
+          <button class="btn secondary grow" id="btn-guest">
+            <i class="fas fa-user-ninja"></i> ENTRAR COMO INVITADO
+          </button>
+        </div>
+        <div id="message-onboarding"></div>
       </div>
 
-      <div id="user-profile" style="display: none;">
-        <h3 id="welcome-text">¡Bienvenido, <span id="user-nickname">usuario</span>!</h3>
+      <div id="profile" style="display:none;">
+        <div class="row" style="justify-content:space-between;">
+          <div style="text-align:left;">
+            <div style="font-weight:950; font-size: 1.15rem;">
+              ¡Bienvenido, <span id="user-nickname">usuario</span>!
+            </div>
+            <div class="small" id="user-handle" style="margin-top:6px;">
+              <i class="fas fa-id-badge"></i> <span id="user-id">—</span>
+              <span style="margin:0 8px;">•</span>
+              <i class="fas fa-clock"></i> <span id="user-streak">—</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <span class="pill success" id="pill-live"><i class="fas fa-bolt"></i> LIVE</span>
+          </div>
+        </div>
+
         <div class="points-display">
           <i class="fas fa-coins"></i> <span id="user-points">100</span> MOYOS
         </div>
-        <div class="level-badge">
-          <i class="fas fa-level-up-alt"></i> Nivel <span id="user-level">1</span>
+
+        <div class="row" style="justify-content:center; margin-bottom: 8px;">
+          <span class="level-badge"><i class="fas fa-level-up-alt"></i> Nivel <span id="user-level">1</span></span>
+          <span class="pill"><i class="fas fa-music"></i> <span id="songs-added">0</span> canciones</span>
+          <span class="pill"><i class="fas fa-thumbs-up"></i> <span id="votes-received">0</span> votos</span>
         </div>
-        <div style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">
-          <i class="fas fa-music"></i> Canciones: <span id="songs-added">0</span> • 
-          <i class="fas fa-fire"></i> Racha: <span id="streak-days">1</span> días
+
+        <div class="progress-container">
+          <div class="progress-header">
+            <span id="current-level-display">Nivel 1</span>
+            <span id="next-level-display">Nivel 2</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="level-progress-fill" style="width:0%"></div>
+          </div>
+          <div class="xp-display">
+            <span id="current-xp-display">0/100 XP</span>
+            <span id="xp-to-next">100 XP para subir</span>
+          </div>
         </div>
-        <button onclick="changeUsername()" class="change-username-btn">
-          <i class="fas fa-user-edit"></i> Cambiar apodo
-        </button>
+
+        <div class="divider"></div>
+
+        <div class="grid3">
+          <div class="tile">
+            <div class="k">Ranking (Top)</div>
+            <div class="v smallv" id="top1">—</div>
+            <div class="small" id="top2">—</div>
+            <div class="small" id="top3">—</div>
+          </div>
+
+          <div class="tile">
+            <div class="k">Regalos</div>
+            <div class="v" id="gift-count">0</div>
+            <div class="small">Enviados hoy</div>
+          </div>
+
+          <div class="tile">
+            <div class="k">Modo</div>
+            <div class="v smallv" id="priority-mode">Normal</div>
+            <div class="small">Subí prioridad con MOYOS</div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top: 12px;">
+          <button class="btn ghost grow" id="btn-change">
+            <i class="fas fa-user-edit"></i> Cambiar apodo
+          </button>
+          <button class="btn secondary grow" id="btn-refresh">
+            <i class="fas fa-sync"></i> Sincronizar
+          </button>
+        </div>
+
+        <div id="message-profile"></div>
       </div>
     </div>
 
     <div class="search-box">
-      <h3>🎵 Buscar canción</h3>
-      <p style="color: #aaa; margin-bottom: 15px; font-size: 0.95rem;">
-        Solo se permiten géneros afines al rock (clásico, alternativo, metal, punk, indie, industrial, etc.).
-        <br>
-        <strong style="color: var(--warning); display: block; margin-top: 5px;">
-          <i class="fas fa-clock"></i> LÍMITE: Máximo 7 minutos por canción
-        </strong>
-        <span style="color: var(--success); display: inline-block; margin-top: 5px;">
-          <i class="fas fa-check-circle"></i> ¡Gana MOYOS por cada canción que agregues!
+      <div class="row" style="justify-content:space-between; margin-bottom: 10px;">
+        <div style="font-weight:950; font-size: 1.1rem;">🎵 Buscar canción</div>
+        <div class="row" style="gap:10px;">
+          <span class="pill warning" title="Máximo 7 minutos por canción"><i class="fas fa-clock"></i> 7 min</span>
+          <span class="pill success" title="Filtro Rock/Metal/Alternativo"><i class="fas fa-filter"></i> MusicDefend</span>
+        </div>
+      </div>
+
+      <div class="small" style="line-height:1.35;">
+        Sugerí canciones con vibra rock/metal/alternativo. Ganás MOYOS por sugerencia válida.
+        <span style="display:block; margin-top:4px;">
+          <i class="fas fa-keyboard"></i> Tip: presioná <b>Enter</b> para buscar.
         </span>
-      </p>
+      </div>
 
-      <input type="text" id="song-search" placeholder="Busca tu canción favorita..." class="search-input">
-      <button onclick="searchSongs()" class="search-btn">
-        <i class="fas fa-search"></i> BUSCAR CANCIONES
-      </button>
+      <div style="margin-top: 12px;">
+        <input type="text" id="song-search" placeholder="Busca tu canción favorita..." class="search-input" autocomplete="off" />
+      </div>
 
-      <div id="auth-required-message" style="display: none;" class="auth-required" onclick="redirectToAuth()">
-        <i class="fas fa-lock"></i> <strong>🔐 ¡NECESITAS AUTENTICARTE CON YOUTUBE!</strong><br>
-        Para agregar canciones a la playlist, debes autorizar MOYOFY con tu cuenta de Google.<br>
+      <div style="margin-top: 12px;">
+        <button class="btn" id="btn-search">
+          <i class="fas fa-search"></i> BUSCAR CANCIONES
+        </button>
+      </div>
+
+      <div id="auth-required-message" style="display:none;" class="auth-required">
+        <i class="fas fa-lock"></i> <strong>🔐 Necesitás autorizar YouTube</strong><br>
+        Para agregar canciones a la playlist, autorizá MOYOFY con tu cuenta de Google.<br>
         <small>(Solo una vez por sesión)</small>
       </div>
 
@@ -1136,115 +609,113 @@
       <div class="results-container" id="results-container">
         <div class="loading">
           <div class="spinner"></div>
-          <p>¿Qué canción quieres agregar hoy?</p>
+          <p>¿Qué canción querés agregar hoy?</p>
+          <p class="small" style="margin-top:8px;">Entrá con tu apodo para aparecer en ranking en vivo.</p>
         </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="card" style="margin:0; border-color: rgba(0,255,170,.22); background: rgba(15,15,30,.45);">
+        <div class="row" style="justify-content:space-between;">
+          <div style="font-weight:950;"><i class="fas fa-gift"></i> Regalos virtuales</div>
+          <span class="pill success"><i class="fas fa-bolt"></i> LIVE</span>
+        </div>
+        <div class="small" style="margin-top: 8px; line-height:1.35;">
+          Enviá MOYOS a otros usuarios (individuos). Esto activa animaciones y suma al ranking.
+        </div>
+
+        <div class="grid2" style="margin-top: 12px;">
+          <div class="tile">
+            <div class="k">Enviar a (apodo)</div>
+            <input type="text" id="gift-to" placeholder="Ej: MetallicaFan" class="search-input" autocomplete="off" maxlength="24">
+          </div>
+          <div class="tile">
+            <div class="k">Regalo</div>
+            <select id="gift-type" class="search-input" style="appearance:none;">
+              <option value="beer">🍺 Cerveza dorada (+10)</option>
+              <option value="shot">🔥 Shot infernal (+25)</option>
+              <option value="crown">👑 Corona neon (+50)</option>
+              <option value="unicorn">🦄 Unicornio neon (+80)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top: 12px;">
+          <button class="btn secondary grow" id="btn-send-gift">
+            <i class="fas fa-paper-plane"></i> ENVIAR REGALO
+          </button>
+          <button class="btn ghost grow" id="btn-open-leaderboard">
+            <i class="fas fa-trophy"></i> VER RANKING
+          </button>
+        </div>
+
+        <div id="message-gifts"></div>
       </div>
     </div>
 
-    <div class="gamification-panel">
-      <div class="gamification-title">
-        <i class="fas fa-trophy"></i> 🏆 TU PROGRESO EN EL BAR
-      </div>
-
-      <div class="progress-container">
-        <div class="progress-header">
-          <span id="current-level-display">Nivel 1</span>
-          <span id="next-level-display">Nivel 2</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="level-progress-fill" style="width: 0%"></div>
-        </div>
-        <div class="xp-display">
-          <span id="current-xp-display">0/100 XP</span>
-          <span id="xp-to-next">100 XP para subir</span>
-        </div>
-      </div>
-
-      <div class="stats-container" id="stats-container"></div>
-
-      <h4 style="margin: 20px 0 10px 0; color: var(--success); position: relative; z-index: 2;">
-        <i class="fas fa-medal"></i> LOGROS
-      </h4>
-      <div class="achievements-container" id="achievements-container"></div>
-
-      <h4 style="margin: 20px 0 10px 0; color: var(--warning); position: relative; z-index: 2;">
-        <i class="fas fa-bullseye"></i> DESAFÍOS ACTIVOS
-      </h4>
-      <div class="challenges-container" id="challenges-container"></div>
-    </div>
+    <footer>
+      <p>MOYOFY · Social Music Bar Platform · © 2025 Abundia.io</p>
+      <p class="small">Música vía YouTube · Límite 7 min · Economía interna (MOYOS) · Ranking en vivo</p>
+    </footer>
   </div>
-
-  <footer>
-    <p>MOYOFY PREMIUM v2 · Sistema de entretenimiento social para bares</p>
-    <p>Música impulsada por YouTube · Límite de 7 minutos por canción · © 2025 Abundia.io</p>
-  </footer>
 
   <div class="confetti-container" id="confetti-container"></div>
 
-  <audio id="success-sound" preload="auto">
-    <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="level-up-sound" preload="auto">
-    <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-trumpet-2018.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="click-sound" preload="auto">
-    <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="explosion-sound" preload="auto">
-    <source src="https://assets.mixkit.co/sfx/preview/mixkit-fireworks-explosion-3038.mp3" type="audio/mpeg">
-  </audio>
+  <audio id="success-sound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg"></audio>
+  <audio id="level-up-sound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-trumpet-2018.mp3" type="audio/mpeg"></audio>
+  <audio id="click-sound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg"></audio>
+  <audio id="explosion-sound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-fireworks-explosion-3038.mp3" type="audio/mpeg"></audio>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const BAR_LOCATION = { lat: 9.93422, lng: -84.06894 };
     const RADIUS_METERS = 20000;
     const COOLDOWN_MS = 5 * 60 * 1000;
     const MAX_DURATION_MINUTES = 7;
     const MAX_DURATION_SECONDS = MAX_DURATION_MINUTES * 60;
-    
+
     let soundEnabled = true;
     let currentUser = null;
     let API_BASE = window.location.origin;
     let requiresAuth = false;
     let lastLevel = 1;
 
-    const GAMIFICATION = {
+    let SUPABASE_URL = null;
+    let SUPABASE_ANON_KEY = null;
+    let BAR_ID = "rafasbar";
+    let supabase = null;
+    let realtimeChannel = null;
+
+    const ECONOMY = {
+      baseGiftValues: { beer: 10, shot: 25, crown: 50, unicorn: 80 },
       pointsPerSong: 10,
       xpPerLevel: 100,
-      
-      achievements: [
-        { id: 'first-song', name: '🎵 Primer Hit', description: 'Agrega tu primera canción', icon: 'fa-music', goal: 1, reward: 50 },
-        { id: 'rock-enthusiast', name: '🎸 Rockero', description: 'Agrega 5 canciones de rock', icon: 'fa-guitar', goal: 5, reward: 100 },
-        { id: 'metal-head', name: '🤘 Metalero', description: 'Agrega 3 canciones de metal', icon: 'fa-volume-up', goal: 3, reward: 150 },
-        { id: 'streak-3', name: '🔥 Racha Caliente', description: '3 días consecutivos activo', icon: 'fa-fire', goal: 3, reward: 200 },
-        { id: 'genre-explorer', name: '🧭 Explorador', description: 'Canciones en 3 géneros diferentes', icon: 'fa-compass', goal: 3, reward: 250 },
-        { id: 'bar-regular', name: '🍻 Regular del Bar', description: '10 canciones agregadas', icon: 'fa-beer', goal: 10, reward: 500 }
-      ],
-      
-      challenges: [
-        { id: 'challenge-1', name: 'Agrega una canción de Queen', description: 'Gana 50 MOYOS extra', reward: 50, type: 'specific-artist', target: 'Queen' },
-        { id: 'challenge-2', name: 'Agrega 3 canciones hoy', description: 'Gana 100 MOYOS extra', reward: 100, type: 'daily-count', target: 3 },
-        { id: 'challenge-3', name: 'Completa tu primer logro', description: 'Gana 25 MOYOS extra', reward: 25, type: 'first-achievement', target: 1 }
-      ]
+      voteReward: 3,
+      giftSendCostMultiplier: 1
     };
+
+    function $(id){ return document.getElementById(id); }
 
     function playSound(soundId) {
       if (!soundEnabled) return;
       const sound = document.getElementById(soundId);
-      if (sound) {
+      if (!sound) return;
+      try {
         sound.currentTime = 0;
-        sound.play().catch(e => console.log("Error reproduciendo sonido:", e));
-      }
+        sound.play();
+      } catch (e) {}
     }
 
     function toggleSound() {
       soundEnabled = !soundEnabled;
-      const icon = document.getElementById('sound-icon');
+      const icon = $('sound-icon');
       icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
       if (soundEnabled) playSound('click-sound');
     }
 
     function formatDuration(seconds) {
-      if (!seconds) return '--:--';
+      if (!seconds && seconds !== 0) return '--:--';
       const mins = Math.floor(seconds / 60);
       const secs = Math.floor(seconds % 60);
       return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -1262,88 +733,118 @@
 
     function createEpicConfettiExplosion(x, y, intensity = 100) {
       playSound('explosion-sound');
-      const container = document.getElementById('confetti-container');
+      const container = $('confetti-container');
       for (let i = 0; i < intensity; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
-        const size = Math.random() * 20 + 8;
+        const size = Math.random() * 18 + 8;
         confetti.style.width = `${size}px`;
         confetti.style.height = `${size}px`;
         confetti.style.left = `${x}px`;
         confetti.style.top = `${y}px`;
         confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-        if (Math.random() > 0.7) {
-          confetti.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
-        } else if (Math.random() > 0.5) {
-          confetti.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
-        }
-        const tx = (Math.random() - 0.5) * 1200;
-        const ty = (Math.random() - 0.5) * 1200;
+        const palette = ['#ff004c','#00ffaa','#ffcc00','#9d4edd','#4361ee','#ff006e','#00ccff','#ff9900','#aa00ff','#00ff88'];
+        confetti.style.background = palette[Math.floor(Math.random()*palette.length)];
+        const tx = (Math.random() - 0.5) * 1100;
+        const ty = (Math.random() - 0.5) * 950;
         const r = Math.random() * 720;
         confetti.style.setProperty('--tx', `${tx}px`);
         confetti.style.setProperty('--ty', `${ty}px`);
         confetti.style.setProperty('--r', `${r}deg`);
-        confetti.style.animation = `confetti-explosion ${Math.random() * 3000 + 4000}ms ease-out forwards`;
-        confetti.style.animationDelay = `${Math.random() * 500}ms`;
+        confetti.style.animation = `confetti-explosion ${Math.random() * 2600 + 3800}ms ease-out forwards`;
+        confetti.style.animationDelay = `${Math.random() * 420}ms`;
         container.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 7000);
+        setTimeout(() => confetti.remove(), 7200);
       }
     }
 
-    function createPointsAnimation(x, y, points) {
-      const container = document.getElementById('confetti-container');
-      const pointsElement = document.createElement('div');
-      pointsElement.className = 'points-animation';
-      pointsElement.textContent = `+${points} MOYOS`;
-      pointsElement.style.left = `${x}px`;
-      pointsElement.style.top = `${y}px`;
-      container.appendChild(pointsElement);
-      setTimeout(() => pointsElement.remove(), 2500);
-    }
-
-    function startGame() {
-      playSound('click-sound');
-      const introScreen = document.getElementById('intro-screen');
-      introScreen.style.opacity = '0';
-      setTimeout(() => {
-        introScreen.style.display = 'none';
-        document.getElementById('main-container').style.display = 'block';
-        const savedUser = localStorage.getItem('moyofy_user');
-        if (savedUser) {
-          currentUser = JSON.parse(savedUser);
-          showUserProfile();
-          updateGamificationUI();
-          lastLevel = calculateLevel(currentUser.points || 100).level;
-        } else {
-          showNicknameSection();
-        }
-      }, 800);
+    function createPointsAnimation(x, y, points, label = "MOYOS") {
+      const container = $('confetti-container');
+      const el = document.createElement('div');
+      el.className = 'points-animation';
+      el.textContent = `+${points} ${label}`;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 2400);
     }
 
     function calculateLevel(points) {
-      const level = Math.floor(points / GAMIFICATION.xpPerLevel) + 1;
-      const currentXp = points % GAMIFICATION.xpPerLevel;
-      const xpPercentage = (currentXp / GAMIFICATION.xpPerLevel) * 100;
-      const xpNeeded = GAMIFICATION.xpPerLevel - currentXp;
+      const level = Math.floor(points / ECONOMY.xpPerLevel) + 1;
+      const currentXp = points % ECONOMY.xpPerLevel;
+      const xpPercentage = (currentXp / ECONOMY.xpPerLevel) * 100;
+      const xpNeeded = ECONOMY.xpPerLevel - currentXp;
       return { level, currentXp, xpPercentage, xpNeeded, nextLevel: level + 1 };
     }
 
-    function updateGamificationUI() {
+    function showMessage(containerId, text, type='info') {
+      const container = $(containerId);
+      if (!container) return;
+      let icon = 'info-circle';
+      if (type === 'success') icon = 'check-circle';
+      else if (type === 'error') icon = 'exclamation-circle';
+      else if (type === 'warning') icon = 'exclamation-triangle';
+      container.innerHTML = `<div class="message ${type}"><i class="fas fa-${icon}"></i> ${text}</div>`;
+      setTimeout(() => { if (container) container.innerHTML = ''; }, 5200);
+    }
+
+    function setConnPill(ok, label) {
+      const pill = $('pill-conn');
+      if (!pill) return;
+      const cls = ok ? 'pill success' : 'pill warning';
+      pill.className = cls;
+      pill.innerHTML = ok ? `<i class="fas fa-cloud"></i> ${label}` : `<i class="fas fa-triangle-exclamation"></i> ${label}`;
+    }
+
+    function todayKey() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function safeTrim(s){ return (s || '').toString().trim(); }
+
+    function normalizeNickname(nick){
+      return safeTrim(nick).replace(/\s+/g,' ').slice(0,24);
+    }
+
+    function setUIStateLoggedOut() {
+      $('onboarding').style.display = 'block';
+      $('profile').style.display = 'none';
+    }
+
+    function setUIStateLoggedIn() {
+      $('onboarding').style.display = 'none';
+      $('profile').style.display = 'block';
+    }
+
+    function updateProfileUI() {
       if (!currentUser) return;
-      const points = currentUser.points || 100;
-      const stats = calculateLevel(points);
+
+      $('user-nickname').textContent = currentUser.nickname || 'usuario';
+      $('user-id').textContent = currentUser.public_id || '—';
+      $('user-points').textContent = currentUser.points ?? 100;
+
+      const stats = calculateLevel(currentUser.points ?? 100);
+      $('user-level').textContent = stats.level;
+      $('current-level-display').textContent = `Nivel ${stats.level}`;
+      $('next-level-display').textContent = `Nivel ${stats.nextLevel}`;
+      $('level-progress-fill').style.width = `${stats.xpPercentage}%`;
+      $('current-xp-display').textContent = `${stats.currentXp}/${ECONOMY.xpPerLevel} XP`;
+      $('xp-to-next').textContent = `${stats.xpNeeded} XP para subir`;
+
+      $('songs-added').textContent = currentUser.songs_added ?? 0;
+      $('votes-received').textContent = currentUser.votes_received ?? 0;
+
+      const streakLabel = currentUser.streak_days ? `${currentUser.streak_days} día(s)` : '0 día(s)';
+      $('user-streak').textContent = `Racha: ${streakLabel}`;
+
       if (stats.level > lastLevel) {
         triggerLevelUpAnimation(stats.level);
         lastLevel = stats.level;
       }
-      document.getElementById('level-progress-fill').style.width = `${stats.xpPercentage}%`;
-      document.getElementById('current-level-display').textContent = `Nivel ${stats.level}`;
-      document.getElementById('next-level-display').textContent = `Nivel ${stats.nextLevel}`;
-      document.getElementById('current-xp-display').textContent = `${stats.currentXp}/${GAMIFICATION.xpPerLevel} XP`;
-      document.getElementById('xp-to-next').textContent = `${stats.xpNeeded} XP para subir`;
-      updateStatsUI();
-      updateAchievementsUI();
-      updateChallengesUI();
     }
 
     function triggerLevelUpAnimation(level) {
@@ -1352,321 +853,19 @@
       levelUp.className = 'level-up-animation';
       levelUp.textContent = `🎉 NIVEL ${level}!`;
       document.body.appendChild(levelUp);
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      createEpicConfettiExplosion(centerX, centerY, 200);
+      createEpicConfettiExplosion(window.innerWidth/2, window.innerHeight/2, 180);
       setTimeout(() => levelUp.remove(), 2000);
     }
 
-    function showNicknameSection() {
-      document.getElementById('nickname-section').style.display = 'block';
-      document.getElementById('user-profile').style.display = 'none';
-    }
-
-    function showUserProfile() {
-      if (!currentUser) return;
-      document.getElementById('nickname-section').style.display = 'none';
-      document.getElementById('user-profile').style.display = 'block';
-      updateUserProfile();
-    }
-
-    function updateUserProfile() {
-      if (!currentUser) return;
-      document.getElementById('user-nickname').textContent = currentUser.nickname;
-      document.getElementById('user-points').textContent = currentUser.points || 100;
-      document.getElementById('user-level').textContent = calculateLevel(currentUser.points || 100).level;
-      document.getElementById('songs-added').textContent = currentUser.songsAdded || 0;
-      document.getElementById('streak-days').textContent = currentUser.streak || 1;
-      updateGamificationUI();
-      checkAchievements();
-    }
-
-    function setNickname() {
-      playSound('click-sound');
-      const nickname = document.getElementById('nickname').value.trim();
-      if (!nickname || nickname.length < 3) {
-        showMessage('⚠️ Ingresa un apodo válido (mínimo 3 caracteres)', 'warning');
-        return;
-      }
-      const userId = `user_${nickname.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`;
-      currentUser = {
-        id: userId,
-        nickname: nickname,
-        points: 100,
-        songsAdded: 0,
-        streak: 1,
-        joinDate: new Date().toISOString()
-      };
-      localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
-      showUserProfile();
-      playSound('success-sound');
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      createEpicConfettiExplosion(centerX, centerY, 150);
-      showMessage(`🎉 ¡Bienvenido ${nickname} al Rafa's Bar! 100 MOYOS de regalo`, 'success');
-    }
-
-    function updateStatsUI() {
-      const container = document.getElementById('stats-container');
-      if (!container) return;
-      const songsAdded = currentUser.songsAdded || 0;
-      const streak = currentUser.streak || 1;
-      const points = currentUser.points || 100;
-      const level = calculateLevel(points).level;
-      const stats = [
-        { label: 'Canciones', value: songsAdded, icon: '🎵' },
-        { label: 'Racha', value: `${streak} días`, icon: '🔥' },
-        { label: 'Nivel', value: level, icon: '⭐' },
-        { label: 'MOYOS', value: points, icon: '💰' }
-      ];
-      let html = '';
-      stats.forEach(stat => {
-        html += `<div class="stat-card"><div class="stat-icon" style="font-size: 1.5rem; margin-bottom: 8px;">${stat.icon}</div><div class="stat-value">${stat.value}</div><div class="stat-label">${stat.label}</div></div>`;
+    async function requestLocation() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) return reject(new Error('Geolocalización no soportada.'));
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve(pos.coords),
+          (err) => reject(err),
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 10000 }
+        );
       });
-      container.innerHTML = html;
-    }
-
-    function updateAchievementsUI() {
-      const container = document.getElementById('achievements-container');
-      if (!container) return;
-      const songsAdded = currentUser.songsAdded || 0;
-      const achievements = currentUser.achievements || {};
-      let html = '';
-      GAMIFICATION.achievements.forEach(achievement => {
-        const progress = achievements[achievement.id] || 0;
-        const isUnlocked = progress >= achievement.goal;
-        const progressPercent = Math.min((progress / achievement.goal) * 100, 100);
-        html += `<div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}" title="${achievement.description} (${progress}/${achievement.goal})"><div class="achievement-icon"><i class="fas ${achievement.icon}"></i></div><div class="achievement-name">${achievement.name}</div><div class="achievement-desc">${achievement.description}</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width: ${progressPercent}%"></div></div>${isUnlocked ? '<div style="color: var(--success); font-size: 0.7rem; margin-top: 5px;">¡COMPLETADO!</div>' : ''}</div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    function updateChallengesUI() {
-      const container = document.getElementById('challenges-container');
-      if (!container) return;
-      let html = '';
-      GAMIFICATION.challenges.forEach(challenge => {
-        html += `<div class="challenge-item"><div class="challenge-info"><div style="font-weight: bold; font-size: 0.95rem;">${challenge.name}</div><div style="font-size: 0.8rem; color: #aaa;">${challenge.description}</div></div><div class="challenge-reward">+${challenge.reward} MOYOS</div></div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    function checkAchievements() {
-      if (!currentUser) return;
-      const songsAdded = currentUser.songsAdded || 0;
-      const achievements = currentUser.achievements || {};
-      let newAchievements = [];
-      GAMIFICATION.achievements.forEach(achievement => {
-        let progress = achievements[achievement.id] || 0;
-        switch (achievement.id) {
-          case 'first-song': progress = songsAdded >= 1 ? 1 : 0; break;
-          case 'rock-enthusiast': progress = Math.min(songsAdded, achievement.goal); break;
-          case 'metal-head': progress = Math.min(Math.floor(songsAdded * 0.3), achievement.goal); break;
-          case 'streak-3': progress = Math.min(currentUser.streak || 1, achievement.goal); break;
-          case 'genre-explorer': progress = songsAdded >= 10 ? 3 : Math.floor(songsAdded / 3); break;
-          case 'bar-regular': progress = Math.min(songsAdded, achievement.goal); break;
-        }
-        achievements[achievement.id] = progress;
-        if (progress >= achievement.goal && (!currentUser.unlockedAchievements || !currentUser.unlockedAchievements.includes(achievement.id))) {
-          newAchievements.push(achievement);
-          if (!currentUser.unlockedAchievements) currentUser.unlockedAchievements = [];
-          currentUser.unlockedAchievements.push(achievement.id);
-        }
-      });
-      currentUser.achievements = achievements;
-      localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
-      if (newAchievements.length > 0) {
-        newAchievements.forEach(achievement => {
-          showMessage(`🏆 ¡Logro desbloqueado: ${achievement.name}! +${achievement.reward} MOYOS`, 'success');
-          currentUser.points += achievement.reward;
-          updateUserProfile();
-        });
-      }
-    }
-
-    async function searchSongs() {
-      playSound('click-sound');
-      const query = document.getElementById('song-search').value.trim();
-      if (!query) {
-        showMessage('❌ Ingresa el nombre de una canción o artista', 'error');
-        return;
-      }
-      if (!currentUser) {
-        showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
-        showNicknameSection();
-        return;
-      }
-      document.getElementById('results-container').innerHTML = `<div class="loading"><div class="spinner"></div><p>Buscando canciones de rock y metal...</p><p style="margin-top: 10px; font-size: 0.9rem; color: #aaa;"><strong>${query}</strong></p><p style="font-size: 0.8rem; color: #888; margin-top: 5px;"><i class="fas fa-clock"></i> Solo canciones de hasta ${MAX_DURATION_MINUTES} minutos</p></div>`;
-      try {
-        const response = await fetch(`${API_BASE}/search`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ q: query })
-        });
-        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-        const data = await response.json();
-        if (!data.ok) throw new Error(data.error || 'Error en la búsqueda');
-        displaySearchResults(data.items, data.filterStats, data.warnings);
-        if (data.items && data.items.length > 0) {
-          showMessage(`✅ ¡Encontramos ${data.items.length} canciones apropiadas para el bar!`, 'success');
-        } else {
-          let warningMsg = '🔍 No encontramos canciones que cumplan con los criterios del bar';
-          if (data.warnings && data.warnings.length > 0) warningMsg += `<br><small>${data.warnings[0]}</small>`;
-          showMessage(warningMsg, 'warning');
-        }
-      } catch (error) {
-        console.error('Error en búsqueda:', error);
-        document.getElementById('results-container').innerHTML = `<div class="message error"><i class="fas fa-exclamation-circle"></i> <strong>Error al buscar canciones</strong><br><small>${error.message || 'Intenta de nuevo más tarde'}</small><p style="margin-top: 10px; font-size: 0.9rem;">Tip: Busca por artista o canción específica (ej: "Queen Bohemian Rhapsody", "Metallica Enter Sandman")</p></div>`;
-      }
-    }
-
-    function displaySearchResults(items, stats, warnings = []) {
-      const container = document.getElementById('results-container');
-      let html = '';
-      if (warnings && warnings.length > 0) {
-        html += `<div class="duration-warning"><i class="fas fa-clock"></i>${warnings.join('<br>')}</div>`;
-      }
-      if (stats) {
-        html += `<div class="filter-stats"><i class="fas fa-filter"></i> <strong>Filtro activo:</strong> ${stats.approved}/${stats.totalResults} aprobados (${stats.approvalRate}%)<br><small>Búsqueda: "${stats.query || 'rock'}" | Límite: ${MAX_DURATION_MINUTES} min</small></div>`;
-      }
-      if (!items || items.length === 0) {
-        html += `<div class="message warning"><i class="fas fa-music"></i> No se encontraron canciones que cumplan con los criterios de Rafa's Bar.<p style="margin-top: 10px; font-size: 0.9rem; color: #ddd;">⚠ Recuerda: Solo se permiten géneros rock y sus variantes.<br>⚠ <strong>Límite de duración:</strong> Máximo ${MAX_DURATION_MINUTES} minutos<br><strong>Sugerencias:</strong></p><ul style="text-align: left; margin-top: 10px; padding-left: 20px; font-size: 0.9rem;"><li>"Queen Bohemian Rhapsody" (5:55)</li><li>"Metallica Enter Sandman" (5:31)</li><li>"AC/DC Back in Black" (4:16)</li><li>"Nirvana Smells Like Teen Spirit" (5:01)</li><li>"Guns N' Roses Sweet Child O' Mine" (5:56)</li></ul></div>`;
-        container.innerHTML = html;
-        return;
-      }
-      items.forEach((item, index) => {
-        const title = item.snippet.title;
-        const videoId = item.id.videoId || item.id;
-        let artist = 'Artista desconocido';
-        if (item.snippet.channelTitle && !item.snippet.channelTitle.toLowerCase().includes('vevo')) {
-          artist = item.snippet.channelTitle;
-        } else if (title.includes('-')) {
-          artist = title.split('-')[0].trim();
-        } else if (title.includes('by')) {
-          artist = title.split('by')[1]?.trim() || item.snippet.channelTitle;
-        }
-        const displayTitle = title.length > 60 ? title.substring(0, 60) + '...' : title;
-        let durationDisplay = '';
-        let durationSeconds = 0;
-        if (item.contentDetails && item.contentDetails.duration) {
-          durationSeconds = parseISODuration(item.contentDetails.duration);
-          const formattedDuration = formatDuration(durationSeconds);
-          const durationClass = durationSeconds > MAX_DURATION_SECONDS ? 'too-long' : durationSeconds > 300 ? 'warning' : '';
-          durationDisplay = `<div class="song-duration ${durationClass}" title="${durationSeconds} segundos"><i class="fas fa-clock"></i> ${formattedDuration}${durationSeconds > MAX_DURATION_SECONDS ? ' (NO PERMITIDA)' : ''}</div>`;
-        }
-        html += `<div class="song-item" onclick="suggestSong('${videoId}', '${title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${artist.replace(/'/g, "\\'")}', this, ${durationSeconds})"><div class="song-info"><div class="song-title">${displayTitle}</div><div class="song-artist">${artist}</div>${durationDisplay}</div><button class="add-btn" ${durationSeconds > MAX_DURATION_SECONDS ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}><i class="fas fa-plus"></i> ${durationSeconds > MAX_DURATION_SECONDS ? 'DEMASIADO LARGA' : 'AGREGAR'}</button></div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    async function suggestSong(videoId, title, artist, element, durationSeconds = 0) {
-      playSound('click-sound');
-      if (durationSeconds > MAX_DURATION_SECONDS) {
-        const durationFormatted = formatDuration(durationSeconds);
-        const maxFormatted = formatDuration(MAX_DURATION_SECONDS);
-        showMessage(`❌ Esta canción dura ${durationFormatted} (límite: ${maxFormatted}). No se puede agregar.`, 'error');
-        element.style.animation = 'shake 0.5s';
-        element.style.backgroundColor = 'rgba(255, 107, 107, 0.15)';
-        element.style.borderLeftColor = 'var(--danger)';
-        setTimeout(() => element.style.animation = '', 500);
-        return;
-      }
-      if (!currentUser) {
-        showMessage('⚠️ Necesitas ingresar tu nombre primero', 'warning');
-        showNicknameSection();
-        return;
-      }
-      if (!canAddSong()) {
-        const waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(localStorage.getItem('moyofy_last_add')))) / 60000);
-        showMessage(`⏳ Espera ${waitTime} minuto(s) antes de agregar otra canción.`, 'warning');
-        return;
-      }
-      try {
-        const coords = await requestLocation();
-        if (!isUserNearBar(coords.latitude, coords.longitude)) {
-          showMessage('📍 ¡Solo desde Rafa\'s Bar! Acércate al local para agregar canciones.', 'warning');
-          return;
-        }
-      } catch (error) {
-        if (error.code === 1) {
-          showMessage('📍 Permiso de ubicación requerido. Permite el acceso para agregar canciones.', 'error');
-        } else {
-          showMessage('📍 Error al obtener tu ubicación. ¿Estás en el bar?', 'error');
-        }
-        return;
-      }
-      if (requiresAuth) {
-        showMessage('🔐 Necesitas autenticarte con YouTube para agregar canciones', 'error');
-        showAuthRequiredMessage();
-        return;
-      }
-      try {
-        const button = element.querySelector('.add-btn');
-        const rect = button.getBoundingClientRect();
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SUGERIDO...';
-        const response = await fetch(`${API_BASE}/suggest-song`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ videoId: videoId, title: title, userId: currentUser.id })
-        });
-        const data = await response.json();
-        if (data.ok) {
-          element.classList.add('bounce');
-          element.style.backgroundColor = 'rgba(0, 255, 170, 0.15)';
-          element.style.borderLeftColor = 'var(--success)';
-          currentUser.points = (currentUser.points || 100) + GAMIFICATION.pointsPerSong;
-          currentUser.songsAdded = (currentUser.songsAdded || 0) + 1;
-          currentUser.streak = (currentUser.streak || 0) + 1;
-          setLastAddTime();
-          localStorage.setItem('moyofy_user', JSON.stringify(currentUser));
-          updateUserProfile();
-          const shortTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
-          showMessage(`✅ ¡"${shortTitle}" sugerida y agregada a la playlist! +${GAMIFICATION.pointsPerSong} MOYOS`, 'success');
-          playSound('success-sound');
-          createEpicConfettiExplosion(x, y, 120);
-          createPointsAnimation(x, y, GAMIFICATION.pointsPerSong);
-          setTimeout(() => {
-            document.getElementById('results-container').innerHTML = `<div class="message success"><i class="fas fa-check-circle"></i> ¡Canción agregada exitosamente!<br><small>Busca más canciones para agregar</small><p style="margin-top: 10px; font-size: 0.9rem;"><i class="fas fa-clock"></i> Recuerda: Límite de ${MAX_DURATION_MINUTES} minutos por canción</p></div>`;
-            document.getElementById('song-search').value = '';
-            document.getElementById('song-search').focus();
-          }, 2000);
-        } else {
-          if (data.requiresAuth) {
-            requiresAuth = true;
-            showAuthRequiredMessage();
-            throw new Error('🔐 Necesitas autenticarte con YouTube para agregar canciones');
-          }
-          if (data.error && data.error.includes('dura más de 7 minutos')) {
-            showMessage(`⏱️ ${data.error}`, 'error');
-            element.querySelector('.add-btn').innerHTML = '<i class="fas fa-clock"></i> DEMASIADO LARGA';
-            element.querySelector('.add-btn').disabled = true;
-            element.querySelector('.add-btn').style.opacity = '0.5';
-            element.querySelector('.add-btn').style.cursor = 'not-allowed';
-            element.style.animation = 'shake 0.5s';
-            element.style.backgroundColor = 'rgba(255, 107, 107, 0.15)';
-            element.style.borderLeftColor = 'var(--danger)';
-            setTimeout(() => element.style.animation = '', 500);
-          } else {
-            throw new Error(data.error || 'Error al sugerir canción');
-          }
-        }
-      } catch (error) {
-        console.error('Error al sugerir canción:', error);
-        if (!error.message.includes('dura más de 7 minutos')) {
-          showMessage(`❌ Error: ${error.message}`, 'error');
-        }
-      } finally {
-        const button = element.querySelector('.add-btn');
-        if (button && !button.disabled) {
-          button.disabled = false;
-          button.innerHTML = '<i class="fas fa-plus"></i> AGREGAR';
-          element.classList.remove('bounce');
-        }
-      }
     }
 
     function isUserNearBar(userLat, userLng) {
@@ -1684,64 +883,620 @@
       return distance <= RADIUS_METERS;
     }
 
-    function requestLocation() {
-      return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) reject(new Error('Geolocalización no soportada.'));
-        navigator.geolocation.getCurrentPosition(
-          (position) => resolve(position.coords),
-          (error) => reject(error)
-        );
-      });
-    }
-
     function canAddSong() {
       const lastAddTime = localStorage.getItem('moyofy_last_add');
       if (!lastAddTime) return true;
-      const now = Date.now();
-      return (now - parseInt(lastAddTime)) >= COOLDOWN_MS;
+      return (Date.now() - parseInt(lastAddTime, 10)) >= COOLDOWN_MS;
     }
 
     function setLastAddTime() {
       localStorage.setItem('moyofy_last_add', Date.now().toString());
     }
 
-    function showMessage(text, type = 'info') {
-      const container = document.getElementById('message-container');
-      let icon = 'info-circle';
-      if (type === 'success') icon = 'check-circle';
-      else if (type === 'error') icon = 'exclamation-circle';
-      else if (type === 'warning') icon = 'exclamation-triangle';
-      container.innerHTML = `<div class="message ${type} bounce"><i class="fas fa-${icon}"></i>${text}</div>`;
-      setTimeout(() => container.innerHTML = '', 5000);
-    }
-
     function showAuthRequiredMessage() {
-      document.getElementById('auth-required-message').style.display = 'block';
+      $('auth-required-message').style.display = 'block';
+      $('auth-required-message').onclick = () => redirectToAuth();
     }
 
     function redirectToAuth() {
       window.location.href = `${API_BASE}/auth`;
     }
 
-    function changeUsername() {
-      playSound('click-sound');
-      if (confirm('¿Estás seguro de que quieres cambiar tu apodo? Perderás tu progreso actual.')) {
-        localStorage.removeItem('moyofy_user');
-        currentUser = null;
-        lastLevel = 1;
-        showNicknameSection();
-        showMessage('✏️ Ingresa tu nuevo apodo para continuar', 'info');
+    function setResultsLoading(query) {
+      $('results-container').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Buscando canciones...</p>
+          <p class="small" style="margin-top:8px;"><b>${escapeHtml(query)}</b></p>
+          <p class="small" style="margin-top:6px;"><i class="fas fa-clock"></i> Solo canciones de hasta ${MAX_DURATION_MINUTES} minutos</p>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+
+    function sanitizeForAttr(str) {
+      return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    async function fetchPublicConfig() {
+      try {
+        const r = await fetch(`${API_BASE}/v2/public-config`, { method:'GET' });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        if (!data.ok) throw new Error(data.error || 'Config inválida');
+        SUPABASE_URL = data.supabaseUrl;
+        SUPABASE_ANON_KEY = data.supabaseAnonKey;
+        BAR_ID = data.barId || BAR_ID;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+          supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: false, autoRefreshToken: false },
+            realtime: { params: { eventsPerSecond: 5 } }
+          });
+          setConnPill(true, 'Conectado');
+          return true;
+        }
+        setConnPill(false, 'Modo local');
+        return false;
+      } catch (e) {
+        setConnPill(false, 'Sin conexión');
+        return false;
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('🚀 MOYOFY PREMIUM v2 cargado - Límite de 7 minutos activado');
-      const savedUser = localStorage.getItem('moyofy_user');
-      if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        lastLevel = calculateLevel(currentUser.points || 100).level;
+    function loadLocalUser() {
+      try {
+        const raw = localStorage.getItem('moyofy_user_v2');
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (_) { return null; }
+    }
+
+    function saveLocalUser(u) {
+      localStorage.setItem('moyofy_user_v2', JSON.stringify(u));
+    }
+
+    function clearLocalUser() {
+      localStorage.removeItem('moyofy_user_v2');
+      localStorage.removeItem('moyofy_last_add');
+    }
+
+    async function bootstrapUser({ nickname, email, guest=false }) {
+      const payload = { nickname, email, guest, barId: BAR_ID, clientTs: new Date().toISOString() };
+      const r = await fetch(`${API_BASE}/v2/bootstrap`, {
+        method:'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json();
+      if (!data.ok) throw new Error(data.error || 'No se pudo crear perfil');
+      return data.user;
+    }
+
+    async function fetchMe(publicId) {
+      const r = await fetch(`${API_BASE}/v2/me?publicId=${encodeURIComponent(publicId)}&barId=${encodeURIComponent(BAR_ID)}`);
+      const data = await r.json();
+      if (!data.ok) throw new Error(data.error || 'No se pudo cargar perfil');
+      return data.user;
+    }
+
+    async function fetchLeaderboard() {
+      const r = await fetch(`${API_BASE}/v2/leaderboard?barId=${encodeURIComponent(BAR_ID)}&limit=10`);
+      const data = await r.json();
+      if (!data.ok) throw new Error(data.error || 'No se pudo cargar ranking');
+      return data.items || [];
+    }
+
+    function renderTop3(items) {
+      const a = items || [];
+      $('top1').textContent = a[0] ? `#1 ${a[0].nickname} · ${a[0].points} MOYOS` : '—';
+      $('top2').textContent = a[1] ? `#2 ${a[1].nickname} · ${a[1].points} MOYOS` : '—';
+      $('top3').textContent = a[2] ? `#3 ${a[2].nickname} · ${a[2].points} MOYOS` : '—';
+    }
+
+    async function syncAll() {
+      if (!currentUser?.public_id) return;
+      try {
+        const fresh = await fetchMe(currentUser.public_id);
+        currentUser = fresh;
+        saveLocalUser(currentUser);
+        updateProfileUI();
+        const top = await fetchLeaderboard();
+        renderTop3(top);
+      } catch (e) {}
+    }
+
+    async function subscribeRealtime() {
+      if (!supabase || !currentUser) return;
+
+      if (realtimeChannel) {
+        try { await supabase.removeChannel(realtimeChannel); } catch(_) {}
+        realtimeChannel = null;
       }
-    });
+
+      realtimeChannel = supabase.channel(`moyofy_${BAR_ID}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'moyofy_users', filter: `bar_id=eq.${BAR_ID}` }, async (payload) => {
+          try {
+            if (payload?.new?.public_id && currentUser?.public_id === payload.new.public_id) {
+              currentUser = { ...currentUser, ...payload.new };
+              saveLocalUser(currentUser);
+              updateProfileUI();
+            }
+            const top = await fetchLeaderboard();
+            renderTop3(top);
+          } catch (e) {}
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'moyofy_gifts', filter: `bar_id=eq.${BAR_ID}` }, async (payload) => {
+          try {
+            const g = payload?.new;
+            if (!g) return;
+            if (currentUser?.public_id && (g.to_public_id === currentUser.public_id || g.from_public_id === currentUser.public_id)) {
+              const top = await fetchLeaderboard();
+              renderTop3(top);
+            }
+          } catch (_) {}
+        })
+        .subscribe((status) => {
+          const live = $('pill-live');
+          if (status === 'SUBSCRIBED') live.className = 'pill success';
+          else live.className = 'pill warning';
+        });
+    }
+
+    function setPriorityLabel() {
+      if (!currentUser) return;
+      const points = currentUser.points ?? 0;
+      const mode = points >= 500 ? 'VIP' : points >= 250 ? 'Prioridad' : 'Normal';
+      $('priority-mode').textContent = mode;
+    }
+
+    async function enterFlow({ guest=false }) {
+      playSound('click-sound');
+
+      const nick = normalizeNickname($('nickname').value);
+      const email = safeTrim($('email').value).toLowerCase();
+
+      if (!guest) {
+        if (!nick || nick.length < 3) {
+          showMessage('message-onboarding', 'Ingresá un apodo válido (mínimo 3 caracteres).', 'warning');
+          return;
+        }
+      }
+
+      const finalNick = guest ? `Invitado${Math.floor(Math.random()*900+100)}` : nick;
+
+      try {
+        $('btn-enter').disabled = true;
+        $('btn-guest').disabled = true;
+
+        const user = await bootstrapUser({ nickname: finalNick, email: email || null, guest });
+        currentUser = user;
+        saveLocalUser(currentUser);
+
+        setUIStateLoggedIn();
+        updateProfileUI();
+        setPriorityLabel();
+
+        const top = await fetchLeaderboard();
+        renderTop3(top);
+
+        if (supabase) await subscribeRealtime();
+
+        playSound('success-sound');
+        createEpicConfettiExplosion(window.innerWidth/2, window.innerHeight/2, 140);
+        showMessage('message-profile', `Bienvenido ${escapeHtml(currentUser.nickname)} · Perfil sincronizado`, 'success');
+
+      } catch (e) {
+        showMessage('message-onboarding', `No se pudo entrar: ${escapeHtml(e.message)}`, 'error');
+      } finally {
+        $('btn-enter').disabled = false;
+        $('btn-guest').disabled = false;
+      }
+    }
+
+    async function searchSongs() {
+      playSound('click-sound');
+
+      const query = safeTrim($('song-search').value);
+      if (!query) {
+        showMessage('message-container', 'Ingresá el nombre de una canción o artista.', 'error');
+        return;
+      }
+      if (!currentUser) {
+        showMessage('message-container', 'Primero entrá con tu apodo para aparecer en ranking.', 'warning');
+        setUIStateLoggedOut();
+        return;
+      }
+
+      setResultsLoading(query);
+
+      try {
+        const response = await fetch(`${API_BASE}/search`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ q: query })
+        });
+
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+        const data = await response.json();
+        if (!data.ok) throw new Error(data.error || 'Error en la búsqueda');
+
+        displaySearchResults(data.items || [], data.filterStats || null);
+
+        if (data.items && data.items.length > 0) {
+          showMessage('message-container', `Encontramos ${data.items.length} canciones apropiadas.`, 'success');
+        } else {
+          showMessage('message-container', `No encontramos canciones que cumplan con los criterios del bar.`, 'warning');
+        }
+      } catch (e) {
+        $('results-container').innerHTML = `
+          <div class="message error">
+            <i class="fas fa-exclamation-circle"></i>
+            Error al buscar canciones<br>
+            <small>${escapeHtml(e.message || 'Intenta de nuevo más tarde')}</small>
+            <div class="small" style="margin-top:8px;">Tip: buscá por artista + canción (ej: "Queen Bohemian Rhapsody")</div>
+          </div>
+        `;
+      }
+    }
+
+    function displaySearchResults(items, stats) {
+      const container = $('results-container');
+      let html = '';
+
+      if (stats) {
+        html += `
+          <div class="pill" style="display:inline-flex; margin: 6px 0 10px;">
+            <i class="fas fa-filter"></i>
+            ${stats.approved}/${stats.totalResults} aprobados (${stats.approvalRate}%)
+            <span style="margin:0 8px;">•</span>
+            "${escapeHtml(stats.query || '')}"
+          </div>
+        `;
+      }
+
+      if (!items || items.length === 0) {
+        html += `
+          <div class="message warning">
+            <i class="fas fa-music"></i>
+            No se encontraron canciones para el filtro del bar.
+            <div class="small" style="margin-top:10px; text-align:left;">
+              <b>Sugerencias:</b>
+              <ul style="margin-top:8px; padding-left: 18px;">
+                <li>Queen Bohemian Rhapsody</li>
+                <li>Metallica Enter Sandman</li>
+                <li>AC/DC Back In Black</li>
+                <li>Nirvana Smells Like Teen Spirit</li>
+              </ul>
+            </div>
+          </div>
+        `;
+        container.innerHTML = html;
+        return;
+      }
+
+      items.forEach((item) => {
+        const title = item?.snippet?.title || 'Sin título';
+        const videoId = (item?.id?.videoId) || item?.id || '';
+        if (!videoId) return;
+
+        let artist = 'Artista';
+        const channel = item?.snippet?.channelTitle || '';
+        if (channel && !channel.toLowerCase().includes('vevo')) artist = channel;
+        else if (title.includes('-')) artist = title.split('-')[0].trim();
+
+        const displayTitle = title.length > 64 ? title.slice(0,64) + '...' : title;
+
+        let durationSeconds = 0;
+        let durationDisplay = '';
+        if (item.contentDetails && item.contentDetails.duration) {
+          durationSeconds = parseISODuration(item.contentDetails.duration);
+          const formatted = formatDuration(durationSeconds);
+          const cls = durationSeconds > MAX_DURATION_SECONDS ? 'too-long' : durationSeconds > 300 ? 'warning' : '';
+          durationDisplay = `<div class="song-duration ${cls}"><i class="fas fa-clock"></i> ${formatted}${durationSeconds > MAX_DURATION_SECONDS ? ' (NO PERMITIDA)' : ''}</div>`;
+        }
+
+        const disabled = durationSeconds > MAX_DURATION_SECONDS ? 'disabled' : '';
+        const btnLabel = durationSeconds > MAX_DURATION_SECONDS ? 'DEMASIADO LARGA' : 'AGREGAR';
+
+        html += `
+          <div class="song-item">
+            <div class="song-info">
+              <div class="song-title">${escapeHtml(displayTitle)}</div>
+              <div class="song-artist">${escapeHtml(artist)}</div>
+              ${durationDisplay}
+              <div class="small" style="margin-top:6px;">
+                <i class="fas fa-thumbs-up"></i>
+                <button class="btn-mini-inline" style="background:transparent;border:none;color:#cfcfff;cursor:pointer;font-weight:900;"
+                  onclick="voteSong('${sanitizeForAttr(videoId)}')">Votar (+${ECONOMY.voteReward} MOYOS al creador)</button>
+              </div>
+            </div>
+            <button class="add-btn" ${disabled}
+              onclick="suggestSong('${sanitizeForAttr(videoId)}','${sanitizeForAttr(title)}','${sanitizeForAttr(artist)}', this, ${durationSeconds})">
+              <i class="fas fa-plus"></i> ${btnLabel}
+            </button>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function voteSong(videoId) {
+      if (!currentUser) {
+        showMessage('message-container', 'Entrá con tu apodo para votar.', 'warning');
+        return;
+      }
+      try {
+        const r = await fetch(`${API_BASE}/v2/vote`, {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify({ barId: BAR_ID, fromPublicId: currentUser.public_id, videoId })
+        });
+        const data = await r.json();
+        if (!data.ok) throw new Error(data.error || 'No se pudo votar');
+        showMessage('message-container', `Voto enviado.`, 'success');
+        await syncAll();
+      } catch (e) {
+        showMessage('message-container', `No se pudo votar: ${escapeHtml(e.message)}`, 'error');
+      }
+    }
+
+    async function suggestSong(videoId, title, artist, buttonEl, durationSeconds = 0) {
+      playSound('click-sound');
+
+      if (durationSeconds > MAX_DURATION_SECONDS) {
+        showMessage('message-container', `Esta canción dura ${formatDuration(durationSeconds)} y supera el límite (${MAX_DURATION_MINUTES} min).`, 'error');
+        return;
+      }
+
+      if (!currentUser) {
+        showMessage('message-container', 'Entrá con tu apodo primero.', 'warning');
+        setUIStateLoggedOut();
+        return;
+      }
+
+      if (!canAddSong()) {
+        const waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(localStorage.getItem('moyofy_last_add'),10))) / 60000);
+        showMessage('message-container', `Esperá ${waitTime} minuto(s) antes de agregar otra canción.`, 'warning');
+        return;
+      }
+
+      try {
+        const coords = await requestLocation();
+        if (!isUserNearBar(coords.latitude, coords.longitude)) {
+          showMessage('message-container', 'Solo podés agregar canciones estando cerca del local.', 'warning');
+          return;
+        }
+      } catch (e) {
+        showMessage('message-container', 'Permiso de ubicación requerido para agregar canciones.', 'error');
+        return;
+      }
+
+      if (requiresAuth) {
+        showMessage('message-container', 'Necesitás autorizar YouTube para agregar canciones.', 'error');
+        showAuthRequiredMessage();
+        return;
+      }
+
+      const original = buttonEl.innerHTML;
+      buttonEl.disabled = true;
+      buttonEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AGREGANDO...';
+
+      try {
+        const response = await fetch(`${API_BASE}/suggest-song`, {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            videoId,
+            title,
+            userId: currentUser.public_id
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          if (data && data.requiresAuth) {
+            requiresAuth = true;
+            showAuthRequiredMessage();
+            throw new Error('Necesitás autorizar YouTube');
+          }
+          if (data && (data.error === 'VIDEO_DUPLICATE' || data.message === 'El video ya existe en la playlist')) {
+            throw new Error('Esa canción ya está en la playlist.');
+          }
+          throw new Error((data && (data.error || data.message)) || `Error HTTP ${response.status}`);
+        }
+
+        setLastAddTime();
+
+        const award = await fetch(`${API_BASE}/v2/award-song`, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            barId: BAR_ID,
+            publicId: currentUser.public_id,
+            videoId,
+            title,
+            artist,
+            award: ECONOMY.pointsPerSong
+          })
+        });
+
+        const awardData = await award.json();
+        if (awardData.ok && awardData.user) {
+          currentUser = awardData.user;
+          saveLocalUser(currentUser);
+          updateProfileUI();
+          setPriorityLabel();
+        }
+
+        playSound('success-sound');
+        const rect = buttonEl.getBoundingClientRect();
+        const x = rect.left + rect.width/2;
+        const y = rect.top + rect.height/2;
+        createEpicConfettiExplosion(x, y, 110);
+        createPointsAnimation(x, y, ECONOMY.pointsPerSong, "MOYOS");
+
+        showMessage('message-container', `Canción agregada. +${ECONOMY.pointsPerSong} MOYOS`, 'success');
+
+        $('song-search').value = '';
+        $('song-search').focus();
+
+        await syncAll();
+      } catch (e) {
+        showMessage('message-container', `No se pudo agregar: ${escapeHtml(e.message)}`, 'error');
+      } finally {
+        buttonEl.disabled = false;
+        buttonEl.innerHTML = original;
+      }
+    }
+
+    async function sendGift() {
+      playSound('click-sound');
+
+      if (!currentUser) {
+        showMessage('message-gifts', 'Entrá con tu apodo para enviar regalos.', 'warning');
+        return;
+      }
+
+      const toNick = normalizeNickname($('gift-to').value);
+      const giftType = $('gift-type').value;
+      if (!toNick || toNick.length < 3) {
+        showMessage('message-gifts', 'Ingresá el apodo del destinatario.', 'warning');
+        return;
+      }
+
+      const amount = ECONOMY.baseGiftValues[giftType] || 10;
+      const cost = Math.ceil(amount * ECONOMY.giftSendCostMultiplier);
+
+      if ((currentUser.points ?? 0) < cost) {
+        showMessage('message-gifts', `No tenés MOYOS suficientes. Necesitás ${cost} MOYOS.`, 'error');
+        return;
+      }
+
+      try {
+        const r = await fetch(`${API_BASE}/v2/gift`, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            barId: BAR_ID,
+            fromPublicId: currentUser.public_id,
+            toNickname: toNick,
+            giftType,
+            amount
+          })
+        });
+        const data = await r.json();
+        if (!data.ok) throw new Error(data.error || 'No se pudo enviar el regalo');
+
+        currentUser = data.fromUser;
+        saveLocalUser(currentUser);
+        updateProfileUI();
+        setPriorityLabel();
+
+        playSound('success-sound');
+        createEpicConfettiExplosion(window.innerWidth/2, window.innerHeight/2, 120);
+        createPointsAnimation(window.innerWidth/2, window.innerHeight/2, amount, "MOYOS");
+        showMessage('message-gifts', `Regalo enviado a ${escapeHtml(toNick)} · (${amount} MOYOS)`, 'success');
+
+        $('gift-to').value = '';
+        await syncAll();
+      } catch (e) {
+        showMessage('message-gifts', `No se pudo enviar: ${escapeHtml(e.message)}`, 'error');
+      }
+    }
+
+    function startGame() {
+      playSound('click-sound');
+      const intro = $('intro-screen');
+      intro.style.opacity = '0';
+      setTimeout(() => {
+        intro.style.display = 'none';
+        $('main-container').style.display = 'block';
+      }, 720);
+    }
+
+    async function init() {
+      $('sound-toggle').addEventListener('click', toggleSound);
+
+      $('btn-start').addEventListener('click', async () => {
+        startGame();
+        const ok = await fetchPublicConfig();
+        const saved = loadLocalUser();
+
+        if (saved?.public_id) {
+          try {
+            currentUser = await fetchMe(saved.public_id);
+            saveLocalUser(currentUser);
+            setUIStateLoggedIn();
+            updateProfileUI();
+            setPriorityLabel();
+            const top = await fetchLeaderboard();
+            renderTop3(top);
+            if (ok && supabase) await subscribeRealtime();
+          } catch (e) {
+            currentUser = null;
+            clearLocalUser();
+            setUIStateLoggedOut();
+          }
+        } else {
+          setUIStateLoggedOut();
+        }
+      });
+
+      $('btn-enter').addEventListener('click', () => enterFlow({ guest:false }));
+      $('btn-guest').addEventListener('click', () => enterFlow({ guest:true }));
+
+      $('btn-search').addEventListener('click', () => searchSongs());
+
+      $('song-search').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchSongs();
+        }
+      });
+
+      $('btn-change').addEventListener('click', () => {
+        playSound('click-sound');
+        if (confirm('¿Cambiar apodo? Esto crea un perfil nuevo.')) {
+          clearLocalUser();
+          currentUser = null;
+          lastLevel = 1;
+          setUIStateLoggedOut();
+          showMessage('message-onboarding', 'Ingresá tu nuevo apodo para continuar.', 'success');
+        }
+      });
+
+      $('btn-refresh').addEventListener('click', async () => {
+        playSound('click-sound');
+        await syncAll();
+        showMessage('message-profile', 'Sincronizado.', 'success');
+      });
+
+      $('btn-send-gift').addEventListener('click', () => sendGift());
+
+      $('btn-open-leaderboard').addEventListener('click', async () => {
+        playSound('click-sound');
+        try {
+          const top = await fetchLeaderboard();
+          const lines = top.slice(0,10).map((u,i)=>`#${i+1} ${u.nickname} · ${u.points} MOYOS`).join('\n');
+          alert(lines || 'Aún no hay ranking.');
+        } catch (e) {
+          alert('No se pudo cargar ranking.');
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
