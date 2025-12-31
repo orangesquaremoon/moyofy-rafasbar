@@ -7,11 +7,12 @@
     "start": "node backend/server.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.89.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "express-session": "^1.18.0",
     "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0",
     "googleapis": "^144.0.0",
     "lru-cache": "^10.2.0"
   }
