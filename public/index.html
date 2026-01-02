@@ -650,7 +650,9 @@
   <audio id="click-sound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg"></audio>
   <audio id="explosion-sound" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-fireworks-explosion-3038.mp3" type="audio/mpeg"></audio>
 
+  <!-- SDK Supabase (define window.supabase) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     const BAR_LOCATION = { lat: 9.93422, lng: -84.06894 };
     const RADIUS_METERS = 20000;
@@ -667,7 +669,9 @@
     let SUPABASE_URL = null;
     let SUPABASE_ANON_KEY = null;
     let BAR_ID = "rafasbar";
-    let supabase = null;
+
+    // IMPORTANTE: NO declarar "supabase" aquí (ya existe por CDN).
+    let sbClient = null;
     let realtimeChannel = null;
 
     const ECONOMY = {
@@ -684,16 +688,12 @@
       if (!soundEnabled) return;
       const sound = document.getElementById(soundId);
       if (!sound) return;
-      try {
-        sound.currentTime = 0;
-        sound.play();
-      } catch (e) {}
+      try { sound.currentTime = 0; sound.play(); } catch (e) {}
     }
 
     function toggleSound() {
       soundEnabled = !soundEnabled;
       const icon = $('sound-icon');
-      if (!icon) return;
       icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
       if (soundEnabled) playSound('click-sound');
     }
@@ -718,7 +718,6 @@
     function createEpicConfettiExplosion(x, y, intensity = 100) {
       playSound('explosion-sound');
       const container = $('confetti-container');
-      if (!container) return;
       for (let i = 0; i < intensity; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
@@ -745,7 +744,6 @@
 
     function createPointsAnimation(x, y, points, label = "MOYOS") {
       const container = $('confetti-container');
-      if (!container) return;
       const el = document.createElement('div');
       el.className = 'points-animation';
       el.textContent = `+${points} ${label}`;
@@ -782,6 +780,14 @@
       pill.innerHTML = ok ? `<i class="fas fa-cloud"></i> ${label}` : `<i class="fas fa-triangle-exclamation"></i> ${label}`;
     }
 
+    function todayKey() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+
     function safeTrim(s){ return (s || '').toString().trim(); }
 
     function normalizeNickname(nick){
@@ -789,17 +795,13 @@
     }
 
     function setUIStateLoggedOut() {
-      const onboarding = $('onboarding');
-      const profile = $('profile');
-      if (onboarding) onboarding.style.display = 'block';
-      if (profile) profile.style.display = 'none';
+      $('onboarding').style.display = 'block';
+      $('profile').style.display = 'none';
     }
 
     function setUIStateLoggedIn() {
-      const onboarding = $('onboarding');
-      const profile = $('profile');
-      if (onboarding) onboarding.style.display = 'none';
-      if (profile) profile.style.display = 'block';
+      $('onboarding').style.display = 'none';
+      $('profile').style.display = 'block';
     }
 
     function updateProfileUI() {
@@ -807,7 +809,7 @@
 
       $('user-nickname').textContent = currentUser.nickname || 'usuario';
       $('user-id').textContent = currentUser.public_id || '—';
-      $('user-points').textContent = (currentUser.points ?? 100);
+      $('user-points').textContent = currentUser.points ?? 100;
 
       const stats = calculateLevel(currentUser.points ?? 100);
       $('user-level').textContent = stats.level;
@@ -817,8 +819,8 @@
       $('current-xp-display').textContent = `${stats.currentXp}/${ECONOMY.xpPerLevel} XP`;
       $('xp-to-next').textContent = `${stats.xpNeeded} XP para subir`;
 
-      $('songs-added').textContent = (currentUser.songs_added ?? 0);
-      $('votes-received').textContent = (currentUser.votes_received ?? 0);
+      $('songs-added').textContent = currentUser.songs_added ?? 0;
+      $('votes-received').textContent = currentUser.votes_received ?? 0;
 
       const streakLabel = currentUser.streak_days ? `${currentUser.streak_days} día(s)` : '0 día(s)';
       $('user-streak').textContent = `Racha: ${streakLabel}`;
@@ -876,10 +878,8 @@
     }
 
     function showAuthRequiredMessage() {
-      const box = $('auth-required-message');
-      if (!box) return;
-      box.style.display = 'block';
-      box.onclick = () => redirectToAuth();
+      $('auth-required-message').style.display = 'block';
+      $('auth-required-message').onclick = () => redirectToAuth();
     }
 
     function redirectToAuth() {
@@ -898,13 +898,12 @@
     }
 
     function escapeHtml(str) {
-      const s = String(str || '');
-      return s
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g,'&#039;');
+      return String(str || '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
     }
 
     function sanitizeForAttr(str) {
@@ -922,15 +921,11 @@
         SUPABASE_ANON_KEY = data.supabaseAnonKey;
         BAR_ID = data.barId || BAR_ID;
 
-        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-          const sbGlobal = (window.supabase && window.supabase.createClient) ? window.supabase : (window.Supabase || window.supabase);
-          if (!sbGlobal || !sbGlobal.createClient) throw new Error('Supabase JS no cargó');
-
-          supabase = sbGlobal.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase && typeof window.supabase.createClient === 'function') {
+          sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { persistSession: false, autoRefreshToken: false },
             realtime: { params: { eventsPerSecond: 5 } }
           });
-
           setConnPill(true, 'Conectado');
           return true;
         }
@@ -1000,28 +995,26 @@
         currentUser = fresh;
         saveLocalUser(currentUser);
         updateProfileUI();
-        setPriorityLabel();
         const top = await fetchLeaderboard();
         renderTop3(top);
       } catch (e) {}
     }
 
     async function subscribeRealtime() {
-      if (!supabase || !currentUser) return;
+      if (!sbClient || !currentUser) return;
 
       if (realtimeChannel) {
-        try { await supabase.removeChannel(realtimeChannel); } catch(_) {}
+        try { await sbClient.removeChannel(realtimeChannel); } catch(_) {}
         realtimeChannel = null;
       }
 
-      realtimeChannel = supabase.channel(`moyofy_${BAR_ID}`)
+      realtimeChannel = sbClient.channel(`moyofy_${BAR_ID}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'moyofy_users', filter: `bar_id=eq.${BAR_ID}` }, async (payload) => {
           try {
             if (payload?.new?.public_id && currentUser?.public_id === payload.new.public_id) {
-              currentUser = { ...currentUser, ...payload.new }; // <- CORREGIDO (spread correcto)
+              currentUser = { ...currentUser, ...payload.new };
               saveLocalUser(currentUser);
               updateProfileUI();
-              setPriorityLabel();
             }
             const top = await fetchLeaderboard();
             renderTop3(top);
@@ -1039,7 +1032,6 @@
         })
         .subscribe((status) => {
           const live = $('pill-live');
-          if (!live) return;
           if (status === 'SUBSCRIBED') live.className = 'pill success';
           else live.className = 'pill warning';
         });
@@ -1082,7 +1074,7 @@
         const top = await fetchLeaderboard();
         renderTop3(top);
 
-        if (supabase) await subscribeRealtime();
+        if (sbClient) await subscribeRealtime();
 
         playSound('success-sound');
         createEpicConfettiExplosion(window.innerWidth/2, window.innerHeight/2, 140);
@@ -1260,8 +1252,7 @@
       }
 
       if (!canAddSong()) {
-        const last = parseInt(localStorage.getItem('moyofy_last_add') || '0', 10);
-        const waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - last)) / 60000);
+        const waitTime = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(localStorage.getItem('moyofy_last_add'),10))) / 60000);
         showMessage('message-container', `Esperá ${waitTime} minuto(s) antes de agregar otra canción.`, 'warning');
         return;
       }
@@ -1414,106 +1405,82 @@
     function startGame() {
       playSound('click-sound');
       const intro = $('intro-screen');
-      if (!intro) return;
       intro.style.opacity = '0';
       setTimeout(() => {
         intro.style.display = 'none';
-        const main = $('main-container');
-        if (main) main.style.display = 'block';
+        $('main-container').style.display = 'block';
       }, 720);
     }
 
     async function init() {
-      const soundToggle = $('sound-toggle');
-      if (soundToggle) soundToggle.addEventListener('click', toggleSound);
+      $('sound-toggle').addEventListener('click', toggleSound);
 
-      const btnStart = $('btn-start');
-      if (btnStart) {
-        btnStart.addEventListener('click', async () => {
-          startGame();
+      $('btn-start').addEventListener('click', async () => {
+        startGame();
+        const ok = await fetchPublicConfig();
+        const saved = loadLocalUser();
 
-          const ok = await fetchPublicConfig();
-          const saved = loadLocalUser();
-
-          if (saved?.public_id) {
-            try {
-              currentUser = await fetchMe(saved.public_id);
-              saveLocalUser(currentUser);
-              setUIStateLoggedIn();
-              updateProfileUI();
-              setPriorityLabel();
-              const top = await fetchLeaderboard();
-              renderTop3(top);
-              if (ok && supabase) await subscribeRealtime();
-            } catch (e) {
-              currentUser = null;
-              clearLocalUser();
-              setUIStateLoggedOut();
-            }
-          } else {
-            setUIStateLoggedOut();
-          }
-        });
-      }
-
-      const btnEnter = $('btn-enter');
-      if (btnEnter) btnEnter.addEventListener('click', () => enterFlow({ guest:false }));
-
-      const btnGuest = $('btn-guest');
-      if (btnGuest) btnGuest.addEventListener('click', () => enterFlow({ guest:true }));
-
-      const btnSearch = $('btn-search');
-      if (btnSearch) btnSearch.addEventListener('click', () => searchSongs());
-
-      const songSearch = $('song-search');
-      if (songSearch) {
-        songSearch.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            searchSongs();
-          }
-        });
-      }
-
-      const btnChange = $('btn-change');
-      if (btnChange) {
-        btnChange.addEventListener('click', () => {
-          playSound('click-sound');
-          if (confirm('¿Cambiar apodo? Esto crea un perfil nuevo.')) {
-            clearLocalUser();
-            currentUser = null;
-            lastLevel = 1;
-            setUIStateLoggedOut();
-            showMessage('message-onboarding', 'Ingresá tu nuevo apodo para continuar.', 'success');
-          }
-        });
-      }
-
-      const btnRefresh = $('btn-refresh');
-      if (btnRefresh) {
-        btnRefresh.addEventListener('click', async () => {
-          playSound('click-sound');
-          await syncAll();
-          showMessage('message-profile', 'Sincronizado.', 'success');
-        });
-      }
-
-      const btnSendGift = $('btn-send-gift');
-      if (btnSendGift) btnSendGift.addEventListener('click', () => sendGift());
-
-      const btnOpenLeaderboard = $('btn-open-leaderboard');
-      if (btnOpenLeaderboard) {
-        btnOpenLeaderboard.addEventListener('click', async () => {
-          playSound('click-sound');
+        if (saved?.public_id) {
           try {
+            currentUser = await fetchMe(saved.public_id);
+            saveLocalUser(currentUser);
+            setUIStateLoggedIn();
+            updateProfileUI();
+            setPriorityLabel();
             const top = await fetchLeaderboard();
-            const lines = top.slice(0,10).map((u,i)=>`#${i+1} ${u.nickname} · ${u.points} MOYOS`).join('\n');
-            alert(lines || 'Aún no hay ranking.');
+            renderTop3(top);
+            if (ok && sbClient) await subscribeRealtime();
           } catch (e) {
-            alert('No se pudo cargar ranking.');
+            currentUser = null;
+            clearLocalUser();
+            setUIStateLoggedOut();
           }
-        });
-      }
+        } else {
+          setUIStateLoggedOut();
+        }
+      });
+
+      $('btn-enter').addEventListener('click', () => enterFlow({ guest:false }));
+      $('btn-guest').addEventListener('click', () => enterFlow({ guest:true }));
+
+      $('btn-search').addEventListener('click', () => searchSongs());
+
+      $('song-search').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchSongs();
+        }
+      });
+
+      $('btn-change').addEventListener('click', () => {
+        playSound('click-sound');
+        if (confirm('¿Cambiar apodo? Esto crea un perfil nuevo.')) {
+          clearLocalUser();
+          currentUser = null;
+          lastLevel = 1;
+          setUIStateLoggedOut();
+          showMessage('message-onboarding', 'Ingresá tu nuevo apodo para continuar.', 'success');
+        }
+      });
+
+      $('btn-refresh').addEventListener('click', async () => {
+        playSound('click-sound');
+        await syncAll();
+        showMessage('message-profile', 'Sincronizado.', 'success');
+      });
+
+      $('btn-send-gift').addEventListener('click', () => sendGift());
+
+      $('btn-open-leaderboard').addEventListener('click', async () => {
+        playSound('click-sound');
+        try {
+          const top = await fetchLeaderboard();
+          const lines = top.slice(0,10).map((u,i)=>`#${i+1} ${u.nickname} · ${u.points} MOYOS`).join('\n');
+          alert(lines || 'Aún no hay ranking.');
+        } catch (e) {
+          alert('No se pudo cargar ranking.');
+        }
+      });
     }
 
     document.addEventListener('DOMContentLoaded', init);
