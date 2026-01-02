@@ -11,7 +11,11 @@ let supabaseAdmin = null;
 try {
   const { createClient } = require('@supabase/supabase-js');
   const url = process.env.SUPABASE_URL || null;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || null;
+  const serviceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SECRET_KEY ||
+    null;
+
   if (url && serviceKey) {
     supabaseAdmin = createClient(url, serviceKey, { auth: { persistSession: false } });
     console.log('✅ Supabase Admin inicializado');
@@ -24,6 +28,12 @@ try {
 
 const app = express();
 
+/**
+ * NOTA:
+ * El warning de MemoryStore NO te bloquea el funcionamiento.
+ * Es solo una advertencia de escalabilidad. Lo dejamos así por ahora
+ * para no meter más variables/dependencias hasta que funcione todo.
+ */
 app.use(session({
   secret: process.env.SESSION_SECRET || 'moyofy_secret_key_2025',
   resave: false,
@@ -80,7 +90,6 @@ function initializeOwnerClient() {
     console.error('❌ Error inicializando cliente del propietario:', error.message);
   }
 }
-
 initializeOwnerClient();
 
 const userOauth2Client = new google.auth.OAuth2(
@@ -137,18 +146,15 @@ function requireSupabase(res) {
   return true;
 }
 
+// ---------- CONFIG ----------
 app.get('/v2/public-config', (req, res) => {
   const supabaseUrl = process.env.SUPABASE_URL || null;
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || null;
   const barId = process.env.BAR_ID || process.env.DEFAULT_BAR_ID || 'rafasbar';
-  res.json({
-    ok: true,
-    supabaseUrl,
-    supabaseAnonKey,
-    barId
-  });
+  res.json({ ok: true, supabaseUrl, supabaseAnonKey, barId });
 });
 
+// ---------- BOOTSTRAP ----------
 app.post('/v2/bootstrap', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -170,6 +176,11 @@ app.post('/v2/bootstrap', async (req, res) => {
       .eq('bar_id', barId)
       .ilike('nickname', nickname)
       .maybeSingle();
+
+    if (existing?.error) {
+      console.error('❌ Supabase error in bootstrap(existing):', existing.error);
+      return res.status(500).json({ ok: false, error: existing.error.message });
+    }
 
     if (existing && existing.data) {
       return res.json({ ok: true, user: existing.data });
@@ -194,13 +205,20 @@ app.post('/v2/bootstrap', async (req, res) => {
       .select('*')
       .single();
 
-    if (insert.error) return res.status(500).json({ ok: false, error: insert.error.message });
+    if (insert?.error) {
+      console.error('❌ Supabase error in bootstrap(insert):', insert.error);
+      return res.status(500).json({ ok: false, error: insert.error.message });
+    }
+
     res.json({ ok: true, user: insert.data });
+
   } catch (e) {
-    res.status(500).json({ ok: false, error: 'Error creando perfil' });
+    console.error('❌ Exception in /v2/bootstrap:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error creando perfil' });
   }
 });
 
+// ---------- ME ----------
 app.get('/v2/me', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -216,13 +234,19 @@ app.get('/v2/me', async (req, res) => {
       .eq('public_id', publicId)
       .single();
 
-    if (q.error) return res.status(404).json({ ok: false, error: 'Perfil no encontrado' });
+    if (q?.error) {
+      console.error('❌ Supabase error in /v2/me:', q.error);
+      return res.status(404).json({ ok: false, error: q.error.message });
+    }
+
     res.json({ ok: true, user: q.data });
   } catch (e) {
-    res.status(500).json({ ok: false, error: 'Error cargando perfil' });
+    console.error('❌ Exception in /v2/me:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error cargando perfil' });
   }
 });
 
+// ---------- LEADERBOARD ----------
 app.get('/v2/leaderboard', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -237,13 +261,20 @@ app.get('/v2/leaderboard', async (req, res) => {
       .order('points', { ascending: false })
       .limit(limit);
 
-    if (q.error) return res.status(500).json({ ok: false, error: q.error.message });
+    if (q?.error) {
+      console.error('❌ Supabase error in /v2/leaderboard:', q.error);
+      return res.status(500).json({ ok: false, error: q.error.message });
+    }
+
     res.json({ ok: true, items: q.data || [] });
+
   } catch (e) {
-    res.status(500).json({ ok: false, error: 'Error cargando ranking' });
+    console.error('❌ Exception in /v2/leaderboard:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error cargando ranking' });
   }
 });
 
+// ---------- AWARD SONG ----------
 app.post('/v2/award-song', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -266,7 +297,10 @@ app.post('/v2/award-song', async (req, res) => {
       .eq('public_id', publicId)
       .single();
 
-    if (me.error || !me.data) return res.status(404).json({ ok: false, error: 'Perfil no encontrado' });
+    if (me?.error || !me.data) {
+      console.error('❌ Supabase error in award-song(me):', me?.error);
+      return res.status(404).json({ ok: false, error: me?.error?.message || 'Perfil no encontrado' });
+    }
 
     const u = me.data;
     const lastDay = u.streak_last_day || null;
@@ -296,10 +330,13 @@ app.post('/v2/award-song', async (req, res) => {
       .select('*')
       .single();
 
-    if (update.error) return res.status(500).json({ ok: false, error: update.error.message });
+    if (update?.error) {
+      console.error('❌ Supabase error in award-song(update):', update.error);
+      return res.status(500).json({ ok: false, error: update.error.message });
+    }
 
     if (videoId) {
-      await supabaseAdmin
+      const ev = await supabaseAdmin
         .from('moyofy_song_events')
         .insert([{
           bar_id: barId,
@@ -310,14 +347,21 @@ app.post('/v2/award-song', async (req, res) => {
           awarded: award,
           created_at: nowISO()
         }]);
+
+      if (ev?.error) {
+        console.error('❌ Supabase error in award-song(event insert):', ev.error);
+      }
     }
 
     res.json({ ok: true, user: update.data });
+
   } catch (e) {
-    res.status(500).json({ ok: false, error: 'Error otorgando MOYOS' });
+    console.error('❌ Exception in /v2/award-song:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error otorgando MOYOS' });
   }
 });
 
+// ---------- GIFT ----------
 app.post('/v2/gift', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -338,7 +382,10 @@ app.post('/v2/gift', async (req, res) => {
       .eq('public_id', fromPublicId)
       .single();
 
-    if (fromQ.error || !fromQ.data) return res.status(404).json({ ok: false, error: 'Emisor no encontrado' });
+    if (fromQ?.error || !fromQ.data) {
+      console.error('❌ Supabase error in gift(from):', fromQ?.error);
+      return res.status(404).json({ ok: false, error: fromQ?.error?.message || 'Emisor no encontrado' });
+    }
 
     const toQ = await supabaseAdmin
       .from('moyofy_users')
@@ -347,7 +394,10 @@ app.post('/v2/gift', async (req, res) => {
       .ilike('nickname', toNickname)
       .single();
 
-    if (toQ.error || !toQ.data) return res.status(404).json({ ok: false, error: 'Destinatario no encontrado (apodo exacto)' });
+    if (toQ?.error || !toQ.data) {
+      console.error('❌ Supabase error in gift(to):', toQ?.error);
+      return res.status(404).json({ ok: false, error: toQ?.error?.message || 'Destinatario no encontrado (apodo exacto)' });
+    }
 
     const from = fromQ.data;
     const to = toQ.data;
@@ -370,7 +420,10 @@ app.post('/v2/gift', async (req, res) => {
       .select('*')
       .single();
 
-    if (fromUpdate.error) return res.status(500).json({ ok: false, error: fromUpdate.error.message });
+    if (fromUpdate?.error) {
+      console.error('❌ Supabase error in gift(fromUpdate):', fromUpdate.error);
+      return res.status(500).json({ ok: false, error: fromUpdate.error.message });
+    }
 
     const toUpdate = await supabaseAdmin
       .from('moyofy_users')
@@ -383,9 +436,12 @@ app.post('/v2/gift', async (req, res) => {
       .select('*')
       .single();
 
-    if (toUpdate.error) return res.status(500).json({ ok: false, error: toUpdate.error.message });
+    if (toUpdate?.error) {
+      console.error('❌ Supabase error in gift(toUpdate):', toUpdate.error);
+      return res.status(500).json({ ok: false, error: toUpdate.error.message });
+    }
 
-    await supabaseAdmin
+    const giftInsert = await supabaseAdmin
       .from('moyofy_gifts')
       .insert([{
         bar_id: barId,
@@ -399,12 +455,19 @@ app.post('/v2/gift', async (req, res) => {
         created_at: nowISO()
       }]);
 
+    if (giftInsert?.error) {
+      console.error('❌ Supabase error in gift(insert):', giftInsert.error);
+    }
+
     res.json({ ok: true, fromUser: fromUpdate.data, toUser: toUpdate.data });
+
   } catch (e) {
-    res.status(500).json({ ok: false, error: 'Error enviando regalo' });
+    console.error('❌ Exception in /v2/gift:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error enviando regalo' });
   }
 });
 
+// ---------- VOTE ----------
 app.post('/v2/vote', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -423,7 +486,10 @@ app.post('/v2/vote', async (req, res) => {
       .eq('public_id', fromPublicId)
       .single();
 
-    if (fromQ.error || !fromQ.data) return res.status(404).json({ ok: false, error: 'Votante no encontrado' });
+    if (fromQ?.error || !fromQ.data) {
+      console.error('❌ Supabase error in vote(fromQ):', fromQ?.error);
+      return res.status(404).json({ ok: false, error: fromQ?.error?.message || 'Votante no encontrado' });
+    }
 
     const lastSong = await supabaseAdmin
       .from('moyofy_song_events')
@@ -434,7 +500,12 @@ app.post('/v2/vote', async (req, res) => {
       .limit(1)
       .maybeSingle();
 
-    if (!lastSong || !lastSong.data || !lastSong.data.public_id) {
+    if (lastSong?.error) {
+      console.error('❌ Supabase error in vote(lastSong):', lastSong.error);
+      return res.status(500).json({ ok: false, error: lastSong.error.message });
+    }
+
+    if (!lastSong?.data?.public_id) {
       return res.status(404).json({ ok: false, error: 'No se encontró autor para esta canción (aún)' });
     }
 
@@ -452,11 +523,16 @@ app.post('/v2/vote', async (req, res) => {
       .eq('video_id', videoId)
       .maybeSingle();
 
-    if (existing && existing.data) {
+    if (existing?.error) {
+      console.error('❌ Supabase error in vote(existing):', existing.error);
+      return res.status(500).json({ ok: false, error: existing.error.message });
+    }
+
+    if (existing?.data) {
       return res.status(409).json({ ok: false, error: 'Ya votaste esta canción hoy' });
     }
 
-    await supabaseAdmin
+    const voteInsert = await supabaseAdmin
       .from('moyofy_votes')
       .insert([{
         bar_id: barId,
@@ -467,6 +543,11 @@ app.post('/v2/vote', async (req, res) => {
         created_at: nowISO()
       }]);
 
+    if (voteInsert?.error) {
+      console.error('❌ Supabase error in vote(insert vote):', voteInsert.error);
+      return res.status(500).json({ ok: false, error: voteInsert.error.message });
+    }
+
     const reward = Math.max(parseInt(process.env.VOTE_REWARD || '3', 10), 1);
 
     const toQ = await supabaseAdmin
@@ -476,11 +557,15 @@ app.post('/v2/vote', async (req, res) => {
       .eq('public_id', toPublicId)
       .single();
 
-    if (toQ.error || !toQ.data) return res.json({ ok: true });
+    if (toQ?.error || !toQ.data) {
+      // no bloquea el voto, solo no recompensa
+      console.error('❌ Supabase error in vote(toQ):', toQ?.error);
+      return res.json({ ok: true });
+    }
 
     const to = toQ.data;
 
-    await supabaseAdmin
+    const upd = await supabaseAdmin
       .from('moyofy_users')
       .update({
         points: (to.points || 0) + reward,
@@ -490,12 +575,19 @@ app.post('/v2/vote', async (req, res) => {
       .eq('bar_id', barId)
       .eq('public_id', toPublicId);
 
+    if (upd?.error) {
+      console.error('❌ Supabase error in vote(update reward):', upd.error);
+    }
+
     res.json({ ok: true });
+
   } catch (e) {
-    res.status(500).json({ ok: false, error: 'Error procesando voto' });
+    console.error('❌ Exception in /v2/vote:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error procesando voto' });
   }
 });
 
+// ---------- OAUTH ----------
 app.get('/auth', (req, res) => {
   const url = userOauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -544,6 +636,7 @@ app.get('/oauth2callback', async (req, res) => {
         </body></html>
       `);
     } catch (err) {
+      console.error('❌ Error autenticando propietario:', err);
       return res.status(500).send('Error autenticando propietario');
     }
   }
@@ -558,10 +651,12 @@ app.get('/oauth2callback', async (req, res) => {
     userOauth2Client.setCredentials(tokens);
     res.send(`<html><body><h1>Autenticación exitosa</h1><p>Puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>`);
   } catch (err) {
+    console.error('❌ Error en oauth2callback:', err);
     res.status(500).send('<h1>Error en OAuth Callback</h1>');
   }
 });
 
+// ---------- SEARCH ----------
 app.post('/search', async (req, res) => {
   const { q } = req.body;
 
@@ -598,6 +693,7 @@ app.post('/search', async (req, res) => {
     });
 
   } catch (error) {
+    console.error('❌ Error en /search:', error?.response?.data || error);
     let errorMessage = 'Error al buscar videos en YouTube';
     let statusCode = 500;
 
@@ -606,15 +702,13 @@ app.post('/search', async (req, res) => {
       statusCode = 429;
     }
 
-    res.status(statusCode).json({
-      ok: false,
-      error: errorMessage
-    });
+    res.status(statusCode).json({ ok: false, error: errorMessage });
   }
 });
 
+// ---------- SUGGEST SONG ----------
 app.post('/suggest-song', async (req, res) => {
-  const { videoId, title, userId } = req.body;
+  const { videoId } = req.body;
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
   if (!defaultPlaylistId) {
@@ -656,6 +750,7 @@ app.post('/suggest-song', async (req, res) => {
     }
 
   } catch (error) {
+    console.error('❌ Error verificando canción:', error?.response?.data || error);
     if (error.code === 401 || error.response?.status === 401) {
       return res.status(500).json({ ok: false, error: 'Error de autenticación del servidor.', requiresAuth: true });
     }
@@ -686,6 +781,7 @@ app.post('/suggest-song', async (req, res) => {
     });
 
   } catch (error) {
+    console.error('❌ Error insertando en playlist:', error?.response?.data || error);
     let errorMessage = 'Error al agregar canción';
     let requiresAuth = false;
     let statusCode = 500;
@@ -702,6 +798,7 @@ app.post('/suggest-song', async (req, res) => {
   }
 });
 
+// ---------- HEALTH ----------
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
@@ -714,6 +811,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+// ---------- STATIC ----------
 app.get('/', (req, res) => {
   const indexPath = path.join(__dirname, '../public/index.html');
   if (fs.existsSync(indexPath)) return res.sendFile(indexPath);
@@ -726,10 +824,7 @@ app.get('*', (req, res) => {
   return res.redirect('/');
 });
 
-app.use((error, req, res, next) => {
-  res.status(500).json({ ok: false, error: 'Error interno del servidor' });
-});
-
+// ---------- FILTER ----------
 function filterRockMusic(items) {
   if (!items || !Array.isArray(items)) return [];
 
