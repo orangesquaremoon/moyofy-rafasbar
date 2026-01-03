@@ -656,6 +656,10 @@
   <script>
     const BAR_LOCATION = { lat: 9.93422, lng: -84.06894 };
     const RADIUS_METERS = 20000;
+
+    // ✅ MODIFICACIÓN: desactivar completamente el uso de geolocalización
+    const GEOLOCATION_REQUIRED = false;
+
     const COOLDOWN_MS = 5 * 60 * 1000;
     const MAX_DURATION_MINUTES = 7;
     const MAX_DURATION_SECONDS = MAX_DURATION_MINUTES * 60;
@@ -1275,15 +1279,19 @@
         return;
       }
 
-      try {
-        const coords = await requestLocation();
-        if (!isUserNearBar(coords.latitude, coords.longitude)) {
-          showMessage('message-container', 'Solo podés agregar canciones estando cerca del local.', 'warning');
+      // ✅ MODIFICACIÓN: no solicitar ubicación y no bloquear por distancia
+      // (Se deja el código de geolocalización intacto arriba, pero no se usa.)
+      if (GEOLOCATION_REQUIRED) {
+        try {
+          const coords = await requestLocation();
+          if (!isUserNearBar(coords.latitude, coords.longitude)) {
+            showMessage('message-container', 'Solo podés agregar canciones estando cerca del local.', 'warning');
+            return;
+          }
+        } catch (e) {
+          showMessage('message-container', e?.message || 'No se pudo obtener la ubicación.', 'error');
           return;
         }
-      } catch (e) {
-        showMessage('message-container', e?.message || 'No se pudo obtener la ubicación.', 'error');
-        return;
       }
 
       if (requiresAuth) {
