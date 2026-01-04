@@ -1,8 +1,9 @@
 /**
  * MOYOFY backend/server.js
- * - Guarda tokens del OWNER en Supabase (moyofy_kv)
- * - Re-auth automático si tokens son invalid_grant
- * - No depende de archivos (owner_tokens.json) en Render
+ * - OWNER tokens persistentes en Supabase (moyofy_kv)
+ * - /owner/auth + /oauth2callback?state=owner
+ * - Re-auth automático si invalid_grant
+ * - Rutas V2 completas (bootstrap/me/leaderboard/award-song/gift/vote)
  */
 
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
@@ -28,16 +29,18 @@ try {
     supabaseAdmin = createClient(url, serviceKey, { auth: { persistSession: false } });
     console.log('✅ Supabase Admin inicializado');
   } else {
-    console.log('⚠️ Supabase no configurado (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY).');
+    console.log('⚠️ Supabase no configurado (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY). V2 endpoints limitados.');
   }
 } catch (e) {
   console.log('⚠️ Falta dependencia @supabase/supabase-js en server. V2 endpoints no disponibles hasta instalarla.');
 }
 
-// ------------------------ APP ------------------------
 const app = express();
 
-// Session (warning MemoryStore es normal; no bloquea)
+/**
+ * NOTA:
+ * El warning de MemoryStore NO bloquea.
+ */
 app.use(session({
   secret: process.env.SESSION_SECRET || 'moyofy_secret_key_2025',
   resave: false,
@@ -48,7 +51,7 @@ app.use(session({
   }
 }));
 
-// CORS
+// ------------------------ CORS ------------------------
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
@@ -58,9 +61,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permitir llamadas sin origin en dev/herramientas
     if (!origin && process.env.NODE_ENV !== 'production') return callback(null, true);
-
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) callback(null, true);
     else callback(new Error('Not allowed by CORS'));
   },
@@ -70,12 +71,11 @@ app.use(cors({
 }));
 app.options('*', cors());
 
-// Body + static
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Request logger
+// ------------------------ LOGGER ------------------------
 app.use((req, res, next) => {
   const start = Date.now();
   const originalEnd = res.end;
@@ -87,7 +87,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// JSON malformed handler
+// JSON mal formado
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     return res.status(400).json({ ok: false, error: 'JSON mal formado en la solicitud' });
@@ -160,6 +160,7 @@ async function loadOwnerTokensFromSupabase() {
 
 async function clearOwnerTokensInSupabase() {
   if (!supabaseAdmin) return false;
+
   const { error } = await supabaseAdmin
     .from('moyofy_kv')
     .delete()
@@ -169,7 +170,8 @@ async function clearOwnerTokensInSupabase() {
     console.error('❌ Supabase error borrando owner_tokens:', error);
     return false;
   }
-  console.log('🧨 owner_tokens borrados de Supabase (para forzar re-auth)');
+
+  console.log('🧨 owner_tokens borrados en Supabase (forzar re-auth)');
   return true;
 }
 
@@ -177,14 +179,13 @@ async function clearOwnerTokensInSupabase() {
 let ownerOauth2Client = null;
 let ownerYoutube = null;
 
-// User client (solo para /auth si lo usás; NO sirve para insertar a playlist del bar)
 const userOauth2Client = new google.auth.OAuth2(
   process.env.OAUTH_CLIENT_ID,
   process.env.OAUTH_CLIENT_SECRET,
   process.env.REDIRECT_URI
 );
 
-// API KEY: para buscar y leer info pública
+// API Key para búsqueda/lectura pública
 const userYoutube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
 async function initializeOwnerClient() {
@@ -198,13 +199,9 @@ async function initializeOwnerClient() {
     // 1) Preferir Supabase
     let tokens = await loadOwnerTokensFromSupabase();
 
-    // 2) Fallback a env var (por si querés usar OWNER_TOKENS_JSON)
+    // 2) fallback env var
     if (!tokens && process.env.OWNER_TOKENS_JSON) {
-      try {
-        tokens = JSON.parse(process.env.OWNER_TOKENS_JSON);
-      } catch (e) {
-        console.error('❌ OWNER_TOKENS_JSON inválido (no es JSON):', e?.message || e);
-      }
+      try { tokens = JSON.parse(process.env.OWNER_TOKENS_JSON); } catch (_) {}
     }
 
     if (!tokens) {
@@ -215,7 +212,7 @@ async function initializeOwnerClient() {
 
     ownerOauth2Client.setCredentials(tokens);
 
-    // Cuando Google rota tokens, este evento dispara y podemos guardar el refresh/access nuevo
+    // Si rota tokens, guardamos actualización
     ownerOauth2Client.on('tokens', async (newTokens) => {
       try {
         const merged = { ...tokens, ...newTokens };
@@ -233,28 +230,17 @@ async function initializeOwnerClient() {
     ownerYoutube = null;
   }
 }
-
-// Inicializar owner al arranque
 initializeOwnerClient();
 
-// ------------------------ CONFIG / V2 ------------------------
+// ------------------------ V2 CONFIG ------------------------
 app.get('/v2/public-config', (req, res) => {
   const supabaseUrl = process.env.SUPABASE_URL || null;
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || null;
   const barId = process.env.BAR_ID || process.env.DEFAULT_BAR_ID || 'rafasbar';
-
-  res.json({
-    ok: true,
-    supabaseUrl,
-    supabaseAnonKey,
-    barId,
-    ownerAuthReady: !!ownerYoutube
-  });
+  res.json({ ok: true, supabaseUrl, supabaseAnonKey, barId, ownerAuthReady: !!ownerYoutube });
 });
 
-// ------------------------ BOOTSTRAP / ME / LEADERBOARD / AWARD / GIFT / VOTE ------------------------
-// (Tu parte Supabase V2 la dejo igual, con mínimos ajustes, porque esto NO es el problema del invalid_grant)
-
+// ------------------------ V2 BOOTSTRAP ------------------------
 app.post('/v2/bootstrap', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -282,9 +268,7 @@ app.post('/v2/bootstrap', async (req, res) => {
       return res.status(500).json({ ok: false, error: existing.error.message });
     }
 
-    if (existing && existing.data) {
-      return res.json({ ok: true, user: existing.data });
-    }
+    if (existing?.data) return res.json({ ok: true, user: existing.data });
 
     const insert = await supabaseAdmin
       .from('moyofy_users')
@@ -318,6 +302,7 @@ app.post('/v2/bootstrap', async (req, res) => {
   }
 });
 
+// ------------------------ V2 ME ------------------------
 app.get('/v2/me', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -345,6 +330,7 @@ app.get('/v2/me', async (req, res) => {
   }
 });
 
+// ------------------------ V2 LEADERBOARD ------------------------
 app.get('/v2/leaderboard', async (req, res) => {
   if (!requireSupabase(res)) return;
 
@@ -372,9 +358,311 @@ app.get('/v2/leaderboard', async (req, res) => {
   }
 });
 
-// ------------------------ OAUTH ROUTES (OWNER) ------------------------
+// ------------------------ V2 AWARD SONG (ESTA ES LA QUE TE FALTABA) ------------------------
+app.post('/v2/award-song', async (req, res) => {
+  if (!requireSupabase(res)) return;
 
-// Ruta para autenticar el OWNER (la cuenta del bar / dueña de la playlist)
+  const barId = String(req.body.barId || process.env.BAR_ID || 'rafasbar').trim();
+  const publicId = String(req.body.publicId || '').trim();
+  const award = Math.max(parseInt(req.body.award || '10', 10), 0);
+  const videoId = String(req.body.videoId || '').trim();
+  const title = String(req.body.title || '').trim().slice(0, 160);
+  const artist = String(req.body.artist || '').trim().slice(0, 120);
+
+  if (!publicId) return res.status(400).json({ ok: false, error: 'publicId requerido' });
+
+  try {
+    const today = getTodayKey();
+
+    const me = await supabaseAdmin
+      .from('moyofy_users')
+      .select('*')
+      .eq('bar_id', barId)
+      .eq('public_id', publicId)
+      .single();
+
+    if (me?.error || !me.data) {
+      console.error('❌ Supabase error in award-song(me):', me?.error);
+      return res.status(404).json({ ok: false, error: me?.error?.message || 'Perfil no encontrado' });
+    }
+
+    const u = me.data;
+    const lastDay = u.streak_last_day || null;
+
+    let streakDays = u.streak_days || 0;
+    if (!lastDay) streakDays = 1;
+    else if (lastDay === today) streakDays = Math.max(streakDays, 1);
+    else {
+      const last = new Date(lastDay + 'T00:00:00Z');
+      const cur = new Date(today + 'T00:00:00Z');
+      const diff = Math.round((cur - last) / (24 * 60 * 60 * 1000));
+      if (diff === 1) streakDays = (streakDays || 0) + 1;
+      else streakDays = 1;
+    }
+
+    const update = await supabaseAdmin
+      .from('moyofy_users')
+      .update({
+        points: (u.points || 0) + award,
+        songs_added: (u.songs_added || 0) + 1,
+        streak_days: streakDays,
+        streak_last_day: today,
+        updated_at: nowISO()
+      })
+      .eq('bar_id', barId)
+      .eq('public_id', publicId)
+      .select('*')
+      .single();
+
+    if (update?.error) {
+      console.error('❌ Supabase error in award-song(update):', update.error);
+      return res.status(500).json({ ok: false, error: update.error.message });
+    }
+
+    if (videoId) {
+      const ev = await supabaseAdmin
+        .from('moyofy_song_events')
+        .insert([{
+          bar_id: barId,
+          public_id: publicId,
+          video_id: videoId,
+          title,
+          artist,
+          awarded: award,
+          created_at: nowISO()
+        }]);
+
+      if (ev?.error) console.error('❌ Supabase error in award-song(event insert):', ev.error);
+    }
+
+    res.json({ ok: true, user: update.data });
+
+  } catch (e) {
+    console.error('❌ Exception in /v2/award-song:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error otorgando MOYOS' });
+  }
+});
+
+// ------------------------ V2 GIFT ------------------------
+app.post('/v2/gift', async (req, res) => {
+  if (!requireSupabase(res)) return;
+
+  const barId = String(req.body.barId || process.env.BAR_ID || 'rafasbar').trim();
+  const fromPublicId = String(req.body.fromPublicId || '').trim();
+  const toNickname = normalizeNickname(req.body.toNickname || '');
+  const giftType = String(req.body.giftType || 'beer').trim();
+  const amount = Math.max(parseInt(req.body.amount || '10', 10), 1);
+
+  if (!fromPublicId) return res.status(400).json({ ok: false, error: 'fromPublicId requerido' });
+  if (!toNickname || toNickname.length < 3) return res.status(400).json({ ok: false, error: 'Destinatario inválido' });
+
+  try {
+    const fromQ = await supabaseAdmin
+      .from('moyofy_users')
+      .select('*')
+      .eq('bar_id', barId)
+      .eq('public_id', fromPublicId)
+      .single();
+
+    if (fromQ?.error || !fromQ.data) {
+      console.error('❌ Supabase error in gift(from):', fromQ?.error);
+      return res.status(404).json({ ok: false, error: fromQ?.error?.message || 'Emisor no encontrado' });
+    }
+
+    const toQ = await supabaseAdmin
+      .from('moyofy_users')
+      .select('*')
+      .eq('bar_id', barId)
+      .ilike('nickname', toNickname)
+      .single();
+
+    if (toQ?.error || !toQ.data) {
+      console.error('❌ Supabase error in gift(to):', toQ?.error);
+      return res.status(404).json({ ok: false, error: toQ?.error?.message || 'Destinatario no encontrado (apodo exacto)' });
+    }
+
+    const from = fromQ.data;
+    const to = toQ.data;
+
+    if ((from.points || 0) < amount) return res.status(400).json({ ok: false, error: 'No hay MOYOS suficientes' });
+    if (from.public_id === to.public_id) return res.status(400).json({ ok: false, error: 'No podés enviarte regalos a vos mismo' });
+
+    const today = getTodayKey();
+    const giftsSentToday = from.gifts_sent_today || 0;
+
+    const fromUpdate = await supabaseAdmin
+      .from('moyofy_users')
+      .update({
+        points: (from.points || 0) - amount,
+        gifts_sent_today: giftsSentToday + 1,
+        updated_at: nowISO()
+      })
+      .eq('bar_id', barId)
+      .eq('public_id', from.public_id)
+      .select('*')
+      .single();
+
+    if (fromUpdate?.error) {
+      console.error('❌ Supabase error in gift(fromUpdate):', fromUpdate.error);
+      return res.status(500).json({ ok: false, error: fromUpdate.error.message });
+    }
+
+    const toUpdate = await supabaseAdmin
+      .from('moyofy_users')
+      .update({
+        points: (to.points || 0) + amount,
+        updated_at: nowISO()
+      })
+      .eq('bar_id', barId)
+      .eq('public_id', to.public_id)
+      .select('*')
+      .single();
+
+    if (toUpdate?.error) {
+      console.error('❌ Supabase error in gift(toUpdate):', toUpdate.error);
+      return res.status(500).json({ ok: false, error: toUpdate.error.message });
+    }
+
+    const giftInsert = await supabaseAdmin
+      .from('moyofy_gifts')
+      .insert([{
+        bar_id: barId,
+        from_public_id: from.public_id,
+        to_public_id: to.public_id,
+        from_nickname: from.nickname,
+        to_nickname: to.nickname,
+        gift_type: giftType,
+        amount,
+        day_key: today,
+        created_at: nowISO()
+      }]);
+
+    if (giftInsert?.error) console.error('❌ Supabase error in gift(insert):', giftInsert.error);
+
+    res.json({ ok: true, fromUser: fromUpdate.data, toUser: toUpdate.data });
+
+  } catch (e) {
+    console.error('❌ Exception in /v2/gift:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error enviando regalo' });
+  }
+});
+
+// ------------------------ V2 VOTE ------------------------
+app.post('/v2/vote', async (req, res) => {
+  if (!requireSupabase(res)) return;
+
+  const barId = String(req.body.barId || process.env.BAR_ID || 'rafasbar').trim();
+  const fromPublicId = String(req.body.fromPublicId || '').trim();
+  const videoId = String(req.body.videoId || '').trim();
+
+  if (!fromPublicId) return res.status(400).json({ ok: false, error: 'fromPublicId requerido' });
+  if (!videoId) return res.status(400).json({ ok: false, error: 'videoId requerido' });
+
+  try {
+    const fromQ = await supabaseAdmin
+      .from('moyofy_users')
+      .select('*')
+      .eq('bar_id', barId)
+      .eq('public_id', fromPublicId)
+      .single();
+
+    if (fromQ?.error || !fromQ.data) {
+      console.error('❌ Supabase error in vote(fromQ):', fromQ?.error);
+      return res.status(404).json({ ok: false, error: fromQ?.error?.message || 'Votante no encontrado' });
+    }
+
+    const lastSong = await supabaseAdmin
+      .from('moyofy_song_events')
+      .select('public_id,video_id,created_at')
+      .eq('bar_id', barId)
+      .eq('video_id', videoId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (lastSong?.error) {
+      console.error('❌ Supabase error in vote(lastSong):', lastSong.error);
+      return res.status(500).json({ ok: false, error: lastSong.error.message });
+    }
+
+    if (!lastSong?.data?.public_id) {
+      return res.status(404).json({ ok: false, error: 'No se encontró autor para esta canción (aún)' });
+    }
+
+    const toPublicId = lastSong.data.public_id;
+    if (toPublicId === fromPublicId) return res.status(400).json({ ok: false, error: 'No podés votarte a vos mismo' });
+
+    const today = getTodayKey();
+
+    const existing = await supabaseAdmin
+      .from('moyofy_votes')
+      .select('id')
+      .eq('bar_id', barId)
+      .eq('day_key', today)
+      .eq('from_public_id', fromPublicId)
+      .eq('video_id', videoId)
+      .maybeSingle();
+
+    if (existing?.error) {
+      console.error('❌ Supabase error in vote(existing):', existing.error);
+      return res.status(500).json({ ok: false, error: existing.error.message });
+    }
+
+    if (existing?.data) {
+      return res.status(409).json({ ok: false, error: 'Ya votaste esta canción hoy' });
+    }
+
+    const voteInsert = await supabaseAdmin
+      .from('moyofy_votes')
+      .insert([{
+        bar_id: barId,
+        day_key: today,
+        from_public_id: fromPublicId,
+        to_public_id: toPublicId,
+        video_id: videoId,
+        created_at: nowISO()
+      }]);
+
+    if (voteInsert?.error) {
+      console.error('❌ Supabase error in vote(insert vote):', voteInsert.error);
+      return res.status(500).json({ ok: false, error: voteInsert.error.message });
+    }
+
+    // Reward al autor
+    const reward = Math.max(parseInt(process.env.VOTE_REWARD || '3', 10), 1);
+
+    const toQ = await supabaseAdmin
+      .from('moyofy_users')
+      .select('*')
+      .eq('bar_id', barId)
+      .eq('public_id', toPublicId)
+      .single();
+
+    if (!toQ?.data) return res.json({ ok: true });
+
+    const to = toQ.data;
+
+    const upd = await supabaseAdmin
+      .from('moyofy_users')
+      .update({
+        points: (to.points || 0) + reward,
+        votes_received: (to.votes_received || 0) + 1,
+        updated_at: nowISO()
+      })
+      .eq('bar_id', barId)
+      .eq('public_id', toPublicId);
+
+    if (upd?.error) console.error('❌ Supabase error in vote(update reward):', upd.error);
+
+    res.json({ ok: true });
+
+  } catch (e) {
+    console.error('❌ Exception in /v2/vote:', e);
+    res.status(500).json({ ok: false, error: e?.message || 'Error procesando voto' });
+  }
+});
+
+// ------------------------ OWNER OAUTH ------------------------
 app.get('/owner/auth', (req, res) => {
   const redirectUri = process.env.REDIRECT_URI;
 
@@ -382,7 +670,6 @@ app.get('/owner/auth', (req, res) => {
     return res.status(500).send('Faltan variables OAuth (OAUTH_CLIENT_ID / OAUTH_CLIENT_SECRET / REDIRECT_URI)');
   }
 
-  // Creamos client si aún no existe
   if (!ownerOauth2Client) {
     ownerOauth2Client = new google.auth.OAuth2(
       process.env.OAUTH_CLIENT_ID,
@@ -394,9 +681,7 @@ app.get('/owner/auth', (req, res) => {
   const url = ownerOauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
-    scope: [
-      'https://www.googleapis.com/auth/youtube'
-    ],
+    scope: ['https://www.googleapis.com/auth/youtube'],
     redirect_uri: redirectUri,
     state: 'owner'
   });
@@ -404,14 +689,12 @@ app.get('/owner/auth', (req, res) => {
   return res.redirect(url);
 });
 
-// (Opcional) auth para usuario normal (NO necesario para agregar a playlist del bar)
+// (Opcional) user auth
 app.get('/auth', (req, res) => {
   const url = userOauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
-    scope: [
-      'https://www.googleapis.com/auth/youtube'
-    ],
+    scope: ['https://www.googleapis.com/auth/youtube'],
     redirect_uri: process.env.REDIRECT_URI
   });
   res.redirect(url);
@@ -420,15 +703,9 @@ app.get('/auth', (req, res) => {
 app.get('/oauth2callback', async (req, res) => {
   const { code, state, error } = req.query;
 
-  if (error) {
-    return res.status(400).send(`<html><body><h1>Error OAuth</h1><p>${String(error)}</p></body></html>`);
-  }
+  if (error) return res.status(400).send(`<html><body><h1>Error OAuth</h1><p>${String(error)}</p></body></html>`);
+  if (!code) return res.status(400).send('<html><body><h1>Error</h1><p>Falta "code" en callback.</p></body></html>');
 
-  if (!code) {
-    return res.status(400).send('<html><body><h1>Error</h1><p>Falta "code" en callback.</p></body></html>');
-  }
-
-  // OWNER callback
   if (state === 'owner') {
     try {
       if (!ownerOauth2Client) {
@@ -440,37 +717,31 @@ app.get('/oauth2callback', async (req, res) => {
       }
 
       const { tokens } = await ownerOauth2Client.getToken(code);
-
-      // Guardar en Supabase (persistente)
       const saved = await saveOwnerTokensToSupabase(tokens);
-
-      // Reinicializar cliente owner para que ya quede listo
       await initializeOwnerClient();
 
       return res.send(`
         <html><body style="font-family:Arial;padding:20px">
           <h2>✅ OWNER Autorizado</h2>
-          <p>${saved ? 'Tokens guardados en Supabase.' : 'No se pudieron guardar tokens en Supabase (revisa SUPABASE_SERVICE_ROLE_KEY).'}</p>
-          <p>Ahora vuelve a MOYOFY e intenta agregar una canción.</p>
-          <p>Puedes cerrar esta ventana.</p>
+          <p>${saved ? 'Tokens guardados en Supabase.' : 'No se pudieron guardar tokens en Supabase (revisar SUPABASE_SERVICE_ROLE_KEY).'}</p>
+          <p>Puedes cerrar esta ventana y volver a MOYOFY.</p>
         </body></html>
       `);
     } catch (err) {
-      console.error('❌ Error autenticando OWNER:', err?.response?.data || err);
-      return res.status(500).send('<html><body><h1>Error OWNER OAuth</h1><p>Revisa logs en Render.</p></body></html>');
+      console.error('❌ Error OWNER oauth2callback:', err?.response?.data || err);
+      return res.status(500).send('<html><body><h1>Error OWNER OAuth</h1><p>Revisa logs.</p></body></html>');
     }
   }
 
-  // User callback (opcional)
+  // user callback (si lo usás)
   try {
     const { tokens } = await userOauth2Client.getToken(code);
     req.session.userTokens = tokens;
     req.session.userAuthenticated = true;
     userOauth2Client.setCredentials(tokens);
-
     return res.send(`<html><body><h1>Autenticación exitosa</h1><p>Puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>`);
   } catch (err) {
-    console.error('❌ Error en oauth2callback usuario:', err?.response?.data || err);
+    console.error('❌ Error user oauth2callback:', err?.response?.data || err);
     return res.status(500).send('<h1>Error en OAuth Callback</h1>');
   }
 });
@@ -502,6 +773,7 @@ app.post('/search', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error en /search:', error?.response?.data || error);
+
     let errorMessage = 'Error al buscar videos en YouTube';
     let statusCode = 500;
 
@@ -514,13 +786,13 @@ app.post('/search', async (req, res) => {
   }
 });
 
-// ------------------------ SUGGEST SONG (OWNER REQUIRED) ------------------------
+// ------------------------ SUGGEST SONG ------------------------
 app.post('/suggest-song', async (req, res) => {
   const { videoId } = req.body;
   const defaultPlaylistId = process.env.DEFAULT_PLAYLIST_ID;
 
   if (!defaultPlaylistId) {
-    return res.status(500).json({ ok: false, error: 'DEFAULT_PLAYLIST_ID no configurado en el servidor', requiresOwnerAuth: true });
+    return res.status(500).json({ ok: false, error: 'DEFAULT_PLAYLIST_ID no configurado', requiresOwnerAuth: true });
   }
 
   if (!videoId) {
@@ -532,18 +804,17 @@ app.post('/suggest-song', async (req, res) => {
     return res.status(400).json({ ok: false, error: 'Video ID con formato inválido', requiresOwnerAuth: false });
   }
 
-  // Si ownerYoutube no está listo, pedimos auth del owner
   if (!ownerYoutube || !ownerOauth2Client) {
     return res.status(401).json({
       ok: false,
       error: 'OWNER_NOT_AUTHORIZED',
-      message: 'Necesitás autorizar la cuenta del bar (OWNER) para poder agregar canciones.',
+      message: 'Necesitás autorizar la cuenta del bar (OWNER) para agregar canciones.',
       requiresOwnerAuth: true,
       ownerAuthUrl: '/owner/auth'
     });
   }
 
-  // 1) Validar video (con API Key)
+  // validar video con API KEY
   try {
     const videoResponse = await userYoutube.videos.list({ part: 'snippet,status', id: videoId });
     if (!videoResponse.data.items || videoResponse.data.items.length === 0) {
@@ -555,11 +826,11 @@ app.post('/suggest-song', async (req, res) => {
       return res.status(403).json({ ok: false, error: 'Esta canción no se puede agregar a playlists.', requiresOwnerAuth: false });
     }
   } catch (error) {
-    console.error('❌ Error validando video:', error?.response?.data || error);
+    console.error('❌ Error verificando canción:', error?.response?.data || error);
     return res.status(500).json({ ok: false, error: 'Error verificando la canción.', requiresOwnerAuth: false });
   }
 
-  // 2) Insertar a playlist (con OWNER OAuth)
+  // insertar en playlist con OWNER OAuth
   try {
     const response = await ownerYoutube.playlistItems.insert({
       part: 'snippet',
@@ -571,7 +842,7 @@ app.post('/suggest-song', async (req, res) => {
       }
     });
 
-    return res.status(200).json({
+    res.status(200).json({
       ok: true,
       message: 'Canción agregada a la playlist.',
       videoId: videoId,
@@ -583,14 +854,13 @@ app.post('/suggest-song', async (req, res) => {
     const payload = error?.response?.data || error;
     console.error('❌ Error insertando en playlist:', payload);
 
-    // Caso típico: invalid_grant = refresh token revocado/expirado
     const isInvalidGrant =
       payload?.error === 'invalid_grant' ||
       payload?.error_description?.includes('expired or revoked') ||
       (payload?.error?.message && String(payload.error.message).includes('invalid_grant'));
 
     if (isInvalidGrant) {
-      console.log('🧨 invalid_grant detectado: tokens del owner expirados/revocados. Limpiando tokens y solicitando re-auth...');
+      console.log('🧨 invalid_grant detectado: tokens del owner expirados/revocados. Limpiando y pidiendo re-auth...');
       await clearOwnerTokensInSupabase();
       ownerYoutube = null;
       ownerOauth2Client = null;
@@ -604,18 +874,6 @@ app.post('/suggest-song', async (req, res) => {
       });
     }
 
-    // 401 genérico
-    if (error.code === 401 || error.response?.status === 401) {
-      return res.status(401).json({
-        ok: false,
-        error: 'OWNER_UNAUTHORIZED',
-        message: 'Owner no autorizado. Volvé a autorizar.',
-        requiresOwnerAuth: true,
-        ownerAuthUrl: '/owner/auth'
-      });
-    }
-
-    // 403 (permisos)
     if (error.response?.status === 403) {
       return res.status(403).json({
         ok: false,
@@ -697,13 +955,8 @@ function filterRockMusic(items) {
     const isAllowedArtist = allowedArtists.some(artist => channel.includes(artist) || title.includes(artist));
     if (isAllowedArtist) return true;
 
-    const hasRockKeyword = rockKeywords.some(keyword =>
-      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
-    );
-
-    const hasExcludedKeyword = excludedKeywords.some(keyword =>
-      title.includes(keyword) || channel.includes(keyword) || description.includes(keyword)
-    );
+    const hasRockKeyword = rockKeywords.some(keyword => title.includes(keyword) || channel.includes(keyword) || description.includes(keyword));
+    const hasExcludedKeyword = excludedKeywords.some(keyword => title.includes(keyword) || channel.includes(keyword) || description.includes(keyword));
 
     return hasRockKeyword && !hasExcludedKeyword;
   });
@@ -723,12 +976,11 @@ function checkConfiguration() {
   ];
 
   const missing = requiredVars.filter(v => !process.env[v]);
-
   if (missing.length > 0) console.log(`⚠️ Faltan variables requeridas: ${missing.join(', ')}`);
   else console.log('✅ Variables requeridas OK');
 
   const supa = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY;
-  console.log(`ℹ️ Supabase KV tokens: ${supa ? '✅ Disponible' : '⚠️ No disponible (no guardará tokens OWNER)'}`);
+  console.log(`ℹ️ Supabase KV tokens: ${supa ? '✅ Disponible' : '⚠️ No disponible'}`);
 }
 
 app.listen(PORT, HOST, () => {
