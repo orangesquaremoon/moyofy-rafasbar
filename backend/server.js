@@ -34,6 +34,7 @@ const app = express();
  * Es solo una advertencia de escalabilidad. Lo dejamos así por ahora
  * para no meter más variables/dependencias hasta que funcione todo.
  */
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET || 'moyofy_secret_key_2025',
   resave: false,
@@ -70,24 +71,85 @@ app.use(express.static(path.join(__dirname, '../public')));
 let ownerOauth2Client = null;
 let ownerYoutube = null;
 
-function initializeOwnerClient() {
-  if (!process.env.OWNER_TOKENS_JSON) {
-    console.error('❌ OWNER_TOKENS_JSON no configurado. No se puede inicializar el cliente del propietario.');
-    return;
+// -------------------- OWNER TOKEN STORAGE (FIX INVALID_GRANT) --------------------
+// Guardamos tokens en runtime para que la demo funcione de inmediato sin depender de redeploy.
+// En Render, /tmp suele ser escribible. Si usás disco persistente, podés cambiar la ruta.
+const OWNER_TOKENS_FILE = process.env.OWNER_TOKENS_FILE
+  ? path.resolve(process.env.OWNER_TOKENS_FILE)
+  : path.join(__dirname, 'owner_tokens.json');
+
+function safeJsonParse(raw) {
+  try { return JSON.parse(raw); } catch (_) { return null; }
+}
+
+function loadOwnerTokens() {
+  // Prioridad: ENV -> File
+  if (process.env.OWNER_TOKENS_JSON) {
+    const t = safeJsonParse(process.env.OWNER_TOKENS_JSON);
+    if (t) return t;
+    console.error('❌ OWNER_TOKENS_JSON existe pero NO es JSON válido.');
   }
+
   try {
-    const tokens = JSON.parse(process.env.OWNER_TOKENS_JSON);
-    ownerOauth2Client = new google.auth.OAuth2(
-      process.env.OAUTH_CLIENT_ID,
-      process.env.OAUTH_CLIENT_SECRET,
-      process.env.REDIRECT_URI
-    );
+    if (fs.existsSync(OWNER_TOKENS_FILE)) {
+      const raw = fs.readFileSync(OWNER_TOKENS_FILE, 'utf8');
+      const t = safeJsonParse(raw);
+      if (t) return t;
+      console.error('❌ owner_tokens.json existe pero NO es JSON válido.');
+    }
+  } catch (e) {
+    console.error('⚠️ No se pudo leer OWNER_TOKENS_FILE:', e?.message || e);
+  }
+
+  return null;
+}
+
+function saveOwnerTokens(tokens) {
+  try {
+    fs.writeFileSync(OWNER_TOKENS_FILE, JSON.stringify(tokens, null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('⚠️ No se pudo guardar OWNER_TOKENS_FILE:', e?.message || e);
+    return false;
+  }
+}
+
+function clearOwnerTokens() {
+  try {
+    if (fs.existsSync(OWNER_TOKENS_FILE)) fs.unlinkSync(OWNER_TOKENS_FILE);
+  } catch (_) {}
+}
+
+// Inicializa SIEMPRE el OAuth2 del owner (aunque no tenga tokens) para que /owner/auth funcione.
+function initializeOwnerClient() {
+  ownerOauth2Client = new google.auth.OAuth2(
+    process.env.OAUTH_CLIENT_ID,
+    process.env.OAUTH_CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  const tokens = loadOwnerTokens();
+  if (tokens) {
     ownerOauth2Client.setCredentials(tokens);
-    ownerOauth2Client.on('tokens', () => {});
+
+    // Si Google renueva tokens, persistimos de inmediato para que no vuelva a fallar la demo.
+    ownerOauth2Client.on('tokens', (newTokens) => {
+      if (!newTokens) return;
+
+      // Merge: si viene access_token pero no refresh_token, preservamos el refresh_token anterior
+      const current = loadOwnerTokens() || {};
+      const merged = { ...current, ...newTokens };
+      // Por seguridad: si merged no tiene refresh_token pero current sí, mantenelo.
+      if (!merged.refresh_token && current.refresh_token) merged.refresh_token = current.refresh_token;
+
+      saveOwnerTokens(merged);
+    });
+
     ownerYoutube = google.youtube({ version: 'v3', auth: ownerOauth2Client });
     console.log('✅ Cliente de YouTube del propietario inicializado.');
-  } catch (error) {
-    console.error('❌ Error inicializando cliente del propietario:', error.message);
+  } else {
+    ownerYoutube = null;
+    console.log('⚠️ OWNER tokens no encontrados. Debés autorizar con /owner/auth (una vez).');
   }
 }
 initializeOwnerClient();
@@ -98,6 +160,7 @@ const userOauth2Client = new google.auth.OAuth2(
   process.env.REDIRECT_URI
 );
 
+// OJO: Este cliente SOLO usa API key (búsqueda pública, no requiere OAuth).
 const userYoutube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
 
 app.use((req, res, next) => {
@@ -144,6 +207,21 @@ function requireSupabase(res) {
     return false;
   }
   return true;
+}
+
+// Helper: detecta invalid_grant de Google (token expirado / revocado)
+function isInvalidGrant(err) {
+  const data = err?.response?.data;
+  const desc = data?.error_description || '';
+  const errCode = data?.error || '';
+  return errCode === 'invalid_grant' || String(desc).toLowerCase().includes('expired') || String(desc).toLowerCase().includes('revoked');
+}
+
+function setOwnerAuthBroken() {
+  // Resetea el cliente owner para forzar re-auth
+  ownerYoutube = null;
+  try { if (ownerOauth2Client) ownerOauth2Client.setCredentials({}); } catch (_) {}
+  clearOwnerTokens();
 }
 
 // ---------- CONFIG ----------
@@ -558,7 +636,6 @@ app.post('/v2/vote', async (req, res) => {
       .single();
 
     if (toQ?.error || !toQ.data) {
-      // no bloquea el voto, solo no recompensa
       console.error('❌ Supabase error in vote(toQ):', toQ?.error);
       return res.json({ ok: true });
     }
@@ -588,6 +665,7 @@ app.post('/v2/vote', async (req, res) => {
 });
 
 // ---------- OAUTH ----------
+// Usuario normal (no se usa para insertar en playlist en tu flujo actual, pero lo dejamos)
 app.get('/auth', (req, res) => {
   const url = userOauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -602,11 +680,21 @@ app.get('/auth', (req, res) => {
   res.redirect(url);
 });
 
+// OWNER: FIX CRÍTICO -> agregar state:'owner' para que /oauth2callback entre al branch del propietario.
 app.get('/owner/auth', (req, res) => {
-  if (!ownerOauth2Client) return res.status(500).send('Owner OAuth no inicializado');
+  if (!ownerOauth2Client) {
+    // Seguridad adicional, aunque ya lo inicializamos siempre
+    ownerOauth2Client = new google.auth.OAuth2(
+      process.env.OAUTH_CLIENT_ID,
+      process.env.OAUTH_CLIENT_SECRET,
+      process.env.REDIRECT_URI
+    );
+  }
+
   const url = ownerOauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
+    state: 'owner',
     scope: [
       'https://www.googleapis.com/auth/youtube',
       'https://www.googleapis.com/auth/userinfo.email',
@@ -620,30 +708,53 @@ app.get('/owner/auth', (req, res) => {
 app.get('/oauth2callback', async (req, res) => {
   const { code, state } = req.query;
 
+  const { error } = req.query;
+  if (error) return res.status(400).send(`<html><body><h1>Error OAuth</h1><p>${error}</p></body></html>`);
+  if (!code) return res.status(400).send(`<html><body><h1>Error OAuth</h1><p>Falta "code" en callback.</p></body></html>`);
+
+  // OWNER CALLBACK
   if (state === 'owner') {
     try {
+      if (!ownerOauth2Client) {
+        ownerOauth2Client = new google.auth.OAuth2(
+          process.env.OAUTH_CLIENT_ID,
+          process.env.OAUTH_CLIENT_SECRET,
+          process.env.REDIRECT_URI
+        );
+      }
+
       const { tokens } = await ownerOauth2Client.getToken(code);
-      console.log('✅ TOKENS DEL PROPIETARIO OBTENIDOS');
-      console.log('⬇️ COPIA ESTE JSON EN RENDER COMO OWNER_TOKENS_JSON ⬇️');
-      console.log(JSON.stringify(tokens));
+
+      // Merge para mantener refresh_token si Google no lo manda siempre
+      const current = loadOwnerTokens() || {};
+      const merged = { ...current, ...tokens };
+      if (!merged.refresh_token && current.refresh_token) merged.refresh_token = current.refresh_token;
+
+      // Guardar ya mismo para que la demo funcione SIN redeploy
+      saveOwnerTokens(merged);
+
+      // Set credentials y levantar youtube owner en caliente
+      ownerOauth2Client.setCredentials(merged);
+      ownerYoutube = google.youtube({ version: 'v3', auth: ownerOauth2Client });
+
+      console.log('✅ OWNER AUTH OK (tokens guardados en owner_tokens.json).');
       return res.send(`
         <html><body style="font-family:Arial;padding:20px">
           <h2>✅ Autenticación del PROPIETARIO completada</h2>
-          <p>Copia el JSON que aparece en los logs de Render y pégalo como:</p>
-          <pre>OWNER_TOKENS_JSON</pre>
-          <p>Luego guarda y deja que Render haga redeploy.</p>
+          <p>Listo. Ya podés volver a MOYOFY e intentar agregar una canción.</p>
+          <p><b>Nota:</b> Para producción, también podés copiar tokens a <code>OWNER_TOKENS_JSON</code> en Render si querés.</p>
           <p>Puedes cerrar esta ventana.</p>
         </body></html>
       `);
     } catch (err) {
-      console.error('❌ Error autenticando propietario:', err);
+      console.error('❌ Error autenticando propietario:', err?.response?.data || err);
+      // Si hay invalid_grant acá, también limpiamos por si quedaron restos
+      if (isInvalidGrant(err)) setOwnerAuthBroken();
       return res.status(500).send('Error autenticando propietario');
     }
   }
 
-  const { error } = req.query;
-  if (error) return res.status(400).send(`<html><body><h1>Error OAuth</h1><p>${error}</p></body></html>`);
-
+  // USER CALLBACK (se mantiene igual)
   try {
     const { tokens } = await userOauth2Client.getToken(code);
     req.session.userTokens = tokens;
@@ -651,7 +762,7 @@ app.get('/oauth2callback', async (req, res) => {
     userOauth2Client.setCredentials(tokens);
     res.send(`<html><body><h1>Autenticación exitosa</h1><p>Puedes cerrar esta ventana y regresar a MOYOFY.</p></body></html>`);
   } catch (err) {
-    console.error('❌ Error en oauth2callback:', err);
+    console.error('❌ Error en oauth2callback:', err?.response?.data || err);
     res.status(500).send('<h1>Error en OAuth Callback</h1>');
   }
 });
@@ -724,7 +835,17 @@ app.post('/suggest-song', async (req, res) => {
     return res.status(400).json({ ok: false, error: 'Video ID con formato inválido', requiresAuth: false });
   }
 
+  // Si ownerYoutube no está listo, forzá re-auth directo
+  if (!ownerYoutube || !ownerOauth2Client) {
+    return res.status(500).json({
+      ok: false,
+      error: 'El servidor requiere autorizar al propietario (YouTube).',
+      requiresAuth: true
+    });
+  }
+
   try {
+    // Verificación pública del video (API KEY)
     const videoResponse = await userYoutube.videos.list({ part: 'snippet,status', id: videoId });
     if (!videoResponse.data.items || videoResponse.data.items.length === 0) {
       return res.status(404).json({ ok: false, error: 'Video no encontrado en YouTube', requiresAuth: false });
@@ -735,10 +856,7 @@ app.post('/suggest-song', async (req, res) => {
       return res.status(403).json({ ok: false, error: 'Esta canción no se puede agregar a playlists.', requiresAuth: false });
     }
 
-    if (!ownerYoutube) {
-      return res.status(500).json({ ok: false, error: 'Cliente propietario no disponible.', requiresAuth: true });
-    }
-
+    // Duplicado: requiere OAuth owner (acá es donde te explotaba invalid_grant)
     const existingItemsResponse = await ownerYoutube.playlistItems.list({
       part: 'snippet',
       playlistId: defaultPlaylistId,
@@ -750,10 +868,24 @@ app.post('/suggest-song', async (req, res) => {
     }
 
   } catch (error) {
-    console.error('❌ Error verificando canción:', error?.response?.data || error);
+    const payload = error?.response?.data || error;
+    console.error('❌ Error verificando canción:', payload);
+
+    // FIX: Si es invalid_grant, limpiamos tokens y pedimos auth. Así no queda "pegado" para siempre.
+    if (isInvalidGrant(error)) {
+      console.error('🧨 invalid_grant detectado: tokens del owner expirados/revocados. Limpiando tokens y solicitando re-auth...');
+      setOwnerAuthBroken();
+      return res.status(500).json({
+        ok: false,
+        error: 'El servidor necesita re-autorización del propietario (tokens revocados/expirados).',
+        requiresAuth: true
+      });
+    }
+
     if (error.code === 401 || error.response?.status === 401) {
       return res.status(500).json({ ok: false, error: 'Error de autenticación del servidor.', requiresAuth: true });
     }
+
     return res.status(500).json({ ok: false, error: 'Error verificando la canción.', requiresAuth: false });
   }
 
@@ -781,7 +913,20 @@ app.post('/suggest-song', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error insertando en playlist:', error?.response?.data || error);
+    const payload = error?.response?.data || error;
+    console.error('❌ Error insertando en playlist:', payload);
+
+    // FIX: invalid_grant al insertar = tokens muertos -> limpiar y pedir re-auth
+    if (isInvalidGrant(error)) {
+      console.error('🧨 invalid_grant detectado al insertar: tokens del owner expirados/revocados. Limpiando tokens y solicitando re-auth...');
+      setOwnerAuthBroken();
+      return res.status(500).json({
+        ok: false,
+        error: 'El servidor necesita re-autorización del propietario (tokens revocados/expirados).',
+        requiresAuth: true
+      });
+    }
+
     let errorMessage = 'Error al agregar canción';
     let requiresAuth = false;
     let statusCode = 500;
@@ -807,7 +952,9 @@ app.get('/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     supabase: supabaseAdmin ? '✅ Configured' : '⚠️ Not configured',
     youtubeApi: process.env.YOUTUBE_API_KEY ? '✅ Configured' : '❌ Not Configured',
-    playlist: process.env.DEFAULT_PLAYLIST_ID ? '✅ Configured' : '❌ Not Configured'
+    playlist: process.env.DEFAULT_PLAYLIST_ID ? '✅ Configured' : '❌ Not Configured',
+    ownerAuth: ownerYoutube ? '✅ Owner OAuth Ready' : '⚠️ Owner OAuth Required',
+    ownerTokensFile: OWNER_TOKENS_FILE
   });
 });
 
@@ -874,11 +1021,13 @@ function checkConfiguration() {
     'OAUTH_CLIENT_ID',
     'OAUTH_CLIENT_SECRET',
     'REDIRECT_URI',
-    'DEFAULT_PLAYLIST_ID',
-    'OWNER_TOKENS_JSON'
+    'DEFAULT_PLAYLIST_ID'
+    // OWNER_TOKENS_JSON ya no es estrictamente requerido porque ahora aceptamos owner_tokens.json en runtime
   ];
 
   const optionalVars = [
+    'OWNER_TOKENS_JSON',
+    'OWNER_TOKENS_FILE',
     'SUPABASE_URL',
     'SUPABASE_ANON_KEY',
     'SUPABASE_SERVICE_ROLE_KEY',
@@ -892,8 +1041,8 @@ function checkConfiguration() {
   else console.log('✅ Variables requeridas OK');
 
   const optMissing = optionalVars.filter(v => !process.env[v]);
-  if (optMissing.length > 0) console.log(`ℹ️ Variables opcionales no configuradas (V2): ${optMissing.join(', ')}`);
-  else console.log('✅ Variables opcionales V2 OK');
+  if (optMissing.length > 0) console.log(`ℹ️ Variables opcionales no configuradas: ${optMissing.join(', ')}`);
+  else console.log('✅ Variables opcionales OK');
 }
 
 app.listen(PORT, HOST, () => {
