@@ -251,6 +251,29 @@
     }
     .add-btn:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(0,255,170,.44); }
     .add-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; background: linear-gradient(45deg, #6d6d6d, #858585); color:#1c1c1c; }
+    
+    /* ✅ AJUSTE 3: pointer-events:none para íconos dentro de botones */
+    .add-btn i,
+    .btn i,
+    .vote-btn i {
+      pointer-events: none;
+    }
+
+    .vote-btn {
+      background: transparent;
+      border: none;
+      color: #cfcfff;
+      cursor: pointer;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all .2s ease;
+      font-size: 0.85rem;
+    }
+    .vote-btn:hover {
+      background: rgba(0, 255, 170, 0.1);
+      color: var(--success);
+    }
 
     .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .grid3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
@@ -688,6 +711,35 @@
 
     function $(id){ return document.getElementById(id); }
 
+    // ✅ NUEVA FUNCIÓN: resolveButtonEl - Normaliza el elemento para obtener siempre el botón
+    function resolveButtonEl(el) {
+      if (!el) return null;
+      if (el.tagName === 'BUTTON') return el;
+      return el.querySelector ? el.querySelector('button') : null;
+    }
+
+    // ✅ FUNCIÓN MEJORADA: escapeHtml - Escapa todos los caracteres HTML
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    // ✅ AJUSTE 1: escapeForAttribute CORREGIDO - HTML escape para atributos
+    function escapeForAttribute(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    // ✅ NUEVA FUNCIÓN: safeJSON - Convierte a JSON seguro para atributos data
+    function safeJSON(obj) {
+      return JSON.stringify(obj || {}).replace(/</g, '\\u003c');
+    }
+
     function playSound(soundId) {
       if (!soundEnabled) return;
       const sound = document.getElementById(soundId);
@@ -772,7 +824,7 @@
       if (type === 'success') icon = 'check-circle';
       else if (type === 'error') icon = 'exclamation-circle';
       else if (type === 'warning') icon = 'exclamation-triangle';
-      container.innerHTML = `<div class="message ${type}"><i class="fas fa-${icon}"></i> ${text}</div>`;
+      container.innerHTML = `<div class="message ${type}"><i class="fas fa-${icon}"></i> ${escapeHtml(text)}</div>`;
       setTimeout(() => { if (container) container.innerHTML = ''; }, 5200);
     }
 
@@ -781,7 +833,7 @@
       if (!pill) return;
       const cls = ok ? 'pill success' : 'pill warning';
       pill.className = cls;
-      pill.innerHTML = ok ? `<i class="fas fa-cloud"></i> ${label}` : `<i class="fas fa-triangle-exclamation"></i> ${label}`;
+      pill.innerHTML = ok ? `<i class="fas fa-cloud"></i> ${escapeHtml(label)}` : `<i class="fas fa-triangle-exclamation"></i> ${escapeHtml(label)}`;
     }
 
     function todayKey() {
@@ -917,19 +969,6 @@
           <p class="small" style="margin-top:6px;"><i class="fas fa-clock"></i> Solo canciones de hasta ${MAX_DURATION_MINUTES} minutos</p>
         </div>
       `;
-    }
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
-    }
-
-    function sanitizeForAttr(str) {
-      return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
 
     async function fetchPublicConfig() {
@@ -1215,21 +1254,29 @@
 
         const disabled = durationSeconds > MAX_DURATION_SECONDS ? 'disabled' : '';
         const btnLabel = durationSeconds > MAX_DURATION_SECONDS ? 'DEMASIADO LARGA' : 'AGREGAR';
+        
+        // ✅ CORRECCIÓN: Usar data attributes en lugar de onclick inline
+        const songData = {
+          videoId: videoId,
+          title: title,
+          artist: artist,
+          duration: durationSeconds
+        };
 
         html += `
-          <div class="song-item">
+          <div class="song-item" data-song='${safeJSON(songData)}'>
             <div class="song-info">
               <div class="song-title">${escapeHtml(displayTitle)}</div>
               <div class="song-artist">${escapeHtml(artist)}</div>
               ${durationDisplay}
               <div class="small" style="margin-top:6px;">
                 <i class="fas fa-thumbs-up"></i>
-                <button class="btn-mini-inline" style="background:transparent;border:none;color:#cfcfff;cursor:pointer;font-weight:900;"
-                  onclick="voteSong('${sanitizeForAttr(videoId)}')">Votar (+${ECONOMY.voteReward} MOYOS al creador)</button>
+                <button class="vote-btn" data-video-id="${escapeForAttribute(videoId)}">
+                  Votar (+${ECONOMY.voteReward} MOYOS al creador)
+                </button>
               </div>
             </div>
-            <button class="add-btn" ${disabled}
-              onclick="suggestSong('${sanitizeForAttr(videoId)}','${sanitizeForAttr(title)}','${sanitizeForAttr(artist)}', this, ${durationSeconds})">
+            <button class="add-btn" ${disabled} data-song-action="add">
               <i class="fas fa-plus"></i> ${btnLabel}
             </button>
           </div>
@@ -1237,6 +1284,60 @@
       });
 
       container.innerHTML = html;
+    }
+
+    // ✅ NUEVO: Event delegation para manejar clicks en botones
+    function setupEventDelegation() {
+      const resultsContainer = $('results-container');
+      if (!resultsContainer) return;
+
+      // Eliminar listeners anteriores para evitar duplicados
+      resultsContainer.removeEventListener('click', handleResultsContainerClick);
+      
+      // Agregar nuevo listener
+      resultsContainer.addEventListener('click', handleResultsContainerClick);
+    }
+
+    // ✅ NUEVO: Manejador de eventos para el contenedor de resultados
+    function handleResultsContainerClick(event) {
+      const target = event.target;
+      
+      // Manejar clic en botón "Agregar"
+      const addBtn = target.closest('.add-btn');
+      if (addBtn && !addBtn.disabled) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Obtener los datos de la canción desde el contenedor padre
+        const songItem = addBtn.closest('.song-item');
+        if (!songItem) return;
+        
+        try {
+          const songData = JSON.parse(songItem.dataset.song || '{}');
+          const { videoId, title, artist, duration } = songData;
+          
+          if (videoId && title) {
+            suggestSong(videoId, title, artist, addBtn, duration || 0);
+          }
+        } catch (e) {
+          console.error('Error parsing song data:', e);
+          showMessage('message-container', 'Error interno al procesar la canción.', 'error');
+        }
+        return;
+      }
+      
+      // Manejar clic en botón "Votar"
+      const voteBtn = target.closest('.vote-btn');
+      if (voteBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const videoId = voteBtn.dataset.videoId;
+        if (videoId) {
+          voteSong(videoId);
+        }
+        return;
+      }
     }
 
     async function voteSong(videoId) {
@@ -1259,8 +1360,18 @@
       }
     }
 
+    // ✅ FUNCIÓN MODIFICADA: suggestSong con event delegation
     async function suggestSong(videoId, title, artist, buttonEl, durationSeconds = 0) {
       playSound('click-sound');
+
+      // Normalizar el elemento para obtener siempre el botón
+      const resolvedButtonEl = resolveButtonEl(buttonEl);
+      
+      if (!resolvedButtonEl) {
+        console.error('No se encontró el botón asociado');
+        showMessage('message-container', 'Error interno: no se pudo encontrar el botón.', 'error');
+        return;
+      }
 
       if (durationSeconds > MAX_DURATION_SECONDS) {
         showMessage('message-container', `Esta canción dura ${formatDuration(durationSeconds)} y supera el límite (${MAX_DURATION_MINUTES} min).`, 'error');
@@ -1280,7 +1391,6 @@
       }
 
       // ✅ MODIFICACIÓN: no solicitar ubicación y no bloquear por distancia
-      // (Se deja el código de geolocalización intacto arriba, pero no se usa.)
       if (GEOLOCATION_REQUIRED) {
         try {
           const coords = await requestLocation();
@@ -1300,11 +1410,16 @@
         return;
       }
 
-      const original = buttonEl.innerHTML;
-      buttonEl.disabled = true;
-      buttonEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AGREGANDO...';
-
+      // Guardar el estado original del botón
+      const originalHTML = resolvedButtonEl.innerHTML;
+      const originalDisabled = resolvedButtonEl.disabled;
+      
       try {
+        // Deshabilitar el botón y mostrar estado de carga
+        resolvedButtonEl.disabled = true;
+        resolvedButtonEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AGREGANDO...';
+        
+        // Llamada a la API
         const response = await fetch(`${API_BASE}/suggest-song`, {
           method: 'POST',
           headers: { 'Content-Type':'application/json' },
@@ -1353,7 +1468,7 @@
         }
 
         playSound('success-sound');
-        const rect = buttonEl.getBoundingClientRect();
+        const rect = resolvedButtonEl.getBoundingClientRect();
         const x = rect.left + rect.width/2;
         const y = rect.top + rect.height/2;
         createEpicConfettiExplosion(x, y, 110);
@@ -1361,15 +1476,29 @@
 
         showMessage('message-container', `Canción agregada. +${ECONOMY.pointsPerSong} MOYOS`, 'success');
 
+        // Éxito: cambiar el botón a estado "AGREGADA" permanentemente
+        resolvedButtonEl.innerHTML = '<i class="fas fa-check"></i> AGREGADA';
+        resolvedButtonEl.disabled = true;
+
         $('song-search').value = '';
         $('song-search').focus();
 
         await syncAll();
+        
       } catch (e) {
         showMessage('message-container', `No se pudo agregar: ${escapeHtml(e.message)}`, 'error');
+        
+        // Error: restaurar el botón después de 2 segundos
+        setTimeout(() => {
+          if (resolvedButtonEl) {
+            resolvedButtonEl.innerHTML = originalHTML;
+            resolvedButtonEl.disabled = originalDisabled;
+          }
+        }, 2000);
+        
       } finally {
-        buttonEl.disabled = false;
-        buttonEl.innerHTML = original;
+        // Nota: La restauración en caso de éxito NO se hace aquí
+        // La restauración en caso de error se maneja en el catch con un setTimeout
       }
     }
 
@@ -1464,6 +1593,9 @@
         } else {
           setUIStateLoggedOut();
         }
+        
+        // ✅ AJUSTE 2: setupEventDelegation() se llama solo una vez al final de init()
+        // No se llama aquí para evitar duplicación
       });
 
       $('btn-enter').addEventListener('click', () => enterFlow({ guest:false }));
@@ -1507,6 +1639,9 @@
           alert('No se pudo cargar ranking.');
         }
       });
+      
+      // ✅ AJUSTE 2: setupEventDelegation() se llama solo una vez al final de init()
+      setupEventDelegation();
     }
 
     document.addEventListener('DOMContentLoaded', init);
