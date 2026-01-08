@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>MOYOFY · TV Mode</title>
+
+  <!-- Supabase (mismo CDN que index.html) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --primary:#ff004c;
+      --primary2:#ff006e;
+      --success:#00ffaa;
+      --bg1:#0f1020;
+      --bg2:#1b1c33;
+      --panel:rgba(30,30,50,.88);
+      --stroke:rgba(255,0,76,.25);
+      --text:#f3f4ff;
+      --muted:#a7a7c7;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI, Tahoma, Geneva, Verdana, sans-serif;}
+    html,body{height:100%;background:radial-gradient(1200px 800px at 10% 10%, #24254a 0%, var(--bg1) 55%), linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);color:var(--text);}
+    .app{height:100%;display:flex;gap:14px;padding:14px;}
+    .left{flex:1;min-width:60%;display:flex;flex-direction:column;gap:12px;}
+    .right{width:min(420px, 32vw);display:flex;flex-direction:column;gap:12px;}
+    .card{
+      background:var(--panel);
+      border:2px solid var(--stroke);
+      border-radius:18px;
+      box-shadow:0 14px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+      backdrop-filter: blur(14px);
+      overflow:hidden;
+    }
+    .header{
+      padding:14px 16px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .brand{
+      font-weight:950;
+      font-size:18px;
+      letter-spacing:.5px;
+      background:linear-gradient(45deg, var(--primary), #ff7300, #9d4edd, #4361ee);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-size:300% 300%;
+      animation:shift 6s ease infinite;
+    }
+    @keyframes shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .meta{color:var(--muted);font-weight:800;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52%;}
+    .btn{
+      cursor:pointer;
+      border:none;
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:950;
+      color:#0a0b14;
+      background:linear-gradient(45deg, var(--success), #00cc88);
+      box-shadow:0 8px 22px rgba(0,255,170,.22);
+      user-select:none;
+    }
+    .btn.secondary{
+      background:transparent;
+      color:var(--success);
+      border:2px solid rgba(0,255,170,.35);
+      box-shadow:none;
+    }
+    .playerWrap{position:relative;flex:1;min-height:0;}
+    .player{
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      border:0;
+      background:#000;
+    }
+    .statusBar{
+      padding:12px 16px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      font-weight:950;font-size:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+    }
+    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);}
+    .dot.ok{background:var(--success);box-shadow:0 0 14px rgba(0,255,170,.45);}
+    .dot.warn{background:#ffcc00;box-shadow:0 0 14px rgba(255,204,0,.35);}
+    .dot.bad{background:#ff6b6b;box-shadow:0 0 14px rgba(255,107,107,.35);}
+
+    /* Leaderboard */
+    .lbTitle{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);font-weight:950;}
+    .lbList{padding:10px 12px;display:flex;flex-direction:column;gap:10px;overflow:auto;max-height:46vh;}
+    .lbItem{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 12px;border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .lbLeft{display:flex;align-items:center;gap:10px;min-width:0;}
+    .rank{
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      font-weight:1000;
+      background:rgba(255,0,76,.18);
+      border:1px solid rgba(255,0,76,.25);
+      color:#ffd5e1;
+      flex:0 0 auto;
+    }
+    .nick{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px;}
+    .pts{font-weight:1000;color:var(--success);white-space:nowrap;}
+    .small{color:var(--muted);font-size:12px;font-weight:800;}
+    .empty{padding:18px 16px;color:var(--muted);text-align:center;font-weight:900;}
+
+    /* Fullscreen hint overlay */
+    .overlay{
+      position:fixed;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+      z-index:9999;
+      padding:20px;
+    }
+    .overlay .box{
+      width:min(560px, 92vw);
+      background:rgba(30,30,50,.92);
+      border:2px solid rgba(255,0,76,.25);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
+    }
+    .overlay h3{font-size:18px;margin-bottom:10px;}
+    .overlay p{color:var(--muted);font-weight:800;line-height:1.35;margin-bottom:14px;}
+    .overlay .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.10);}
+  </style>
+</head>
+
+<body>
+  <div id="fsOverlay" class="overlay" style="display:none;">
+    <div class="box">
+      <h3>Modo Pantalla (TV)</h3>
+      <p>
+        Para mejor experiencia en TV, activá pantalla completa.
+        Si el navegador bloquea autoplay, presioná <b>Reproducir</b> dentro del video una vez.
+      </p>
+      <div class="row">
+        <button class="btn secondary" onclick="hideFsOverlay()">Continuar</button>
+        <button class="btn" onclick="enterFullscreen()">Pantalla completa</button>
+      </div>
+      <p class="small" style="margin-top:10px;">
+        Tip: Podés abrir directamente <code>/tv</code> en el dispositivo del bar (Brave).
+      </p>
+    </div>
+  </div>
+
+  <div class="app">
+    <section class="left">
+      <div class="card">
+        <div class="header">
+          <div>
+            <div class="brand">MOYOFY · TV Mode</div>
+            <div id="barMeta" class="meta">Cargando configuración...</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button class="btn secondary" onclick="refreshAll()">Actualizar</button>
+            <button class="btn" onclick="enterFullscreen()">Fullscreen</button>
+          </div>
+        </div>
+
+        <div class="playerWrap">
+          <iframe
+            id="ytPlayer"
+            class="player"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen
+            referrerpolicy="origin-when-cross-origin"
+            src="about:blank">
+          </iframe>
+        </div>
+
+        <div class="statusBar">
+          <div class="pill">
+            <span id="sbDot" class="dot warn"></span>
+            <span id="sbText">Inicializando...</span>
+          </div>
+          <div class="pill">
+            <span class="small">Ranking</span>
+            <span id="sbLb" style="font-weight:1000;">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="right">
+      <div class="card">
+        <div class="lbTitle">Ranking MOYOFY</div>
+        <div id="lbList" class="lbList">
+          <div class="empty">Cargando ranking...</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="lbTitle">Estado</div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;">
+          <div class="pill"><span class="small">barId</span> <span id="stBar" style="font-weight:1000;">—</span></div>
+          <div class="pill"><span class="small">playlist</span> <span id="stPl" style="font-weight:1000;">—</span></div>
+          <div class="pill"><span class="small">actualización</span> <span id="stUpd" style="font-weight:1000;">—</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // ---------------------------
+    // Helpers
+    // ---------------------------
+    function qs(name) {
+      const u = new URL(window.location.href);
+      return u.searchParams.get(name);
+    }
+
+    function setStatus(kind, text) {
+      const dot = document.getElementById('sbDot');
+      const sb = document.getElementById('sbText');
+      sb.textContent = text || '';
+      dot.classList.remove('ok','warn','bad');
+      dot.classList.add(kind || 'warn');
+    }
+
+    function fmtTime() {
+      const d = new Date();
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    // ---------------------------
+    // State
+    // ---------------------------
+    let SUPABASE_URL = null;
+    let SUPABASE_ANON_KEY = null;
+    let BAR_ID = null;
+    let DEFAULT_PLAYLIST_ID = null;
+
+    let supabaseClient = null;
+    let lbRefreshTimer = null;
+    let lastLbFetchAt = 0;
+
+    // ---------------------------
+    // Boot
+    // ---------------------------
+    window.addEventListener('load', () => {
+      init().catch(err => {
+        console.error(err);
+        setStatus('bad', 'Error inicializando TV Mode');
+        document.getElementById('lbList').innerHTML = '<div class="empty">Error inicializando.</div>';
+      });
+    });
+
+    async function init() {
+      setStatus('warn', 'Cargando configuración...');
+      await loadConfig();
+
+      document.getElementById('stBar').textContent = BAR_ID || '—';
+      document.getElementById('stPl').textContent = DEFAULT_PLAYLIST_ID || '—';
+      document.getElementById('barMeta').textContent = BAR_ID ? ('Bar: ' + BAR_ID) : 'Bar: —';
+
+      initPlayer(DEFAULT_PLAYLIST_ID);
+
+      // Leaderboard initial + realtime
+      initSupabase();
+      await fetchAndRenderLeaderboard(true);
+      subscribeLeaderboard();
+
+      // Fallback polling (por si realtime no entrega eventos)
+      if (lbRefreshTimer) clearInterval(lbRefreshTimer);
+      lbRefreshTimer = setInterval(() => {
+        fetchAndRenderLeaderboard(false).catch(() => {});
+      }, 10000);
+
+      // Mostrar overlay de fullscreen una vez por sesión
+      const seen = sessionStorage.getItem('tv_fs_seen');
+      if (!seen) {
+        sessionStorage.setItem('tv_fs_seen', '1');
+        showFsOverlay();
+      }
+
+      setStatus('ok', 'TV Mode activo');
+    }
+
+    async function loadConfig() {
+      // (1) Public config: supabase url/key + barId
+      const pub = await fetch('/v2/public-config', { method: 'GET' }).then(r => r.json());
+      if (!pub || !pub.ok) throw new Error('No se pudo cargar /v2/public-config');
+
+      SUPABASE_URL = pub.supabaseUrl || null;
+      SUPABASE_ANON_KEY = pub.supabaseAnonKey || null;
+      BAR_ID = (qs('barId') || pub.barId || 'rafasbar').trim();
+
+      // (2) TV config: playlist id (y permite override por query)
+      const tv = await fetch('/v2/tv-config?barId=' + encodeURIComponent(BAR_ID), { method: 'GET' }).then(r => r.json());
+      if (!tv || !tv.ok) throw new Error('No se pudo cargar /v2/tv-config');
+
+      DEFAULT_PLAYLIST_ID = (qs('playlistId') || tv.defaultPlaylistId || '').trim() || null;
+
+      if (!DEFAULT_PLAYLIST_ID) {
+        setStatus('warn', 'Falta DEFAULT_PLAYLIST_ID');
+      }
+
+      document.getElementById('stUpd').textContent = fmtTime();
+    }
+
+    function initSupabase() {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        setStatus('warn', 'Supabase no configurado (sin realtime)');
+        return;
+      }
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    function initPlayer(playlistId) {
+      const iframe = document.getElementById('ytPlayer');
+      if (!playlistId) {
+        iframe.src = 'about:blank';
+        return;
+      }
+      // Playlist embed (MVP B1): TV reproduce la playlist directamente.
+      const params = new URLSearchParams({
+        list: playlistId,
+        autoplay: '1',
+        mute: '1',
+        controls: '0',
+        rel: '0',
+        modestbranding: '1',
+        playsinline: '1'
+      });
+      iframe.src = 'https://www.youtube.com/embed/videoseries?' + params.toString();
+    }
+
+    // ---------------------------
+    // Leaderboard
+    // ---------------------------
+    async function fetchAndRenderLeaderboard(force) {
+      // throttle simple para evitar múltiples refresh simultáneos
+      const now = Date.now();
+      if (!force && (now - lastLbFetchAt) < 1500) return;
+      lastLbFetchAt = now;
+
+      const listEl = document.getElementById('lbList');
+      const limit = 10;
+
+      const url = '/v2/leaderboard?barId=' + encodeURIComponent(BAR_ID) + '&limit=' + limit;
+      const res = await fetch(url, { method: 'GET' }).then(r => r.json());
+
+      if (!res || !res.ok) {
+        setStatus('warn', 'No se pudo cargar ranking');
+        listEl.innerHTML = '<div class="empty">No se pudo cargar el ranking.</div>';
+        return;
+      }
+
+      const items = Array.isArray(res.items) ? res.items : [];
+      document.getElementById('sbLb').textContent = String(items.length || 0);
+      document.getElementById('stUpd').textContent = fmtTime();
+
+      if (!items.length) {
+        listEl.innerHTML = '<div class="empty">Sin datos de ranking.</div>';
+        return;
+      }
+
+      const html = items.map((u, idx) => {
+        const rank = idx + 1;
+        const nick = (u.nickname || '—').toString();
+        const pts = Number(u.points || 0);
+        return (
+          '<div class="lbItem">' +
+            '<div class="lbLeft">' +
+              '<div class="rank">' + rank + '</div>' +
+              '<div style="min-width:0;">' +
+                '<div class="nick" title="' + esc(nick) + '">' + esc(nick) + '</div>' +
+                '<div class="small">MOYOS</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="pts">' + pts + '</div>' +
+          '</div>'
+        );
+      }).join('');
+
+      listEl.innerHTML = html;
+    }
+
+    function subscribeLeaderboard() {
+      if (!supabaseClient) return;
+
+      // Realtime: cambios en moyofy_users para el bar actual => refresca leaderboard
+      // (Mismo enfoque que index.html, pero aquí solo necesitamos ranking)
+      try {
+        const channel = supabaseClient
+          .channel('tv_leaderboard')
+          .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'moyofy_users',
+            filter: 'bar_id=eq.' + BAR_ID
+          }, () => {
+            // Pequeño debounce para evitar spam
+            setTimeout(() => fetchAndRenderLeaderboard(false).catch(() => {}), 250);
+          })
+          .subscribe();
+
+        // Si quisieras limpiar: channel.unsubscribe()
+      } catch (e) {
+        console.warn('Realtime no disponible:', e);
+      }
+    }
+
+    // ---------------------------
+    // UI actions
+    // ---------------------------
+    async function refreshAll() {
+      setStatus('warn', 'Actualizando...');
+      await loadConfig();
+      initPlayer(DEFAULT_PLAYLIST_ID);
+      await fetchAndRenderLeaderboard(true);
+      setStatus('ok', 'Actualizado');
+    }
+
+    function showFsOverlay() {
+      const el = document.getElementById('fsOverlay');
+      el.style.display = 'flex';
+    }
+    function hideFsOverlay() {
+      const el = document.getElementById('fsOverlay');
+      el.style.display = 'none';
+    }
+
+    async function enterFullscreen() {
+      try {
+        const root = document.documentElement;
+        if (root.requestFullscreen) await root.requestFullscreen();
+        hideFsOverlay();
+      } catch (e) {
+        console.warn('Fullscreen no permitido:', e);
+        hideFsOverlay();
+      }
+    }
+
+    function esc(s) {
+      return String(s || '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+  </script>
+</body>
+</html>
